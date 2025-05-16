@@ -16,19 +16,21 @@
                 <input type="hidden" name="domain_id" value="{{ $domain->id }}">
 
                 @php
-                    $likert = [
-                        1 => 'Strongly agree',
-                        2 => 'Agree',
-                        3 => 'Neutral',
-                        4 => 'Disagree',
-                        5 => 'Strongly disagree',
-                    ];
-
-                    $likert2 = [
-                        1 => 'Strongly agree',
-                        2 => 'Strongly disagree',
+                    $likertScales = [
+                        'likert' => [
+                            1 => 'Strongly agree',
+                            2 => 'Agree',
+                            3 => 'Neutral',
+                            4 => 'Disagree',
+                            5 => 'Strongly disagree',
+                        ],
+                        'binary' => [
+                            1 => 'Strongly agree',
+                            2 => 'Strongly disagree',
+                        ],
                     ];
                 @endphp
+
 
 
                 @foreach ($sections as $section)
@@ -37,11 +39,15 @@
                             <div class="mt-4">
                                 <p class="font-medium text-gray-800">{{ $loop->iteration }}. {{ $question->question }}
                                 </p>
-
                                 <div class="flex flex-wrap gap-3 mt-2">
-                                    @if ($section->domain->scoring_type === 'likert')
-                                        @foreach ($likert as $value => $label)
-                                            
+
+                                    @php
+                                        $scoringType = $section->domain->scoring_type;
+                                        $options = $likertScales[$scoringType] ?? null;
+                                    @endphp
+
+                                    @if ($options)
+                                        @foreach ($options as $value => $label)
                                             <label class="inline-flex items-center gap-2">
                                                 <input type="radio" name="responses[{{ $question->id }}]"
                                                     value="{{ $value }}">
@@ -49,7 +55,6 @@
                                             </label>
                                         @endforeach
                                     @else
-                                        {{-- Handle other scoring types if needed --}}
                                         <span class="text-red-500 text-sm">Unknown scoring type</span>
                                     @endif
                                 </div>
