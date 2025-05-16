@@ -24,7 +24,7 @@
                             <tr class="border-b">
                                 <td class="px-4 py-2">{{ $loop->iteration }}</td>
                                 <td class="px-4 py-2">{{ $section->name }}</td>
-                                <td class="px-4 py-2">{{ $section->domain->name }}</td>
+                                <td class="px-4 py-2">{{ $section->domain->name ?? 'No Domain Found'}}</td>
                                 <td class="px-4 py-2">{{ $section->description }}</td>
                             </tr>
                         @endforeach
