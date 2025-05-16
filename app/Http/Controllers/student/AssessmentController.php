@@ -25,8 +25,12 @@ class AssessmentController extends Controller
             ? Domain::with(['sections.questions'])->findOrFail($id)
             : Domain::with(['sections.questions'])->orderBy('id')->first();
 
+        // if (!$domain) {
+        //     return redirect()->back()->with('error', 'No Assessment found.');
+        // }
+
         // Get the sections from the selected domain only
-        $sections = $domain->sections;
+        $sections = $domain->sections ?? 'Sk';
 
         return view('student.assessment.index', compact('sections', 'domain'));
     }
@@ -74,24 +78,5 @@ class AssessmentController extends Controller
         }
 
         return redirect()->route('assessment.index')->with('success', 'Assessment submitted successfully!');
-    }
-
-    public function partialSave(Request $request)
-    {
-        $request->validate([
-            'section_id' => 'required|exists:sections,id',
-            'responses' => 'required|array',
-        ]);
-
-        $studentId = Auth::user()->id; // or hardcoded if not using auth
-
-        foreach ($request->responses as $questionId => $value) {
-            StudentAnswer::updateOrCreate(
-                ['student_id' => $studentId, 'question_id' => $questionId],
-                ['value' => $value]
-            );
-        }
-
-        return response()->json(['success' => true]);
     }
 }
