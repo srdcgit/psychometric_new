@@ -18,7 +18,6 @@
                 @php
                     $likertScales = [
                         'likert' => [
-<<<<<<< HEAD
                             1 => 'Not at all interested',
                             2 => 'Slightly interested',
                             3 => 'Moderately interested',
@@ -31,13 +30,6 @@
                             3 => 'Neutral',
                             4 => 'Agree',
                             5 => 'Strongly Agree',
-=======
-                            1 => 'Strongly agree',
-                            2 => 'Agree',
-                            3 => 'Neutral',
-                            4 => 'Disagree',
-                            5 => 'Strongly disagree',
->>>>>>> 91bc8548afe167818f08f9456de04cdd62775f1b
                         ],
                         'binary' => [
                             1 => 'Strongly agree',
