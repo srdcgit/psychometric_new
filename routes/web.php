@@ -28,10 +28,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
 
     Route::get('/assessment', [AssessmentController::class, 'index'])->name('assessment.index');
-   Route::get('/assessment/domain/{id}', [AssessmentController::class, 'index'])->name('assessment.domain.view');
-Route::post('assessment/store', [AssessmentController::class, 'store'])->name('assessment.store');
+    Route::get('/assessment/domain/{id}', [AssessmentController::class, 'index'])->name('assessment.domain.view');
+    Route::post('assessment/store', [AssessmentController::class, 'store'])->name('assessment.store');
 
-
+    Route::get('/assessment/result', [AssessmentController::class, 'result'])->name('assessment.result');
 });
 
 require __DIR__ . '/auth.php';

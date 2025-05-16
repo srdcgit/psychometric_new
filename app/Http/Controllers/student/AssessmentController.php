@@ -8,6 +8,7 @@ use App\Models\Domain;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Section;
+use Illuminate\Support\Facades\DB;
 
 class AssessmentController extends Controller
 {
@@ -20,19 +21,18 @@ class AssessmentController extends Controller
             abort(403, 'Only students can access this page.');
         }
 
+        $domains = Domain::orderBy('id')->get();
         // If no specific domain is passed, use the first one
         $domain = $id
             ? Domain::with(['sections.questions'])->findOrFail($id)
             : Domain::with(['sections.questions'])->orderBy('id')->first();
 
-        // if (!$domain) {
-        //     return redirect()->back()->with('error', 'No Assessment found.');
-        // }
+        $isLastDomain = $domain && $domains->last()->id === $domain->id;
 
         // Get the sections from the selected domain only
-        $sections = $domain->sections ?? 'Sk';
+        $sections = $domain->sections ?? [];
 
-        return view('student.assessment.index', compact('sections', 'domain'));
+        return view('student.assessment.index', compact('sections', 'domain', 'isLastDomain'));
     }
 
 
@@ -78,5 +78,51 @@ class AssessmentController extends Controller
         }
 
         return redirect()->route('assessment.index')->with('success', 'Assessment submitted successfully!');
+    }
+
+    public function result()
+    {
+        $userId = Auth::id();
+
+        $responses = DB::table('assessments')
+            ->join('sections', 'assessments.section_id', '=', 'sections.id')
+            ->join('domains', 'sections.domain_id', '=', 'domains.id')
+            ->select(
+                'assessments.section_id',
+                'sections.name as section_name',
+                'sections.domain_id',
+                'domains.name as domain_name',
+                DB::raw('SUM(response_value) as total'),
+                DB::raw('COUNT(*) as count')
+            )
+            ->where('assessments.student_id', $userId)
+            ->groupBy('assessments.section_id', 'sections.name', 'sections.domain_id', 'domains.name')
+            ->get();
+
+        // Step 1: Prepare flat results with averages
+        $flatResults = [];
+
+        foreach ($responses as $response) {
+            $flatResults[] = [
+                'domain_name' => $response->domain_name,
+                'domain_id' => $response->domain_id,
+                'section_name' => $response->section_name,
+                'average' => round($response->total / $response->count, 2),
+            ];
+        }
+
+        // Step 2: Group by domain_name
+        $grouped = collect($flatResults)->groupBy('domain_name');
+
+        // Step 3: Take top 3 sections per domain
+        $groupedResults = $grouped->map(function ($sections) {
+            return $sections->sortByDesc('average')->take(3);
+        });
+
+        // return view('student.assessment.result', compact('groupedResults'));
+
+        return view('student.assessment.result', [
+            'groupedResults' => $groupedResults->map(fn($items) => $items->values())->toArray()
+        ]);
     }
 }

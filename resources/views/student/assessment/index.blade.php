@@ -40,7 +40,6 @@
                                 <p class="font-medium text-gray-800">{{ $loop->iteration }}. {{ $question->question }}
                                 </p>
                                 <div class="flex flex-wrap gap-3 mt-2">
-
                                     @php
                                         $scoringType = $section->domain->scoring_type;
                                         $options = $likertScales[$scoringType] ?? null;
@@ -68,7 +67,11 @@
 
                 <div class="mt-6 flex justify-center gap-4">
                     <button type="button" id="save-btn" class="btn btn-outline-primary">Save</button>
-                    <button type="button" id="save-next-btn" class="btn btn-success">Save & Next</button>
+                    @if ($isLastDomain)
+                        <button type="button" id="calculate-btn" class="btn btn-primary">Calculate</button>
+                    @else
+                        <button type="button" id="save-next-btn" class="btn btn-success">Save & Next</button>
+                    @endif
                 </div>
             </form>
         @else
@@ -112,6 +115,27 @@
                 e.preventDefault();
                 submitForm(true);
             });
+
+            $('#calculate-btn').on('click', function(e) {
+                e.preventDefault();
+                const data = form.serialize();
+                const submitUrl = "{{ route('assessment.store') }}";
+
+                $.ajax({
+                    url: submitUrl,
+                    method: 'POST',
+                    data: data + '&_token={{ csrf_token() }}',
+                    success: function(res) {
+                        // Redirect to result page
+                        window.location.href = "{{ route('assessment.result') }}";
+                    },
+                    error: function(xhr) {
+                        console.error(xhr.responseText);
+                        alert('Failed to save. Please check console for details.');
+                    }
+                });
+            });
+
         });
     </script>
 
