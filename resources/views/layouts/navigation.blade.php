@@ -6,7 +6,7 @@
                 <!-- Logo -->
                 <div class="shrink-0 flex items-center">
                     <a href="{{ route('dashboard') }}">
-                        <x-application-logo class="block h-9 w-auto fill-current text-gray-800" />
+                        <img style="max-height: 60px;padding-bottom:10px" src="https://identity.zpsdemo.in/assets/images/general/logo_white.png" alt="Identity">
                     </a>
                 </div>
 
