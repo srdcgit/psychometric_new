@@ -19,6 +19,7 @@
                 <select name="scoring_type" id="scoring_type" required >
                     <option value="">Select Option</option>
                     <option value="likert">Likert</option>
+                    <option value="likert2">Likert 2</option>
                     <option value="objective">Objective</option>
                 </select>
             </div>
