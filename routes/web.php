@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\DomainController;
+use App\Http\Controllers\InstituteController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\QuestionController;
 use App\Http\Controllers\SectionController;
@@ -32,6 +33,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('assessment/store', [AssessmentController::class, 'store'])->name('assessment.store');
 
     Route::get('/assessment/result', [AssessmentController::class, 'result'])->name('assessment.result');
+
+    //Institutes
+    Route::get('/institute', [InstituteController::class, 'index'])->name('institute.index');
+    Route::get('/institute/create', [InstituteController::class, 'create'])->name('institute.create');
 });
 
 require __DIR__ . '/auth.php';

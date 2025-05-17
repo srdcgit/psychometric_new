@@ -14,6 +14,10 @@ class Section extends Model
     {
         return $this->belongsTo(Domain::class);
     }
+    public function institute()
+    {
+        return $this->belongsTo(Institute::class);
+    }
     public function questions()
     {
         return $this->hasMany(Question::class);

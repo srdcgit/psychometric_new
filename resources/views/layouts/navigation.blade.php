@@ -6,7 +6,8 @@
                 <!-- Logo -->
                 <div class="shrink-0 flex items-center">
                     <a href="{{ route('dashboard') }}">
-                        <img style="max-height: 60px;padding-bottom:10px" src="https://identity.zpsdemo.in/assets/images/general/logo_white.png" alt="Identity">
+                        <img style="max-height: 60px;padding-bottom:10px"
+                            src="https://identity.zpsdemo.in/assets/images/general/logo_white.png" alt="Identity">
                     </a>
                 </div>
 
@@ -23,6 +24,12 @@
                 @endphp
 
                 @if ($isAdmin)
+                    <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                        <x-nav-link :href="route('institute.index')" :active="request()->routeIs('institute.index')">
+                            {{ __('Institute') }}
+                        </x-nav-link>
+                    </div>
+
                     <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                         <x-nav-link :href="route('domain.index')" :active="request()->routeIs('domain.index')">
                             {{ __('Domain') }}
