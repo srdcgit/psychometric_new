@@ -22,4 +22,6 @@ class Section extends Model
     {
         return $this->hasMany(Question::class);
     }
+
+    
 }

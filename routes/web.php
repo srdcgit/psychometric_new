@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\CareerPathController;
 use App\Http\Controllers\DomainController;
 use App\Http\Controllers\InstituteController;
 use App\Http\Controllers\ProfileController;
@@ -25,6 +26,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('domain', DomainController::class);
     Route::resource('section', SectionController::class);
     Route::resource('question', QuestionController::class);
+    Route::resource('careerpath', CareerPathController::class);
+
+
     Route::get('domain/{id}/sections', [QuestionController::class, 'getSections'])->name('domain.sections');
 
 
