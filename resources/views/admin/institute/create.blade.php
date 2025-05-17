@@ -13,14 +13,38 @@
                 <x-input-error :messages="$errors->get('name')" class="mt-2" />
             </div>
 
-            <div class="mt-4">
-                <x-input-label for="scoring_type" :value="__('Scoring Type')" />
+            <div>
+                <x-input-label for="address" :value="__('Address')" />
+                <x-text-input id="address" name="address" class="mt-1 block w-full" required />
+                <x-input-error :messages="$errors->get('address')" class="mt-2" />
+            </div>
 
-                <select name="scoring_type" id="scoring_type" required >
+            <div>
+                <x-input-label for="mobile" :value="__('Mobile')" />
+                <x-text-input id="mobile" name="mobile" class="mt-1 block w-full" required />
+                <x-input-error :messages="$errors->get('mobile')" class="mt-2" />
+            </div>
+
+
+            <div class="mt-4">
+                <x-input-label for="section_id" :value="__('Section')" />
+
+                <select name="section_id" id="section_id" required>
                     <option value="">Select Option</option>
-                    <option value="likert">Likert</option>
-                    <option value="likert2">Likert 2</option>
-                    <option value="objective">Objective</option>
+                    @foreach ($sections as $section)
+                        <option value="{{ $section->id }}">{{ $section->name }}</option>
+                    @endforeach
+                </select>
+            </div>
+
+             <div class="mt-4">
+                <x-input-label for="student_id" :value="__('Student')" />
+
+                <select name="student_id" id="student_id" required>
+                    <option value="">Select Option</option>
+                    @foreach ($users as $user)
+                        <option value="{{ $user->id }}">{{ $user->name }}</option>
+                    @endforeach
                 </select>
             </div>
 
@@ -34,4 +58,13 @@
             </div>
         </form>
     </div>
+    <!-- CKEditor 5 Script -->
+    <script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
+    <script>
+        ClassicEditor
+            .create(document.querySelector('#description'))
+            .catch(error => {
+                console.error(error);
+            });
+    </script>
 </x-app-layout>
