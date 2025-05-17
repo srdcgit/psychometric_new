@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Domain;
 use App\Models\Section;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class SectionController extends Controller
 {
@@ -13,8 +14,9 @@ class SectionController extends Controller
      */
     public function index()
     {
-         $sections = Section::with('domain')->get();
-    return view('admin.section.index', compact('sections'));
+        $user = Auth::user();
+        $sections = Section::where('uploaded_by', $user->id)->with('domain')->get();
+        return view('admin.section.index', compact('sections'));
     }
 
     /**
@@ -22,8 +24,8 @@ class SectionController extends Controller
      */
     public function create()
     {
-         $domains = Domain::all();
-    return view('admin.section.create', compact('domains'));
+        $domains = Domain::all();
+        return view('admin.section.create', compact('domains'));
     }
 
     /**
@@ -31,15 +33,15 @@ class SectionController extends Controller
      */
     public function store(Request $request)
     {
-       $request->validate([
-        'name' => 'required|string|max:255',
-        'domain_id' => 'required|exists:domains,id',
-        'description' => 'nullable|string',
-    ]);
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'domain_id' => 'required|exists:domains,id',
+            'description' => 'nullable|string',
+        ]);
 
-    Section::create($request->all());
+        Section::create($request->all());
 
-    return redirect()->route('section.index')->with('success', 'Section created successfully.');
+        return redirect()->route('section.index')->with('success', 'Section created successfully.');
     }
 
     /**
@@ -55,22 +57,39 @@ class SectionController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $section = Section::findOrFail($id);
+        $domains = Domain::all();
+        return view('admin.section.edit', compact('section', 'domains'));
     }
+
 
     /**
      * Update the specified resource in storage.
      */
     public function update(Request $request, string $id)
     {
-        //
+        $section = Section::findOrFail($id);
+
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'domain_id' => 'required|exists:domains,id',
+            'description' => 'nullable|string',
+        ]);
+
+        $section->update($request->all());
+
+        return redirect()->route('section.index')->with('success', 'Section updated successfully.');
     }
+
 
     /**
      * Remove the specified resource from storage.
      */
     public function destroy(string $id)
     {
-        //
+        $section = Section::findOrFail($id);
+        $section->delete();
+
+        return redirect()->route('section.index')->with('success', 'Section deleted successfully.');
     }
 }

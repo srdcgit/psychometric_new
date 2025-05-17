@@ -8,7 +8,7 @@
     <div class="max-w-7xl mx-auto py-10 sm:px-6 lg:px-8">
         <div class="mb-6">
             <a href="{{ route('domain.create') }}"
-               class="inline-block px-4 py-2 bg-indigo-600 text-dark rounded hover:bg-indigo-700">
+                class="inline-block px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700">
                 + Add New Domain
             </a>
         </div>
@@ -21,42 +21,95 @@
 
         <div class="bg-white shadow-sm rounded-lg p-6">
             @if ($domains->count())
-                <table class="w-full table-auto">
-                    <thead>
-                        <tr class="bg-gray-100 text-left">
-                            <th class="px-4 py-2">#</th>
-                            <th class="px-4 py-2">Name</th>
-                            <th class="px-4 py-2">Description</th>
-                            <th class="px-4 py-2">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($domains as $key => $domain)
-                            <tr class="border-b">
-                                <td class="px-4 py-2">{{ $key + 1 }}</td>
-                                <td class="px-4 py-2">{{ $domain->name }}</td>
-                                <td class="px-4 py-2">{{ $domain->description }}</td>
-                                <td class="px-4 py-2 space-x-2">
-                                    <a href="{{ route('domain.index', $domain->id) }}"
-                                       class="text-blue-500 hover:underline">Edit</a>
-
-                                    <form action="{{ route('domain.index', $domain->id) }}" method="POST" class="inline">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit"
-                                                class="text-red-600 hover:underline"
-                                                onclick="return confirm('Are you sure you want to delete this domain?')">
-                                            Delete
-                                        </button>
-                                    </form>
-                                </td>
+                <div class="table-responsive">
+                    <table class="w-full table-auto">
+                        <thead>
+                            <tr class="bg-gray-100 text-left">
+                                <th class="px-4 py-2">#</th>
+                                <th class="px-4 py-2">Name</th>
+                                <th class="px-4 py-2">Score Type</th>
+                                <th class="px-4 py-2">Description</th>
+                                <th class="px-4 py-2">Actions</th>
                             </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            @foreach ($domains as $domain)
+                                <tr class="border-b">
+                                    <td class="px-4 py-2">{{ ($domains->currentPage() - 1) * $domains->perPage() + $loop->iteration }}</td>
+                                    <td class="px-4 py-2">{{ $domain->name ?? 'Null' }}</td>
+                                    <td class="px-4 py-2">{{ $domain->scoring_type ?? 'Null' }}</td>
+                                    <td class="px-4 py-2">{!! $domain->description ?? 'null' !!}</td>
+                                    <td class="px-4 py-2 space-x-2">
+                                        <a href="{{ route('domain.edit', $domain->id) }}"
+                                            class="text-blue-500 hover:underline">Edit</a>
+
+                                        <form action="{{ route('domain.destroy', $domain->id) }}" method="POST"
+                                            class="inline delete-form">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="button" class="text-red-600 hover:underline delete-btn"
+                                                data-id="{{ $domain->id }}">
+                                                Delete
+                                            </button>
+                                        </form>
+
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+
+
+                <div class="mt-4">
+                    {!! $domains->links() !!}
+                </div>
             @else
                 <p>No domains found.</p>
             @endif
         </div>
     </div>
+
+
+    <!-- Include SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const deleteButtons = document.querySelectorAll('.delete-btn');
+
+            deleteButtons.forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const form = this.closest('form');
+
+                    Swal.fire({
+                        title: 'Are you sure?',
+                        text: "This will permanently delete the domain.",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#d33',
+                        cancelButtonColor: '#3085d6',
+                        confirmButtonText: 'Yes, delete it!'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            form.submit();
+                        }
+                    });
+                });
+            });
+
+            // Show success alert if session has message
+            @if (session('success'))
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success',
+                    text: '{{ session('success') }}',
+                    timer: 3000,
+                    showConfirmButton: false
+                });
+            @endif
+        });
+    </script>
+
 </x-app-layout>
