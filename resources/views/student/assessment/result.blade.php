@@ -1,6 +1,16 @@
 {{-- @php use Illuminate\Support\Str; @endphp --}}
 
 <x-app-layout>
+
+   @if (session('error'))
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        {{ session('error') }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+@endif
+
+
+
     <div class="max-w-6xl mx-auto py-10">
         <h1 class="text-2xl font-bold text-center mb-6">📊 Assessment Results</h1>
 

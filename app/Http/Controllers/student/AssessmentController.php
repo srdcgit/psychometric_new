@@ -21,6 +21,12 @@ class AssessmentController extends Controller
             abort(403, 'Only students can access this page.');
         }
 
+        if ($user->is_submitted) {
+            return redirect()->route('assessment.result')->with('error', 'You have already submitted the assessment.');
+        }
+
+       
+
         $domains = Domain::orderBy('id')->get();
         // If no specific domain is passed, use the first one
         $domain = $id
@@ -69,21 +75,75 @@ class AssessmentController extends Controller
     }
 
 
-    public function submit(Request $request)
-    {
-        $responses = $request->input('responses');
 
-        foreach ($responses as $questionId => $answer) {
-            // Save to DB, e.g., AssessmentAnswer::create([...])
-        }
+    // public function result()
+    // {
+    //     $userId = Auth::id();
 
-        return redirect()->route('assessment.index')->with('success', 'Assessment submitted successfully!');
-    }
+    //     $responses = DB::table('assessments')
+    //         ->join('sections', 'assessments.section_id', '=', 'sections.id')
+    //         ->join('domains', 'sections.domain_id', '=', 'domains.id')
+    //         ->select(
+    //             'assessments.section_id',
+    //             'sections.name as section_name',
+    //             'sections.domain_id',
+    //             'domains.name as domain_name',
+    //             DB::raw('SUM(response_value) as total'),
+    //             DB::raw('COUNT(*) as count')
+    //         )
+    //         ->where('assessments.student_id', $userId)
+    //         ->groupBy('assessments.section_id', 'sections.name', 'sections.domain_id', 'domains.name')
+    //         ->get();
 
+    //     // Step 1: Prepare flat results with averages
+    //     $flatResults = [];
+
+    //     foreach ($responses as $response) {
+    //         $flatResults[] = [
+    //             'domain_name' => $response->domain_name,
+    //             'domain_id' => $response->domain_id,
+    //             'section_name' => $response->section_name,
+    //             'average' => round($response->total / $response->count, 2),
+    //         ];
+    //     }
+
+    //     // Step 2: Group by domain_name
+    //     $grouped = collect($flatResults)->groupBy('domain_name');
+
+    //     // Step 3: Take top 3 sections per domain
+    //     $groupedResults = $grouped->map(function ($sections) {
+    //         return $sections->sortByDesc('average')->take(3);
+    //     });
+
+    //     // return view('student.assessment.result', compact('groupedResults'));
+
+    //     return view('student.assessment.result', [
+    //         'groupedResults' => $groupedResults->map(fn($items) => $items->values())->toArray()
+    //     ]);
+    // }
+
+
+
+
+    // testing code 
     public function result()
     {
-        $userId = Auth::id();
+        $user = Auth::user();
 
+        // If already submitted, just show the result
+        if ($user->is_submitted) {
+            return $this->renderResult($user->id);
+        }
+
+        // ✅ Mark user as submitted
+        $user->is_submitted = true;
+        $user->save();
+
+        return $this->renderResult($user->id);
+    }
+
+    private function renderResult($userId)
+    {
         $responses = DB::table('assessments')
             ->join('sections', 'assessments.section_id', '=', 'sections.id')
             ->join('domains', 'sections.domain_id', '=', 'domains.id')
@@ -99,7 +159,6 @@ class AssessmentController extends Controller
             ->groupBy('assessments.section_id', 'sections.name', 'sections.domain_id', 'domains.name')
             ->get();
 
-        // Step 1: Prepare flat results with averages
         $flatResults = [];
 
         foreach ($responses as $response) {
@@ -111,18 +170,11 @@ class AssessmentController extends Controller
             ];
         }
 
-        // Step 2: Group by domain_name
         $grouped = collect($flatResults)->groupBy('domain_name');
-
-        // Step 3: Take top 3 sections per domain
-        $groupedResults = $grouped->map(function ($sections) {
-            return $sections->sortByDesc('average')->take(3);
-        });
-
-        // return view('student.assessment.result', compact('groupedResults'));
+        $groupedResults = $grouped->map(fn($sections) => $sections->sortByDesc('average')->take(3)->values());
 
         return view('student.assessment.result', [
-            'groupedResults' => $groupedResults->map(fn($items) => $items->values())->toArray()
+            'groupedResults' => $groupedResults->toArray()
         ]);
     }
 }
