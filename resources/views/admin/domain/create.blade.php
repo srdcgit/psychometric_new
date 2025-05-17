@@ -4,7 +4,7 @@
     </x-slot>
 
     <div class="max-w-2xl mx-auto p-4">
-        <form method="POST" action="{{ route('domain.store') }}"> 
+        <form method="POST" action="{{ route('domain.store') }}">
             @csrf
 
             <div>
@@ -16,7 +16,7 @@
             <div class="mt-4">
                 <x-input-label for="scoring_type" :value="__('Scoring Type')" />
 
-                <select name="scoring_type" id="scoring_type" required >
+                <select name="scoring_type" id="scoring_type" required>
                     <option value="">Select Option</option>
                     <option value="likert">Likert</option>
                     <option value="likert2">Likert 2</option>
@@ -34,4 +34,16 @@
             </div>
         </form>
     </div>
+
+    <!-- CKEditor 5 Script -->
+    <script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
+    <script>
+        ClassicEditor
+            .create(document.querySelector('#description'))
+            .catch(error => {
+                console.error(error);
+            });
+    </script>
+
+
 </x-app-layout>

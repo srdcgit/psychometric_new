@@ -11,7 +11,8 @@ class Domain extends Model
     protected $fillable = [
         'name',
         'description',
-        'scoring_type'
+        'scoring_type',
+        'uploaded_by'
     ];
 
     public function sections()

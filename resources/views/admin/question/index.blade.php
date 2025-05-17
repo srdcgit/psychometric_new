@@ -4,33 +4,97 @@
     </x-slot>
 
     <div class="py-10 max-w-7xl mx-auto sm:px-6 lg:px-8">
-        <a href="{{ route('question.create') }}" class="bg-indigo-600 text-dark px-4 py-2 rounded mb-4 inline-block">
+        <a href="{{ route('question.create') }}" class="bg-indigo-600 text-white px-4 py-2 rounded mb-4 inline-block">
             + Add Question
         </a>
 
         <div class="bg-white shadow rounded p-6">
             @if ($questions->count())
-                <table class="table-auto w-full">
-                    <thead>
-                        <tr class="bg-gray-100">
-                            <th class="px-4 py-2">#</th>
-                            <th class="px-4 py-2">Section</th>
-                            <th class="px-4 py-2">Question</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($questions as $question)
-                            <tr class="border-b">
-                                <td class="px-4 py-2">{{ $loop->iteration }}</td>
-                                <td class="px-4 py-2">{{ $question->section->name }}</td>
-                                <td class="px-4 py-2">{{ $question->question }}</td>
+                <div class="table-responsive">
+                    <table class="table-auto w-full">
+                        <thead>
+                            <tr class="bg-gray-100">
+                                <th class="px-4 py-2">#</th>
+                                <th class="px-4 py-2">Section</th>
+                                <th class="px-4 py-2">Question</th>
+                                <th class="px-4 py-2">Action</th>
                             </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            @foreach ($questions as $question)
+                                <tr class="border-b">
+                                    <td class="px-4 py-2">
+                                        {{ ($questions->currentPage() - 1) * $questions->perPage() + $loop->iteration }}
+                                    </td>
+                                    <td class="px-4 py-2">{{ $question->section->name }}</td>
+                                    <td class="px-4 py-2">{{ $question->question }}</td>
+                                    <td class="px-4 py-2 space-x-2">
+                                        <a href="{{ route('question.edit', $question->id) }}"
+                                            class="text-blue-600 hover:underline">Edit</a>
+
+                                        <form action="{{ route('question.destroy', $question->id) }}" method="POST"
+                                            class="inline delete-form">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="button" class="text-red-600 hover:underline delete-btn"
+                                                data-id="{{ $question->id }}">
+                                                Delete
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+
+
+                <div class="mt-4">
+                    {!! $questions->links() !!}
+                </div>
             @else
                 <p>No questions found.</p>
             @endif
         </div>
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const deleteButtons = document.querySelectorAll('.delete-btn');
+
+            deleteButtons.forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const form = this.closest('form');
+
+                    Swal.fire({
+                        title: 'Are you sure?',
+                        text: "This will permanently delete the question.",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#d33',
+                        cancelButtonColor: '#3085d6',
+                        confirmButtonText: 'Yes, delete it!'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            form.submit();
+                        }
+                    });
+                });
+            });
+
+            @if (session('success'))
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success',
+                    text: '{{ session('success') }}',
+                    timer: 3000,
+                    showConfirmButton: false
+                });
+            @endif
+        });
+    </script>
+
 </x-app-layout>

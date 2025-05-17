@@ -17,7 +17,6 @@ class QuestionController extends Controller
      * Display a listing of the resource.
      */
     public function index()
-
     {
         $user = Auth::user();
 
@@ -25,7 +24,9 @@ class QuestionController extends Controller
         $adminRole = Roll::where('slug', 'admin')->first();
 
         // Fetch questions uploaded by the current admin user
-        $questions = Question::where('uploaded_by', $user->id)->with('section')->get();
+        // $questions = Question::where('uploaded_by', $user->id)->with('section')->get();
+        $questions = Question::where('uploaded_by', $user->id)->with('section')->paginate(10); // Adjust per-page as needed
+
 
         return view('admin.question.index', compact('questions'));
     }
@@ -75,24 +76,47 @@ class QuestionController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $question = Question::findOrFail($id);
+        $domains = Domain::all();
+        $sections = Section::where('domain_id', $question->domain_id)->get();
+
+        return view('admin.question.edit', compact('question', 'domains', 'sections'));
     }
+
 
     /**
      * Update the specified resource in storage.
      */
     public function update(Request $request, string $id)
     {
-        //
+        $request->validate([
+            'domain_id' => 'required|exists:domains,id',
+            'section_id' => 'required|exists:sections,id',
+            'question' => 'required|string|max:1000',
+        ]);
+
+        $question = Question::findOrFail($id);
+        $question->update([
+            'domain_id' => $request->domain_id,
+            'section_id' => $request->section_id,
+            'question' => $request->question,
+        ]);
+
+        return redirect()->route('question.index')->with('success', 'Question updated successfully.');
     }
+
 
     /**
      * Remove the specified resource from storage.
      */
     public function destroy(string $id)
     {
-        //
+        $question = Question::findOrFail($id);
+        $question->delete();
+
+        return redirect()->route('question.index')->with('success', 'Question deleted successfully.');
     }
+
 
     public function getSections($id)
     {

@@ -32,4 +32,14 @@
             </form>
         </div>
     </div>
+
+     <!-- CKEditor 5 Script -->
+    <script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
+    <script>
+        ClassicEditor
+            .create(document.querySelector('#description'))
+            .catch(error => {
+                console.error(error);
+            });
+    </script>
 </x-app-layout>
