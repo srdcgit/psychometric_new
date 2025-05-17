@@ -41,6 +41,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     //Institutes
     Route::get('/institute', [InstituteController::class, 'index'])->name('institute.index');
     Route::get('/institute/create', [InstituteController::class, 'create'])->name('institute.create');
+    Route::post('/institute/store', [InstituteController::class, 'store'])->name('institute.store');
+    Route::get('/institute/{id}/edit', [InstituteController::class,'edit'])->name('institute.edit');
+    Route::patch('/institute/{id}/update', [InstituteController::class,'update'])->name('institute.update');
+
 });
 
 require __DIR__ . '/auth.php';

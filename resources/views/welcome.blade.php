@@ -54,7 +54,7 @@
     font-size: 2.5em;
     font-weight: 700;
     text-shadow: 2px 2px black;">
-            The World�s Most Powerful
+            The World's Most Powerful
             <br />
             Psychometric Career Assessment
         </h1>
