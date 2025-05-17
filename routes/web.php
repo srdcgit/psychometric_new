@@ -37,7 +37,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     //Institutes
     Route::get('/institute', [InstituteController::class, 'index'])->name('institute.index');
     Route::get('/institute/create', [InstituteController::class, 'create'])->name('institute.create');
-    
-});
+
+}); 
 
 require __DIR__ . '/auth.php';
