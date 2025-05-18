@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Models\CareerPath;
@@ -13,7 +12,7 @@ class CareerPathController extends Controller
      */
     public function index()
     {
-        $sections = Section::all();
+        $sections    = Section::all();
         $careerpaths = CareerPath::with('section')->paginate(10);
         return view('admin.careerpath.index', compact('sections', 'careerpaths'));
     }
@@ -23,7 +22,8 @@ class CareerPathController extends Controller
      */
     public function create()
     {
-        //
+        $sections = Section::all();
+        return view('admin.careerpath.create', compact('sections'));
     }
 
     /**
@@ -31,7 +31,18 @@ class CareerPathController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'section_id' => 'required|exists:sections,id',
+            'name'       => 'required|string',
+        ]);
+
+        CareerPath::create([
+            'name'       => $request->name,
+            'section_id' => $request->section_id,
+        ]);
+
+        return redirect()->route('careerpath.index')->with('success', 'Career created successfully!');
+
     }
 
     /**
@@ -47,7 +58,9 @@ class CareerPathController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $career   = CareerPath::findOrFail($id);
+        $sections = Section::all();
+        return view('admin.careerpath.edit', compact('career', 'sections'));
     }
 
     /**
@@ -55,7 +68,19 @@ class CareerPathController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $career = CareerPath::findOrFail($id);
+
+        $request->validate([
+            'section_id' => 'required|exists:sections,id',
+            'name'       => 'required|string',
+        ]);
+
+        $career->update([
+            'name'       => $request->name,
+            'section_id' => $request->section_id,
+        ]);
+
+        return redirect()->route('careerpath.index')->with('success', 'Career updated successfully.');
     }
 
     /**
@@ -63,6 +88,9 @@ class CareerPathController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $career = CareerPath::findOrFail($id);
+        $career->delete();
+
+        return redirect()->route('careerpath.index')->with('success', 'Career deleted successfully.');
     }
 }

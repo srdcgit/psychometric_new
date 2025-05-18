@@ -12,7 +12,9 @@ class InstituteController extends Controller
 {
     public function index()
     {
-        $institutes = Institute::all();
+        // $institutes = Institute::with('sections')->get();
+        $institutes = Institute::with('section', 'student')->get();
+
         return view('admin.institute.index', compact('institutes'));
     }
     public function create()
@@ -30,7 +32,7 @@ class InstituteController extends Controller
         $request->validate([
             'name' => 'required|string|max:255|unique:institutes,name',
             'address' => 'required|string|max:255|unique:institutes,name,' ,
-            'mobile' => 'required|',
+            'mobile' => 'required|max:12',
             'description' => 'nullable|string',
             'section_id' => 'required|exists:sections,id',
             'student_id' => 'required|exists:users,id'

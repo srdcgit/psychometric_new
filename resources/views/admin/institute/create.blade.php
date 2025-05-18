@@ -21,7 +21,7 @@
 
             <div>
                 <x-input-label for="mobile" :value="__('Mobile')" />
-                <x-text-input id="mobile" name="mobile" class="mt-1 block w-full" required />
+                <x-text-input id="mobile" type="number"  name="mobile" class="mt-1 block w-full" maxlength="12" required />
                 <x-input-error :messages="$errors->get('mobile')" class="mt-2" />
             </div>
 

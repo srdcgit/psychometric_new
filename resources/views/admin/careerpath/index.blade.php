@@ -7,7 +7,7 @@
 
     <div class="max-w-7xl mx-auto py-10 sm:px-6 lg:px-8">
         <div class="mb-6">
-            <a href="{{ route('domain.create') }}"
+            <a href="{{ route('careerpath.create') }}"
                 class="inline-block px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700">
                 + Add New Career Path
             </a>
@@ -37,7 +37,7 @@
                                     <td class="px-4 py-2">
                                         {{ ($careerpaths->currentPage() - 1) * $careerpaths->perPage() + $loop->iteration }}
                                     </td>
-                                    <td class="px-4 py-2">{{ $career->name ?? 'Null' }}</td>
+                                    <td class="px-4 py-2">{!! $career->name ?? 'Null' !!}</td>
                                     <td class="px-4 py-2">{{ $career->section->name  }}</td>
                                     <td class="px-4 py-2 space-x-2">
                                         <a href="{{ route('careerpath.edit', $career->id) }}"

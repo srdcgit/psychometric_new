@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->text('address');
-            $table->integer('mobile');
+            $table->text('mobile');
             $table->text('description')->nullable();
             $table->unsignedBigInteger('student_id')->nullable();
             $table->timestamps();
