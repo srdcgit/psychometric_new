@@ -1,13 +1,11 @@
 <x-app-layout>
-    <div class="max-w-4xl mx-auto py-10">
-        <h1 class="text-3xl font-bold text-center mb-6" style="padding:15px">Assessment</h1>
-
+    <div class="max-w-4xl mx-auto py-10" style="padding:15px">
         @if ($domain)
             {{-- Show Domain Name --}}
-            <div class="mb-6">
-                <h2 class="text-xl font-semibold text-indigo-700">
-                    {{-- Domain: {{ $domain->name }} --}}
-                </h2>
+            <div class="mb-6" style="padding:15px;background-color:#fff">
+                <p>
+                    {{ $domain->description }}
+                </p>
             </div>
 
             {{-- Questions Form --}}
