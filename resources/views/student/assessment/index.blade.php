@@ -1,8 +1,8 @@
 <x-app-layout>
-    <div class="max-w-4xl mx-auto py-10">
+    <div class="max-w-4xl mx-auto py-10" style="padding:15px">
         @if ($domain)
             {{-- Show Domain Name --}}
-            <div class="mb-6">
+            <div class="mb-6" style="padding:15px;background-color:#fff">
                 <p>
                     {{ $domain->description }}
                 </p>
