@@ -6,7 +6,7 @@
             {{-- Show Domain Name --}}
             <div class="mb-6">
                 <h2 class="text-xl font-semibold text-indigo-700">
-                    {{-- Domain: {{ $domain->name }} --}}
+                    Instruction: {{ $domain->description }}
                 </h2>
             </div>
 
