@@ -14,16 +14,11 @@
 
 
     <div class="max-w-7xl mx-auto py-12 px-6">
-        <h1 class="text-4xl font-bold text-center text-indigo-700 mb-12">📊 Assessment Results</h1>
+        <h1 class="text-4xl font-bold text-center text-indigo-700 mb-12" style="margin-top:-50px;padding:15px">📊 Assessment Results</h1>
 
         @foreach ($groupedResults as $domainName => $sections)
-            <div class="bg-white shadow-xl rounded-3xl p-8 mb-12 border border-gray-200 transition hover:shadow-2xl">
-                <div class="mb-6">
-                    <h2 class="text-3xl font-semibold text-indigo-600">{{ $domainName }}</h2>
-                    <p class="text-gray-600 text-sm italic mt-1">
-                        {!! $sections[0]['domain_description'] ?? 'No description available.' !!}
-                    </p>
-                </div>
+            <div class="bg-white shadow-xl rounded-3xl p-8 mb-12 border border-gray-200 transition hover:shadow-2xl" style="padding-top:20px;width:65%;margin:auto">
+
 
                 {{-- Section Cards --}}
                 {{-- <div class="flex flex-wrap -mx-4">
