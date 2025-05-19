@@ -7,6 +7,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\QuestionController;
 use App\Http\Controllers\SectionController;
 use App\Http\Controllers\student\AssessmentController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -27,6 +28,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('section', SectionController::class);
     Route::resource('question', QuestionController::class);
     Route::resource('careerpath', CareerPathController::class);
+    Route::resource('students', UserController::class);
 
 
     Route::get('domain/{id}/sections', [QuestionController::class, 'getSections'])->name('domain.sections');

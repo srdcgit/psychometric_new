@@ -25,7 +25,7 @@ class AssessmentController extends Controller
             return redirect()->route('assessment.result')->with('error', 'You have already submitted the assessment.');
         }
 
-       
+
 
         $domains = Domain::orderBy('id')->get();
         // If no specific domain is passed, use the first one
@@ -171,7 +171,23 @@ class AssessmentController extends Controller
         }
 
         $grouped = collect($flatResults)->groupBy('domain_name');
-        $groupedResults = $grouped->map(fn($sections) => $sections->sortByDesc('average')->take(3)->values());
+        // $groupedResults = $grouped->map(fn($sections) => $sections->sortByDesc('average')->take(3)->values());
+
+        $groupedResults = $grouped->map(function ($sections) {
+            $sorted = $sections->sortByDesc('average')->values();
+
+            foreach ($sorted as $index => $section) {
+                $label = $index === 0 ? 'Dominant Trait' : 'Supportive Trait';
+
+                $section['average_value'] = $section['average']; // keep original number for chart
+                $section['average'] = $section['average'] . " ($label)"; // labeled version for display
+
+                $sorted[$index] = $section;
+            }
+
+
+            return $sorted->take(3); // Only take top 3 if needed
+        });
 
         return view('student.assessment.result', [
             'groupedResults' => $groupedResults->toArray()

@@ -40,6 +40,21 @@
                 </div>
 
                 <div class="mb-4">
+                    <label for="keytraits" class="block text-gray-700 font-medium">Key Traits</label>
+                    <textarea name="keytraits" id="keytraits" rows="3" class="w-full border rounded px-3 py-2 mt-1"></textarea>
+                </div>
+
+                <div class="mb-4">
+                    <label for="enjoys" class="block text-gray-700 font-medium">Enjoys</label>
+                    <textarea name="enjoys" id="enjoys" rows="3" class="w-full border rounded px-3 py-2 mt-1"></textarea>
+                </div>
+
+                <div class="mb-4">
+                    <label for="idealenvironments" class="block text-gray-700 font-medium">Ideal Environments</label>
+                    <textarea name="idealenvironments" id="idealenvironments" rows="3" class="w-full border rounded px-3 py-2 mt-1"></textarea>
+                </div>
+
+                <div class="mb-4">
                     <label for="description" class="block text-sm font-medium text-gray-700">Description</label>
                     <textarea name="description" id="description" rows="4"
                               class="mt-1 block w-full border-gray-300 rounded shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">{{ old('description', $section->description) }}</textarea>

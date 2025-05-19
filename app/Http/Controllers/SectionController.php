@@ -36,12 +36,18 @@ class SectionController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'domain_id' => 'required|exists:domains,id',
+            'keytraits' => 'nullable|string',
+            'enjoys' => 'nullable|string',
+            'idealenvironments' => 'nullable|string',
             'description' => 'nullable|string',
         ]);
 
         Section::create([
             'name' => $request->name,
             'domain_id' => $request->domain_id,
+            'keytraits' => $request->keytraits,
+            'enjoys' => $request->enjoys,
+            'idealenvironments' => $request->idealenvironments,
             'description' => $request->description,
             'uploaded_by' => Auth::id(),
         ]);
@@ -78,6 +84,9 @@ class SectionController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'domain_id' => 'required|exists:domains,id',
+            'keytraits' => 'nullable|string',
+            'enjoys' => 'nullable|string',
+            'idealenvironments' => 'nullable|string',
             'description' => 'nullable|string',
         ]);
 
