@@ -34,8 +34,7 @@ class InstituteController extends Controller
             'address' => 'required|string|max:255|unique:institutes,name,' ,
             'mobile' => 'required|max:12',
             'description' => 'nullable|string',
-            'section_id' => 'required|exists:sections,id',
-            'student_id' => 'required|exists:users,id'
+            'allowed_students' => 'required|exists:users,id'
         ]);
 
         Institute::create([
@@ -43,8 +42,7 @@ class InstituteController extends Controller
             'address' => $request->address,
             'mobile' => $request->mobile,
             'description' => $request->description,
-            'section_id' => $request->section_id,
-            'student_id' => $request->student_id
+            'student_id' => $request->allowed_students
         ]);
 
         return redirect()->route('institute.index')->with('success', 'Institute created successfully!');
