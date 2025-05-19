@@ -26,7 +26,7 @@
                 </div>
 
                 {{-- Section Cards --}}
-                <div class="flex flex-wrap -mx-4">
+                {{-- <div class="flex flex-wrap -mx-4">
                     @foreach ($sections as $section)
                         <div class="w-full sm:w-1/2 lg:w-1/3 px-4 mb-6">
                             <div
@@ -46,7 +46,70 @@
                             </div>
                         </div>
                     @endforeach
+                </div> --}}
+
+                {{-- Section Cards --}}
+                <div class="flex flex-wrap -mx-4">
+                    @foreach ($sections as $section)
+                        <div class="w-full sm:w-1/2 lg:w-1/3 px-4 mb-6">
+                            <div
+                                class="h-full bg-gray-50 rounded-xl p-6 border border-gray-200 shadow-sm hover:shadow-md transition">
+                                <h3 class="text-lg font-semibold text-gray-800 mb-2">{{ $section['section_name'] }}</h3>
+                                <p class="text-gray-700 text-sm mb-3">{!! $section['section_description'] !!}</p>
+                                <br>
+                                <div class="text-sm text-gray-700 space-y-1">
+                                    <p><span class="font-bold text-gray-800">Average Score:</span>
+                                        {{ $section['average'] }}</p>
+                                    <p><span class="font-bold">Key Traits:</span> {{ $section['section_keytraits'] }}
+                                    </p>
+                                    <p><span class="font-bold">Enjoys:</span> {{ $section['section_enjoys'] }}</p>
+                                    <p><span class="font-bold">Ideal Environments:</span>
+                                        {{ $section['section_idealenvironments'] }}</p>
+                                </div>
+
+
+
+                            </div>
+                        </div>
+                    @endforeach
                 </div>
+
+                {{-- After all section cards --}}
+                @if (!empty($sections))
+                    <div class="mt-10">
+                        <h4 class="text-2xl font-semibold text-indigo-700 mb-4">💼 Suggested Career Paths</h4>
+
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full text-sm text-left border border-gray-300 rounded-lg">
+                                <thead class="bg-gray-100">
+                                    <tr>
+                                        <th class="px-4 py-2 border">Section</th>
+                                        <th class="px-4 py-2 border text-center">Career Name</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach ($sections as $sec)
+                                        @php
+                                            $sectionId = $sec['section_id'] ?? null;
+                                            $paths = $careerpaths[$sectionId] ?? collect();
+                                        @endphp
+
+                                        @if ($paths->isNotEmpty())
+                                            @foreach ($paths as $path)
+                                                <tr>
+                                                    <td class="px-4 py-2 border">{{ $sec['section_name'] }}</td>
+                                                    <td class="px-4 py-2 border text-center">{!! $path->name !!}
+                                                    </td>
+                                                </tr>
+                                            @endforeach
+                                        @endif
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                @endif
+
 
                 {{-- Chart --}}
                 <div class="mt-8">
@@ -62,43 +125,6 @@
         @endforeach
     </div>
 
-    {{-- Suggested Career Paths --}}
-    <div class="max-w-6xl mx-auto py-12 px-4">
-        <h1 class="text-3xl font-bold text-center text-indigo-700 mb-8">📊 Suggested Career Paths</h1>
-
-        <div class="overflow-x-auto border border-gray-300 rounded-lg shadow-sm">
-            <table class="min-w-full divide-y divide-gray-300 border border-gray-300 rounded-lg">
-                <thead class="bg-indigo-50 border-b border-gray-300">
-                    <tr>
-                        <th scope="col"
-                            class="px-6 py-3 text-left text-xs font-semibold text-indigo-700 uppercase tracking-wider border-r border-gray-300">
-                            Section
-                        </th>
-                        <th scope="col"
-                            class="px-6 py-3 text-center text-xs font-semibold text-indigo-700 uppercase tracking-wider">
-                            Career Name
-                        </th>
-                    </tr>
-                </thead>
-                <tbody class="bg-white divide-y divide-gray-300">
-                    @foreach ($careerpaths as $careerpath)
-                        <tr class="hover:bg-indigo-50 transition duration-150 border-b border-gray-300">
-                            <td class="px-6 py-4 whitespace-nowrap text-gray-800 font-medium border-r border-gray-300">
-                                {{ $careerpath->section->name }}
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-center text-indigo-600 font-semibold">
-                                {!! $careerpath->name !!}
-                            </td>
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table>
-        </div>
-
-        @if ($careerpaths->count() == 0)
-            <p class="text-center text-gray-500 italic mt-6">No career paths available at this time.</p>
-        @endif
-    </div>
 
 
 

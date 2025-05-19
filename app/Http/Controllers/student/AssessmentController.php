@@ -145,12 +145,14 @@ class AssessmentController extends Controller
 
     private function renderResult($userId)
     {
-        $careerpaths = CareerPath::with('section')->get();
+        $careerpaths = CareerPath::with('section')->get()->groupBy('section_id');
+
         $responses = DB::table('assessments')
             ->join('sections', 'assessments.section_id', '=', 'sections.id')
             ->join('domains', 'sections.domain_id', '=', 'domains.id')
             ->select(
                 'assessments.section_id',
+                
                 'sections.name as section_name',
                 'sections.description as section_description',
                 'sections.keytraits as section_keytraits',
@@ -173,6 +175,7 @@ class AssessmentController extends Controller
                 'domain_name' => $response->domain_name,
                 'domain_description' => $response->domain_description,
                 'domain_id' => $response->domain_id,
+                 'section_id' => $response->section_id,
                 'section_name' => $response->section_name,
                 'section_description' => $response->section_description,
                 'section_keytraits' => $response->section_keytraits,
