@@ -56,8 +56,11 @@ class User extends Authenticatable
     }
 
     public function rolls()
-{
-    return $this->belongsTo(Roll::class, 'rolls_id');
-}
-
+    {
+        return $this->belongsTo(Roll::class, 'rolls_id');
+    }
+    public function institute()
+    {
+        return $this->belongsTo(Institute::class);
+    }
 }

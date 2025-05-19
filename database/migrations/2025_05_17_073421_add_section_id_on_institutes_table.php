@@ -16,7 +16,7 @@ return new class extends Migration
 
             $table->foreign('section_id')
                 ->references('id')
-                ->on('institutes');
+                ->on('sections');
         });
     }
 

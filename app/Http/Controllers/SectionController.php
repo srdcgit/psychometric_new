@@ -39,7 +39,12 @@ class SectionController extends Controller
             'description' => 'nullable|string',
         ]);
 
-        Section::create($request->all());
+        Section::create([
+            'name' => $request->name,
+            'domain_id' => $request->domain_id,
+            'description' => $request->description,
+            'uploaded_by' => Auth::id(),
+        ]);
 
         return redirect()->route('section.index')->with('success', 'Section created successfully.');
     }
