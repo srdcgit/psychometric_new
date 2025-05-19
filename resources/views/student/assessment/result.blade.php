@@ -72,15 +72,12 @@
                 {{-- After all section cards --}}
                 @if (!empty($sections))
                     <div class="mt-10">
-                        <h4 class="text-2xl font-semibold text-indigo-700 mb-4" style="margin-left:20px">💼 Suggested Career Paths</h4>
+                        <h4 class="text-2xl font-semibold text-indigo-700 mb-4" style="margin-left:20px;">💼 Suggested Career Paths</h4>
 
                         <div class="overflow-x-auto">
-                            <table class="min-w-full text-sm text-left border border-gray-300 rounded-lg">
+                            <table class="min-w-full text-sm text-left border border-gray-300 rounded-lg"style="margin-left:20px;margin-bottom:30px">
                                 <thead class="bg-gray-100">
-                                    <tr>
-                                        <th class="px-4 py-2 border">Section</th>
-                                        <th class="px-4 py-2 border text-center">Career Name</th>
-                                    </tr>
+
                                 </thead>
                                 <tbody>
                                     @foreach ($sections as $sec)
