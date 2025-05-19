@@ -152,7 +152,7 @@ class AssessmentController extends Controller
             ->join('domains', 'sections.domain_id', '=', 'domains.id')
             ->select(
                 'assessments.section_id',
-                
+
                 'sections.name as section_name',
                 'sections.description as section_description',
                 'sections.keytraits as section_keytraits',
@@ -175,7 +175,7 @@ class AssessmentController extends Controller
                 'domain_name' => $response->domain_name,
                 'domain_description' => $response->domain_description,
                 'domain_id' => $response->domain_id,
-                 'section_id' => $response->section_id,
+                'section_id' => $response->section_id,
                 'section_name' => $response->section_name,
                 'section_description' => $response->section_description,
                 'section_keytraits' => $response->section_keytraits,
@@ -195,8 +195,8 @@ class AssessmentController extends Controller
                 $label = $index === 0 ? 'Dominant Trait' : 'Supportive Trait';
 
                 $section['average_value'] = $section['average']; // keep original number for chart
-                $section['section_name'] = $section['section_name'] . " - $label"; // labeled version for display
-
+                // $section['section_name'] = $section['section_name'] . " - $label"; // labeled version for display
+                $section['label'] = $label;
                 $sorted[$index] = $section;
             }
 

@@ -54,7 +54,7 @@
                         <div class="w-full sm:w-1/2 lg:w-1/3 px-4 mb-6">
                             <div
                                 class="h-full bg-gray-50 rounded-xl p-6 border border-gray-200 shadow-sm hover:shadow-md transition">
-                                <h3 class="text-lg font-semibold text-gray-800 mb-2">{{ $section['section_name'] }}</h3>
+                                <h3 class="text-lg font-semibold text-gray-800 mb-2">{{ $section['section_name'] }} - {{ $section['label'] }}</h3>
                                 <p class="text-gray-700 text-sm mb-3">{!! $section['section_description'] !!}</p>
                                 <br>
                                 <div class="text-sm text-gray-700 space-y-1">
@@ -66,9 +66,6 @@
                                     <p><span class="font-bold">Ideal Environments:</span>
                                         {{ $section['section_idealenvironments'] }}</p>
                                 </div>
-
-
-
                             </div>
                         </div>
                     @endforeach
