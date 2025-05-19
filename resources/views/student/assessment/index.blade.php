@@ -5,7 +5,7 @@
         @if ($domain)
             {{-- Show Domain Name --}}
             <div class="mb-6">
-                <p class="text-xl font-semibold text-indigo-700">
+                <p>
                     {{ $domain->description }}
                 </p>
             </div>
