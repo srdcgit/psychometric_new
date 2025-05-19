@@ -5,9 +5,9 @@
         @if ($domain)
             {{-- Show Domain Name --}}
             <div class="mb-6">
-                <h5 class="text-xl font-semibold text-indigo-700">
+                <p class="text-xl font-semibold text-indigo-700">
                     {{ $domain->description }}
-                </h5>
+                </p>
             </div>
 
             {{-- Questions Form --}}
