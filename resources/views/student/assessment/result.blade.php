@@ -14,16 +14,11 @@
 
 
     <div class="max-w-7xl mx-auto py-12 px-6">
-        <h1 class="text-4xl font-bold text-center text-indigo-700 mb-12">📊 Assessment Results</h1>
+        <h1 class="text-4xl font-bold text-center text-indigo-700 mb-12" style="margin-top:-50px;padding:15px">📊 Assessment Results</h1>
 
         @foreach ($groupedResults as $domainName => $sections)
-            <div class="bg-white shadow-xl rounded-3xl p-8 mb-12 border border-gray-200 transition hover:shadow-2xl">
-                <div class="mb-6">
-                    <h2 class="text-3xl font-semibold text-indigo-600">{{ $domainName }}</h2>
-                    <p class="text-gray-600 text-sm italic mt-1">
-                        {!! $sections[0]['domain_description'] ?? 'No description available.' !!}
-                    </p>
-                </div>
+            <div class="bg-white shadow-xl rounded-3xl p-8 mb-12 border border-gray-200 transition hover:shadow-2xl" style="padding-top:20px;width:65%;margin:auto">
+
 
                 {{-- Section Cards --}}
                 {{-- <div class="flex flex-wrap -mx-4">
@@ -74,15 +69,12 @@
                 {{-- After all section cards --}}
                 @if (!empty($sections))
                     <div class="mt-10">
-                        <h4 class="text-2xl font-semibold text-indigo-700 mb-4">💼 Suggested Career Paths</h4>
+                        <h4 class="text-2xl font-semibold text-indigo-700 mb-4" style="margin-left:20px;">💼 Suggested Career Paths</h4>
 
                         <div class="overflow-x-auto">
-                            <table class="min-w-full text-sm text-left border border-gray-300 rounded-lg">
+                            <table class="min-w-full text-sm text-left border border-gray-300 rounded-lg"style="margin-left:20px;margin-bottom:30px">
                                 <thead class="bg-gray-100">
-                                    <tr>
-                                        <th class="px-4 py-2 border">Section</th>
-                                        <th class="px-4 py-2 border text-center">Career Name</th>
-                                    </tr>
+
                                 </thead>
                                 <tbody>
                                     @foreach ($sections as $sec)
@@ -113,7 +105,7 @@
                     @php $slug = Str::slug($domainName); @endphp
                     <div class="bg-white rounded-xl p-6 border border-gray-300 shadow-md">
                         <h3 class="text-lg font-semibold text-indigo-600 mb-4">
-                            Visual Representation of {{ $domainName }}
+                            Visual Representation of your Score
                         </h3>
                         <canvas id="chart-{{ $slug }}" height="200"></canvas>
                     </div>
