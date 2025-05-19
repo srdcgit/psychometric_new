@@ -41,17 +41,17 @@
 
                 <div class="mb-4">
                     <label for="keytraits" class="block text-gray-700 font-medium">Key Traits</label>
-                    <textarea name="keytraits" id="keytraits" rows="3" class="w-full border rounded px-3 py-2 mt-1"></textarea>
+                    <textarea name="keytraits" id="keytraits" rows="3" class="w-full border rounded px-3 py-2 mt-1">{{ old('keytraits', $section->keytraits) }}</textarea>
                 </div>
 
                 <div class="mb-4">
                     <label for="enjoys" class="block text-gray-700 font-medium">Enjoys</label>
-                    <textarea name="enjoys" id="enjoys" rows="3" class="w-full border rounded px-3 py-2 mt-1"></textarea>
+                    <textarea name="enjoys" id="enjoys" rows="3" class="w-full border rounded px-3 py-2 mt-1">{{ old('enjoys', $section->enjoys) }}</textarea>
                 </div>
 
                 <div class="mb-4">
                     <label for="idealenvironments" class="block text-gray-700 font-medium">Ideal Environments</label>
-                    <textarea name="idealenvironments" id="idealenvironments" rows="3" class="w-full border rounded px-3 py-2 mt-1"></textarea>
+                    <textarea name="idealenvironments" id="idealenvironments" rows="3" class="w-full border rounded px-3 py-2 mt-1">{{ old('idealenvironments', $section->idealenvironments) }}</textarea>
                 </div>
 
                 <div class="mb-4">

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\student;
 
 use App\Http\Controllers\Controller;
 use App\Models\Assessment;
+use App\Models\CareerPath;
 use App\Models\Domain;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -144,19 +145,25 @@ class AssessmentController extends Controller
 
     private function renderResult($userId)
     {
+        $careerpaths = CareerPath::with('section')->get();
         $responses = DB::table('assessments')
             ->join('sections', 'assessments.section_id', '=', 'sections.id')
             ->join('domains', 'sections.domain_id', '=', 'domains.id')
             ->select(
                 'assessments.section_id',
                 'sections.name as section_name',
+                'sections.description as section_description',
+                'sections.keytraits as section_keytraits',
+                'sections.enjoys as section_enjoys',
+                'sections.idealenvironments as section_idealenvironments',
                 'sections.domain_id',
                 'domains.name as domain_name',
+                'domains.description as domain_description',
                 DB::raw('SUM(response_value) as total'),
                 DB::raw('COUNT(*) as count')
             )
             ->where('assessments.student_id', $userId)
-            ->groupBy('assessments.section_id', 'sections.name', 'sections.domain_id', 'domains.name')
+            ->groupBy('assessments.section_id', 'sections.name', 'section_description', 'section_keytraits', 'section_enjoys', 'section_idealenvironments', 'sections.domain_id', 'domains.name', 'domains.description')
             ->get();
 
         $flatResults = [];
@@ -164,8 +171,13 @@ class AssessmentController extends Controller
         foreach ($responses as $response) {
             $flatResults[] = [
                 'domain_name' => $response->domain_name,
+                'domain_description' => $response->domain_description,
                 'domain_id' => $response->domain_id,
                 'section_name' => $response->section_name,
+                'section_description' => $response->section_description,
+                'section_keytraits' => $response->section_keytraits,
+                'section_enjoys' => $response->section_enjoys,
+                'section_idealenvironments' => $response->section_idealenvironments,
                 'average' => round($response->total / $response->count, 2),
             ];
         }
@@ -180,7 +192,7 @@ class AssessmentController extends Controller
                 $label = $index === 0 ? 'Dominant Trait' : 'Supportive Trait';
 
                 $section['average_value'] = $section['average']; // keep original number for chart
-                $section['average'] = $section['average'] . " ($label)"; // labeled version for display
+                $section['section_name'] = $section['section_name'] . " - $label"; // labeled version for display
 
                 $sorted[$index] = $section;
             }
@@ -189,7 +201,7 @@ class AssessmentController extends Controller
             return $sorted->take(3); // Only take top 3 if needed
         });
 
-        return view('student.assessment.result', [
+        return view('student.assessment.result', compact('careerpaths'), [
             'groupedResults' => $groupedResults->toArray()
         ]);
     }
