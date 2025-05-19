@@ -72,7 +72,7 @@
                 {{-- After all section cards --}}
                 @if (!empty($sections))
                     <div class="mt-10">
-                        <h4 class="text-2xl font-semibold text-indigo-700 mb-4">💼 Suggested Career Paths</h4>
+                        <h4 class="text-2xl font-semibold text-indigo-700 mb-4" style="margin-left:20px">💼 Suggested Career Paths</h4>
 
                         <div class="overflow-x-auto">
                             <table class="min-w-full text-sm text-left border border-gray-300 rounded-lg">
@@ -111,7 +111,7 @@
                     @php $slug = Str::slug($domainName); @endphp
                     <div class="bg-white rounded-xl p-6 border border-gray-300 shadow-md">
                         <h3 class="text-lg font-semibold text-indigo-600 mb-4">
-                            Visual Representation of {{ $domainName }}
+                            Visual Representation of your Score
                         </h3>
                         <canvas id="chart-{{ $slug }}" height="200"></canvas>
                     </div>
