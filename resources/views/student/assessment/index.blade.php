@@ -4,7 +4,7 @@
             {{-- Show Domain Name --}}
             <div class="mb-6" style="padding:15px;background-color:#fff">
                 <p>
-                    {{ $domain->description }}
+                    {!! $domain->description !!}
                 </p>
             </div>
 

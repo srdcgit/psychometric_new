@@ -27,13 +27,13 @@
 
               <div>
                 <x-input-label for="allowedstudents" :value="__('Allowed Student')" />
-                <x-text-input id="allowedstudents" type="number"  name="allowedstudents" class="mt-1 block w-full" maxlength="12" required />
-                <x-input-error :messages="$errors->get('allowedstudents')" class="mt-2" />
+                <x-text-input id="allowedstudents" type="number"  name="allowed_students" class="mt-1 block w-full" maxlength="12" required />
+                <x-input-error :messages="$errors->get('allowed_students')" class="mt-2" />
             </div>
 
             <div class="mt-4">
                 <x-input-label for="contactperson" :value="__('Contact Person')" />
-                <textarea id="contactperson" name="contactperson" class="block w-full mt-1 rounded"></textarea>
+                <textarea id="contactperson" name="contact_person" class="block w-full mt-1 rounded"></textarea>
             </div>
 
             <div class="mt-4">

@@ -13,18 +13,15 @@ class InstituteController extends Controller
     public function index()
     {
         // $institutes = Institute::with('sections')->get();
-        $institutes = Institute::with('section', 'student')->get();
+        $institutes = Institute::all();
 
         return view('admin.institute.index', compact('institutes'));
     }
     public function create()
     {
-        $sections = Section::with('institute')->get();
 
-        $checkstudent = Roll::where('slug', 'student')->first();
 
-        $users =User::where('rolls_id', $checkstudent->id)->with('institute')->get();
-        return view('admin.institute.create', compact('sections','users'));
+        return view('admin.institute.create');
     }
 
     public function store(Request $request)
@@ -33,16 +30,17 @@ class InstituteController extends Controller
             'name' => 'required|string|max:255|unique:institutes,name',
             'address' => 'required|string|max:255|unique:institutes,name,' ,
             'mobile' => 'required|max:12',
-            'description' => 'nullable|string',
-            'allowed_students' => 'required|exists:users,id'
+            'allowed_students' => 'required|',
+            'contact_person' => 'nullable|string'
         ]);
 
         Institute::create([
             'name' =>$request->name,
             'address' => $request->address,
             'mobile' => $request->mobile,
-            'description' => $request->description,
-            'student_id' => $request->allowed_students
+            'allowed_students' =>$request->allowed_students,
+            'contact_person' => $request->contact_person
+
         ]);
 
         return redirect()->route('institute.index')->with('success', 'Institute created successfully!');
@@ -62,18 +60,17 @@ class InstituteController extends Controller
             'name' => 'required|string|max:255|unique:institutes,name,' . $institute->id,
             'address' => 'required|string|max:255|unique:institutes,name,' ,
             'mobile' => 'required|',
-            'description' => 'nullable|string',
-            'section_id' => 'required|exists:sections,id',
-            'student_id' => 'required|exists:users,id'
+            'allowed_students' => 'required|',
+            'contact_person' => 'nullable|string'
         ]);
 
        $institute->update([
             'name' => $request->name,
             'address' => $request->address,
             'mobile' => $request->mobile,
-            'description' => $request->description,
-            'section_id' => $request->section_id,
-            'student_id' => $request->student_id
+            'allowed_students' => $request->allowed_students,
+            'contact_person' => $request->description
+
         ]);
 
         return redirect()->route('institute.index')->with('success', 'Institute updated successfully!');

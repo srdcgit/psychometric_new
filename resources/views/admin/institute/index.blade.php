@@ -40,8 +40,8 @@
                                 <td class="px-4 py-2">{{ $institute->name }}</td>
                                 <td class="px-4 py-2">{{ $institute->address }}</td>
                                 <td class="px-4 py-2">{{ $institute->mobile }}</td>
-                                <td class="px-4 py-2">{!! $institute->contactperson !!}</td>
-                                <td class="px-4 py-2">{{ $institute->allowedstudents }}</td>
+                                <td class="px-4 py-2">{{ $institute->allowed_students }}</td>
+                                <td class="px-4 py-2">{!! $institute->contact_person !!}</td>
                                 <td class="px-4 py-2 space-x-2">
                                     <a href="{{ route('institute.index', $institute->id) }}"
                                        class="text-blue-500 hover:underline">Edit</a>
