@@ -25,32 +25,15 @@
                 <x-input-error :messages="$errors->get('mobile')" class="mt-2" />
             </div>
 
-
-            <div class="mt-4">
-                <x-input-label for="section_id" :value="__('Section')" />
-
-                <select name="section_id" id="section_id" required>
-                    <option value="">Select Option</option>
-                    @foreach ($sections as $section)
-                        <option value="{{ $section->id }}">{{ $section->name }}</option>
-                    @endforeach
-                </select>
-            </div>
-
-             <div class="mt-4">
-                <x-input-label for="student_id" :value="__('Student')" />
-
-                <select name="student_id" id="student_id" required>
-                    <option value="">Select Option</option>
-                    @foreach ($users as $user)
-                        <option value="{{ $user->id }}">{{ $user->name }}</option>
-                    @endforeach
-                </select>
+              <div>
+                <x-input-label for="allowedstudents" :value="__('Allowed Student')" />
+                <x-text-input id="allowedstudents" type="number"  name="allowed_students" class="mt-1 block w-full" maxlength="12" required />
+                <x-input-error :messages="$errors->get('allowed_students')" class="mt-2" />
             </div>
 
             <div class="mt-4">
-                <x-input-label for="description" :value="__('Description')" />
-                <textarea id="description" name="description" class="block w-full mt-1 rounded"></textarea>
+                <x-input-label for="contactperson" :value="__('Contact Person')" />
+                <textarea id="contactperson" name="contact_person" class="block w-full mt-1 rounded"></textarea>
             </div>
 
             <div class="mt-4">
@@ -58,13 +41,5 @@
             </div>
         </form>
     </div>
-    <!-- CKEditor 5 Script -->
-    <script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
-    <script>
-        ClassicEditor
-            .create(document.querySelector('#description'))
-            .catch(error => {
-                console.error(error);
-            });
-    </script>
+
 </x-app-layout>

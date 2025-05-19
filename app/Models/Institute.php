@@ -9,9 +9,8 @@ class Institute extends Model
         'name',
         'address',
         'mobile',
-        'description',
-        'section_id',
-        'student_id',
+        'allowed_students',
+        'contact_person',
 
     ];
     public function section()
@@ -22,6 +21,6 @@ class Institute extends Model
     {
         return $this->belongsTo(User::class, 'student_id');
     }
-   
+
 
 }

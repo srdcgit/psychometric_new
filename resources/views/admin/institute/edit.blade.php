@@ -29,10 +29,10 @@
                 </div>
 
                 <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-700" for="description">Description</label>
-                    <textarea name="description" id="description"
+                    <label class="block text-sm font-medium text-gray-700" for="description">Contact_Person</label>
+                    <textarea name="contactperson" id="contactperson"
                         class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                        rows="4">{{ old('description', $institute->description) }}</textarea>
+                        rows="4">{{ old('contactperson', $institute->contactperson) }}</textarea>
                 </div>
 
                 <div class="mb-4">

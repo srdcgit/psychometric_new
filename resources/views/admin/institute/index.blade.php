@@ -28,9 +28,8 @@
                             <th class="px-4 py-2">Name</th>
                             <th class="px-4 py-2">Address</th>
                             <th class="px-4 py-2">Mobile</th>
-                            <th class="px-4 py-2">Description</th>
-                            <th class="px-4 py-2">section</th>
-                            <th class="px-4 py-2">students</th>
+                            <th class="px-4 py-2">Contact Person</th>
+                            <th class="px-4 py-2">Allowed Student</th>
                             <th class="px-4 py-2">Actions</th>
                         </tr>
                     </thead>
@@ -41,9 +40,8 @@
                                 <td class="px-4 py-2">{{ $institute->name }}</td>
                                 <td class="px-4 py-2">{{ $institute->address }}</td>
                                 <td class="px-4 py-2">{{ $institute->mobile }}</td>
-                                <td class="px-4 py-2">{!! $institute->description !!}</td>
-                                <td class="px-4 py-2">{{ $institute->section->name }}</td>
-                                <td class="px-4 py-2">{{ $institute->student->name }}</td>
+                                <td class="px-4 py-2">{{ $institute->allowed_students }}</td>
+                                <td class="px-4 py-2">{!! $institute->contact_person !!}</td>
                                 <td class="px-4 py-2 space-x-2">
                                     <a href="{{ route('institute.index', $institute->id) }}"
                                        class="text-blue-500 hover:underline">Edit</a>
