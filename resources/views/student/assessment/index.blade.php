@@ -1,6 +1,6 @@
 <x-app-layout>
     <div class="max-w-4xl mx-auto py-10">
-        <h1 class="text-3xl font-bold text-center mb-6">?? Assessment</h1>
+        <h1 class="text-3xl font-bold text-center mb-6" style="padding:15px">Assessment</h1>
 
         @if ($domain)
             {{-- Show Domain Name --}}
@@ -75,7 +75,7 @@
                 <div class="mt-6 flex justify-center gap-4">
                     <button type="button" id="save-btn" class="btn btn-outline-primary">Save</button>
                     @if ($isLastDomain)
-                        <button type="button" id="calculate-btn" class="btn btn-primary">Calculate</button>
+                        <button type="button" id="calculate-btn" class="btn btn-primary">Final Submit</button>
                     @else
                         <button type="button" id="save-next-btn" class="btn btn-success">Save & Next</button>
                     @endif
