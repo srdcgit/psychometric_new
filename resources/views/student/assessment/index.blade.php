@@ -29,7 +29,7 @@
                             4 => 'Agree',
                             5 => 'Strongly Agree',
                         ],
-                        'binary' => [
+                        'objective' => [
                             1 => 'Strongly agree',
                             2 => 'Strongly disagree',
                         ],

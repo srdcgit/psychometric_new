@@ -52,6 +52,15 @@
                               required>{{ old('question', $question->question) }}</textarea>
                 </div>
 
+                <div class="mb-4">
+                    <label for="is_reverse" class="block text-gray-700 font-medium mb-1">Is Reverse ?</label>
+                    <button type="button" id="toggleButton" class="bg-gray-300 text-gray-700 px-4 py-2 rounded"
+                        onclick="toggleIsReverse()">
+                        No
+                    </button>
+                    <input type="hidden" name="is_reverse" id="is_reverse" value="0">
+                </div>
+
                 <div class="flex justify-end space-x-4">
                     <a href="{{ route('question.index') }}"
                        class="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300">
@@ -80,5 +89,25 @@
                     }
                 });
         });
+    </script>
+
+     <script>
+        function toggleIsReverse() {
+            const button = document.getElementById('toggleButton');
+            const input = document.getElementById('is_reverse');
+            const isOn = input.value === '1';
+
+            if (isOn) {
+                input.value = '0';
+                button.textContent = 'No';
+                button.classList.remove('bg-blue-600', 'text-white');
+                button.classList.add('bg-gray-300', 'text-gray-700');
+            } else {
+                input.value = '1';
+                button.textContent = 'Yes';
+                button.classList.remove('bg-gray-300', 'text-gray-700');
+                button.classList.add('bg-blue-600', 'text-white');
+            }
+        }
     </script>
 </x-app-layout>

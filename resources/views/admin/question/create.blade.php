@@ -34,6 +34,17 @@
                     <textarea name="question" id="question" rows="4" class="w-full border rounded px-3 py-2 mt-1" required></textarea>
                 </div>
 
+                <div class="mb-4">
+                    <label for="is_reverse" class="block text-gray-700 font-medium mb-1">Is Reverse ?</label>
+                    <button type="button" id="toggleButton" class="bg-gray-300 text-gray-700 px-4 py-2 rounded"
+                        onclick="toggleIsReverse()">
+                        No
+                    </button>
+                    <input type="hidden" name="is_reverse" id="is_reverse" value="0">
+                </div>
+
+
+
                 <x-primary-button>{{ __('Create') }}</x-primary-button>
             </form>
         </div>
@@ -59,8 +70,8 @@
                     $sectionSelect.html('<option value="">Select Section</option>');
                     return;
                 }
-   // Replace placeholder with actual ID
-            var url = sectionUrlTemplate.replace('__ID__', domainId);
+                // Replace placeholder with actual ID
+                var url = sectionUrlTemplate.replace('__ID__', domainId);
                 $.ajax({
                     url: url,
                     method: 'GET',
@@ -80,6 +91,28 @@
             });
         });
     </script>
+
+
+    <script>
+        function toggleIsReverse() {
+            const button = document.getElementById('toggleButton');
+            const input = document.getElementById('is_reverse');
+            const isOn = input.value === '1';
+
+            if (isOn) {
+                input.value = '0';
+                button.textContent = 'No';
+                button.classList.remove('bg-blue-600', 'text-white');
+                button.classList.add('bg-gray-300', 'text-gray-700');
+            } else {
+                input.value = '1';
+                button.textContent = 'Yes';
+                button.classList.remove('bg-gray-300', 'text-gray-700');
+                button.classList.add('bg-blue-600', 'text-white');
+            }
+        }
+    </script>
+
 
 
 </x-app-layout>

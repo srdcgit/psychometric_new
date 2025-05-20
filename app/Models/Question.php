@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Question extends Model
 {
-   protected $fillable = ['domain_id','section_id', 'question','uploaded_by'];
+   protected $fillable = ['domain_id','section_id', 'question','uploaded_by', 'is_reverse'];
 
     public function section()
     {

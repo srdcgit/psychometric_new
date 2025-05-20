@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Assessment;
 use App\Models\CareerPath;
 use App\Models\Domain;
+use App\Models\Question;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Section;
@@ -25,8 +26,6 @@ class AssessmentController extends Controller
         if ($user->is_submitted) {
             return redirect()->route('assessment.result')->with('error', 'You have already submitted the assessment.');
         }
-
-
 
         $domains = Domain::orderBy('id')->get();
         // If no specific domain is passed, use the first one
@@ -51,6 +50,16 @@ class AssessmentController extends Controller
         $sectionIds = $request->section_ids;
 
         foreach ($responses as $questionId => $value) {
+            $question = Question::find($questionId);
+
+            if ($question && $question->is_reverse) {
+                // Reverse the value if it's within 1-5
+                if (in_array($value, [1, 2, 3, 4, 5])) {
+                    $value = 6 - $value;
+                }
+            }
+
+
             Assessment::updateOrCreate(
                 [
                     'student_id' => $studentId,

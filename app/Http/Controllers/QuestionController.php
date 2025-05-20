@@ -51,6 +51,7 @@ class QuestionController extends Controller
             'domain_id' => 'required|exists:domains,id',
             'section_id' => 'required|exists:sections,id',
             'question' => 'required|string|max:1000',
+            'is_reverse' => 'required|boolean',
         ]);
 
         Question::create([
@@ -58,6 +59,7 @@ class QuestionController extends Controller
             'section_id' => $request->section_id,
             'question' => $request->question,
             'uploaded_by' => Auth::user()->id,
+            'is_reverse' => $request->is_reverse
         ]);
 
         return redirect()->route('question.index')->with('success', 'Question added successfully.');
@@ -93,6 +95,7 @@ class QuestionController extends Controller
             'domain_id' => 'required|exists:domains,id',
             'section_id' => 'required|exists:sections,id',
             'question' => 'required|string|max:1000',
+            'is_reverse' => 'required|boolean',
         ]);
 
         $question = Question::findOrFail($id);
@@ -100,6 +103,7 @@ class QuestionController extends Controller
             'domain_id' => $request->domain_id,
             'section_id' => $request->section_id,
             'question' => $request->question,
+            'is_reverse' => $request->is_reverse
         ]);
 
         return redirect()->route('question.index')->with('success', 'Question updated successfully.');
