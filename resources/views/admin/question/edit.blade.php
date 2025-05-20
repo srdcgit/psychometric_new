@@ -53,14 +53,12 @@
                 </div>
 
                 <div class="mb-4">
-                    <label for="is_reverse" class="block text-gray-700 font-medium mb-1">Is Reverse ?</label>
-                    <button type="button" id="toggleButton" class="bg-gray-300 text-gray-700 px-4 py-2 rounded"
-                        onclick="toggleIsReverse()">
+                    <label for="is_reverse" class="block text-gray-700 font-medium mb-1">Is Reverse?</label>
+                    <button type="button" id="toggleButton" class="px-4 py-2 rounded">
                         No
                     </button>
                     <input type="hidden" name="is_reverse" id="is_reverse"
-                        value="{{ old('is_reverse', $question->is_reverse) }}">
-
+                        value="{{ old('is_reverse', $question->is_reverse ?? 0) }}">
                 </div>
 
                 <div class="flex justify-end space-x-4">
@@ -92,21 +90,34 @@
         });
     </script>
 
-   <script>
-    document.addEventListener('DOMContentLoaded', () => {
-        const input = document.getElementById('is_reverse');
-        const button = document.getElementById('toggleButton');
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const input = document.getElementById('is_reverse');
+            const button = document.getElementById('toggleButton');
 
-        if (input.value === '1') {
-            button.textContent = 'Yes';
-            button.classList.remove('bg-gray-300', 'text-gray-700');
-            button.classList.add('bg-blue-600', 'text-white');
-        } else {
-            button.textContent = 'No';
-            button.classList.remove('bg-blue-600', 'text-white');
-            button.classList.add('bg-gray-300', 'text-gray-700');
-        }
-    });
-</script>
+            function updateButtonAppearance() {
+                if (input.value === '1') {
+                    button.textContent = 'Yes';
+                    button.classList.remove('bg-gray-300', 'text-gray-700');
+                    button.classList.add('bg-blue-600', 'text-white');
+                } else {
+                    button.textContent = 'No';
+                    button.classList.remove('bg-blue-600', 'text-white');
+                    button.classList.add('bg-gray-300', 'text-gray-700');
+                }
+            }
+
+            // Initial button setup
+            updateButtonAppearance();
+
+            // Toggle behavior
+            button.addEventListener('click', function() {
+                input.value = input.value === '1' ? '0' : '1';
+                updateButtonAppearance();
+            });
+        });
+    </script>
+
+
 
 </x-app-layout>
