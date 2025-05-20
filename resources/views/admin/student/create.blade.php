@@ -7,17 +7,29 @@
         <form method="POST" action="{{ route('students.store') }}">
             @csrf
             <!--  institution-->
+
             <div class="mt-4">
                 <x-input-label for="register_institute_id" :value="__('Register Institution')" />
                 <select id="register_institute_id" name="register_institute_id"
-                    class="block mt-1 w-full border-gray-300 rounded-md shadow-sm">
-                    <option value="">-- Select Institution --</option>
+                    class="block mt-1 w-full border-gray-300 rounded-md shadow-sm" style="cursor: pointer;">
+                    <option value="">-- Select Institution -- </option>
                     @foreach ($institutes as $institute)
+                        @php
+                            $registered = \App\Models\User::where('register_institute_id', $institute->id)->count();
+                            $allowed = $institute->allowed_students;
+                        @endphp
                         <option value="{{ $institute->id }}"
-                            {{ old('register_institute_id') == $institute->id ? 'selected' : '' }}>
+                            {{ old('register_institute_id') == $institute->id ? 'selected' : '' }}
+                            {{ $registered >= $allowed ? 'disabled' : '' }}
+                            title="{{ $registered >= $allowed ? 'This institution has reached its limit' : '' }}">
                             {{ $institute->name }}
+                            {{ $registered >= $allowed ? '(This institution is full and cannot be selected.)' : '' }}
                         </option>
+
+                        
                     @endforeach
+
+
                 </select>
                 <x-input-error :messages="$errors->get('register_institute_id')" class="mt-2" />
             </div>
