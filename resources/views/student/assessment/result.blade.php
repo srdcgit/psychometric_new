@@ -55,10 +55,10 @@
                                 <div class="text-sm text-gray-700 space-y-1">
                                     <p><span class="font-bold text-gray-800">Average Score:</span>
                                         {{ $section['average'] }}</p>
-                                    <p><span class="font-bold">Key Traits:</span> {{ $section['section_keytraits'] }}
+                                    <p><span style="font-weight:bold;">Key Traits:</span> {{ $section['section_keytraits'] }}
                                     </p>
-                                    <p><span class="font-bold">Enjoys:</span> {{ $section['section_enjoys'] }}</p>
-                                    <p><span class="font-bold">Ideal Environments:</span>
+                                    <p><span style="font-weight:bold;">Enjoys:</span> {{ $section['section_enjoys'] }}</p>
+                                    <p><span style="font-weight:bold;">Ideal Environments:</span>
                                         {{ $section['section_idealenvironments'] }}</p>
                                 </div>
                             </div>
@@ -86,7 +86,7 @@
                                         @if ($paths->isNotEmpty())
                                             @foreach ($paths as $path)
                                                 <tr>
-                                                    <td class="px-4 py-2 border">{{ $sec['section_name'] }}</td>
+                                                    <td class="px-4 py-2 border" style="font-weight:bold;">{{ $sec['section_name'] }}</td>
                                                     <td class="px-4 py-2 border text-center">{!! $path->name !!}
                                                     </td>
                                                 </tr>
