@@ -34,7 +34,8 @@
 
                 <div class="mb-4">
                     <label for="section_id" class="block text-sm font-medium text-gray-700">Section</label>
-                    <select name="section_id" id="section_id" class="mt-1 block w-full rounded border-gray-300" required>
+                    <select name="section_id" id="section_id" class="mt-1 block w-full rounded border-gray-300"
+                        required>
                         <option value="">Select Section</option>
                         @foreach ($sections as $section)
                             <option value="{{ $section->id }}"
@@ -48,8 +49,7 @@
                 <div class="mb-4">
                     <label for="question" class="block text-sm font-medium text-gray-700">Question</label>
                     <textarea name="question" id="question" rows="4"
-                              class="mt-1 block w-full border-gray-300 rounded shadow-sm focus:ring focus:ring-indigo-500 sm:text-sm"
-                              required>{{ old('question', $question->question) }}</textarea>
+                        class="mt-1 block w-full border-gray-300 rounded shadow-sm focus:ring focus:ring-indigo-500 sm:text-sm" required>{{ old('question', $question->question) }}</textarea>
                 </div>
 
                 <div class="mb-4">
@@ -58,16 +58,17 @@
                         onclick="toggleIsReverse()">
                         No
                     </button>
-                    <input type="hidden" name="is_reverse" id="is_reverse" value="0">
+                    <input type="hidden" name="is_reverse" id="is_reverse"
+                        value="{{ old('is_reverse', $question->is_reverse) }}">
+
                 </div>
 
                 <div class="flex justify-end space-x-4">
                     <a href="{{ route('question.index') }}"
-                       class="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300">
+                        class="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300">
                         Cancel
                     </a>
-                    <button type="submit"
-                            class="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700">
+                    <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700">
                         Update Question
                     </button>
                 </div>
@@ -77,7 +78,7 @@
 
     <script>
         // Optional: Load sections dynamically on domain change
-        document.getElementById('domain_id').addEventListener('change', function () {
+        document.getElementById('domain_id').addEventListener('change', function() {
             const domainId = this.value;
             fetch(`/get-sections/${domainId}`)
                 .then(response => response.json())
@@ -91,23 +92,21 @@
         });
     </script>
 
-     <script>
-        function toggleIsReverse() {
-            const button = document.getElementById('toggleButton');
-            const input = document.getElementById('is_reverse');
-            const isOn = input.value === '1';
+   <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const input = document.getElementById('is_reverse');
+        const button = document.getElementById('toggleButton');
 
-            if (isOn) {
-                input.value = '0';
-                button.textContent = 'No';
-                button.classList.remove('bg-blue-600', 'text-white');
-                button.classList.add('bg-gray-300', 'text-gray-700');
-            } else {
-                input.value = '1';
-                button.textContent = 'Yes';
-                button.classList.remove('bg-gray-300', 'text-gray-700');
-                button.classList.add('bg-blue-600', 'text-white');
-            }
+        if (input.value === '1') {
+            button.textContent = 'Yes';
+            button.classList.remove('bg-gray-300', 'text-gray-700');
+            button.classList.add('bg-blue-600', 'text-white');
+        } else {
+            button.textContent = 'No';
+            button.classList.remove('bg-blue-600', 'text-white');
+            button.classList.add('bg-gray-300', 'text-gray-700');
         }
-    </script>
+    });
+</script>
+
 </x-app-layout>
