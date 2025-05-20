@@ -13,6 +13,12 @@
                 <x-input-error :messages="$errors->get('name')" class="mt-2" />
             </div>
 
+            <div class="mt-4">
+                <x-input-label for="email" :value="__('Email')" />
+                <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" required />
+                <x-input-error :messages="$errors->get('email')" class="mt-2" />
+            </div>
+
             <div>
                 <x-input-label for="address" :value="__('Address')" />
                 <x-text-input id="address" name="address" class="mt-1 block w-full" required />
@@ -22,16 +28,18 @@
 
             <div>
                 <x-input-label for="contactperson" :value="__('Contact Person')" />
-                <x-text-input id="contactperson" name="contact_person" class="mt-1 block w-full"  required />
+                <x-text-input id="contactperson" name="contact_person" class="mt-1 block w-full" required />
             </div>
-                        <div>
+            <div>
                 <x-input-label for="mobile" :value="__('Mobile')" />
-                <x-text-input id="mobile" type="number"  name="mobile" class="mt-1 block w-full" maxlength="12" required />
+                <x-text-input id="mobile" type="number" name="mobile" class="mt-1 block w-full" maxlength="12"
+                    required />
                 <x-input-error :messages="$errors->get('mobile')" class="mt-2" />
             </div>
-              <div>
+            <div>
                 <x-input-label for="allowedstudents" :value="__('Allowed Student')" />
-                <x-text-input id="allowedstudents" type="number"  name="allowed_students" class="mt-1 block w-full" maxlength="12" required />
+                <x-text-input id="allowedstudents" type="number" name="allowed_students" class="mt-1 block w-full"
+                    maxlength="12" required />
                 <x-input-error :messages="$errors->get('allowed_students')" class="mt-2" />
             </div>
 

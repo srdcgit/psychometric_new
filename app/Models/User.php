@@ -19,6 +19,7 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'rolls_id',
+        'register_institute_id',
         'name',
         'email',
         'password',
@@ -61,6 +62,6 @@ class User extends Authenticatable
     }
     public function institute()
     {
-        return $this->belongsTo(Institute::class);
+        return $this->belongsTo(Institute::class, 'register_institute_id');
     }
 }

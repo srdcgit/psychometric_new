@@ -8,7 +8,7 @@
     <div class="max-w-7xl mx-auto py-10 sm:px-6 lg:px-8">
         <div class="mb-6">
             <a href="{{ route('institute.create') }}"
-               class="inline-block px-4 py-2 bg-indigo-600 text-dark rounded hover:bg-indigo-700">
+                class="inline-block px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700">
                 + Add New Institute
             </a>
         </div>
@@ -41,17 +41,36 @@
                                 <td class="px-4 py-2">{{ $institute->address }}</td>
                                 <td class="px-4 py-2">{{ $institute->mobile }}</td>
                                 <td class="px-4 py-2">{!! $institute->contact_person !!}</td>
-                                <td class="px-4 py-2">{{ $institute->allowed_students }}</td>
+
+                                @php
+                                    $registered = \App\Models\User::where(
+                                        'register_institute_id',
+                                        $institute->id,
+                                    )->count();
+                                    $allowed = $institute->allowed_students;
+                                @endphp
+
+
+                                <td class="px-4 py-2">
+                                    <div class="text-sm text-gray-600 mt-1">
+                                        {{ $registered }} / {{ $allowed }}
+                                    </div>
+                                </td>
+
+
+
+
+
                                 <td class="px-4 py-2 space-x-2">
                                     <a href="{{ route('institute.index', $institute->id) }}"
-                                       class="text-blue-500 hover:underline">Edit</a>
+                                        class="text-blue-500 hover:underline">Edit</a>
 
-                                    <form action="{{ route('institute.index', $institute->id) }}" method="POST" class="inline">
+                                    <form action="{{ route('institute.index', $institute->id) }}" method="POST"
+                                        class="inline">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit"
-                                                class="text-red-600 hover:underline"
-                                                onclick="return confirm('Are you sure you want to delete this institute??')">
+                                        <button type="submit" class="text-red-600 hover:underline"
+                                            onclick="return confirm('Are you sure you want to delete this institute??')">
                                             Delete
                                         </button>
                                     </form>

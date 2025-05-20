@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
@@ -7,6 +8,8 @@ class Institute extends Model
 {
     protected $fillable = [
         'name',
+        'email',
+        'password',
         'address',
         'mobile',
         'allowed_students',
@@ -21,6 +24,8 @@ class Institute extends Model
     {
         return $this->belongsTo(User::class, 'student_id');
     }
-
-
+    public function registeredStudents()
+    {
+        return $this->hasMany(User::class, 'register_institute_id');
+    }
 }
