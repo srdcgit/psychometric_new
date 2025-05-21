@@ -3,36 +3,27 @@
         <h2 class="font-semibold text-xl text-gray-800">Create Student</h2>
     </x-slot>
 
-    <div class="max-w-2xl mx-auto p-4" style="width:50%">
-        <form method="POST" action="{{ route('students.store') }}">
-            @csrf
-            <!--  institution-->
+    {{-- Sessions msg  --}}
+    @if (session('success'))
+        <div class="mb-4 text-green-600">
+            {{ session('success') }}
+        </div>
+    @endif
 
-            <div class="mt-4">
-                <x-input-label for="register_institute_id" :value="__('Register Institution')" />
-                <select id="register_institute_id" name="register_institute_id"
-                    class="block mt-1 w-full border-gray-300 rounded-md shadow-sm" style="cursor: pointer;">
-                    <option value="">-- Select Institution -- </option>
-                    @foreach ($institutes as $institute)
-                        @php
-                            $registered = \App\Models\User::where('register_institute_id', $institute->id)->count();
-                            $allowed = $institute->allowed_students;
-                        @endphp
-                        <option value="{{ $institute->id }}"
-                            {{ old('register_institute_id') == $institute->id ? 'selected' : '' }}
-                            {{ $registered >= $allowed ? 'disabled' : '' }}
-                            title="{{ $registered >= $allowed ? 'This institution has reached its limit' : '' }}">
-                            {{ $institute->name }}
-                            {{ $registered >= $allowed ? '(This institution is full and cannot be selected.)' : '' }}
-                        </option>
-
-                        
-                    @endforeach
-
-
-                </select>
-                <x-input-error :messages="$errors->get('register_institute_id')" class="mt-2" />
+    @if (session('error'))
+        <div class="p-5">
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                {{ session('error') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
+        </div>
+    @endif
+
+
+    <div class="max-w-2xl mx-auto p-4" style="width:50%">
+        <form method="POST" action="{{ route('institutestudent.store') }}">
+            @csrf
+            <input type="hidden" name="register_institute_id" value="{{ $currentInstituteId }}">
             <!-- Name -->
             <div class="mt-4">
                 <x-input-label for="name" :value="__('Name')" />

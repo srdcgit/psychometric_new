@@ -21,6 +21,7 @@
                 @php
                     $user = Auth::user();
                     $isAdmin = $user && $user->rolls && $user->rolls->slug === 'admin';
+                    $isInstitute = $user && $user->rolls && $user->rolls->slug === 'institute';
                 @endphp
 
                 @if ($isAdmin)
@@ -58,6 +59,12 @@
                     <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                         <x-nav-link :href="route('question.index')" :active="request()->routeIs('question.index')">
                             {{ __('Question') }}
+                        </x-nav-link>
+                    </div>
+                @elseif ($isInstitute)
+                    <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                        <x-nav-link :href="route('institutestudent.index')" :active="request()->routeIs('institutestudent.index')">
+                            {{ __('Student List') }}
                         </x-nav-link>
                     </div>
                 @else
