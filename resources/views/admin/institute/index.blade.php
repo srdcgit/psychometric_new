@@ -56,24 +56,19 @@
                                         {{ $registered }} / {{ $allowed }}
                                     </div>
                                 </td>
-
-
-
-
-
                                 <td class="px-4 py-2 space-x-2">
-                                    <a href="{{ route('institute.index', $institute->id) }}"
+                                    <a href="{{ route('institute.edit', $institute->id) }}"
                                         class="text-blue-500 hover:underline">Edit</a>
-
-                                    <form action="{{ route('institute.index', $institute->id) }}" method="POST"
-                                        class="inline">
+                                    <form action="{{ route('institute.destroy', $institute->id) }}"
+                                        method="POST" class="inline">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="text-red-600 hover:underline"
-                                            onclick="return confirm('Are you sure you want to delete this institute??')">
+                                            onclick="return confirm('Are you sure you want to delete this institute?')">
                                             Delete
                                         </button>
                                     </form>
+
                                 </td>
                             </tr>
                         @endforeach

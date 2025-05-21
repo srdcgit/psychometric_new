@@ -45,7 +45,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/institute/create', [InstituteController::class, 'create'])->name('institute.create');
     Route::post('/institute/store', [InstituteController::class, 'store'])->name('institute.store');
     Route::get('/institute/{id}/edit', [InstituteController::class,'edit'])->name('institute.edit');
-    Route::patch('/institute/{id}/update', [InstituteController::class,'update'])->name('institute.update');
+    Route::post('/institute/{id}/update', [InstituteController::class,'update'])->name('institute.update');
+   Route::delete('/admin/institute/{id}', [InstituteController::class, 'delete'])->name('institute.destroy');
+
 
 });
 

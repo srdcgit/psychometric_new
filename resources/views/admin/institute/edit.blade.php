@@ -20,55 +20,59 @@
 
             <form method="POST" action="{{ route('institute.update', $institute->id) }}">
                 @csrf
-                @method('PUT')
+                
 
-                <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-700" for="name">Institute Name</label>
-                    <input type="text" name="name" id="name" value="{{ old('name', $institute->name) }}"
-                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                <div class="mt-4">
+                    <x-input-label for="name" :value="__('Name')" />
+                    <x-text-input id="name" name="name" class="mt-1 block w-full"
+                        value="{{ old('name', $institute->name) }}" required />
+                    <x-input-error :messages="$errors->get('name')" class="mt-2" />
                 </div>
 
-                <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-700" for="description">Contact_Person</label>
-                    <textarea name="contactperson" id="contactperson"
-                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                        rows="4">{{ old('contactperson', $institute->contactperson) }}</textarea>
+                <div class="mt-4">
+                    <x-input-label for="email" :value="__('Email')" />
+                    <x-text-input id="email" type="email" name="email" class="mt-1 block w-full"
+                        value="{{ old('email', $institute->email) }}" required />
+                    <x-input-error :messages="$errors->get('email')" class="mt-2" />
                 </div>
 
-                <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-700" for="scoring_type">Scoring Type</label>
-                    <select name="scoring_type" id="scoring_type" required
-                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
-                        <option value="">Select Option</option>
-                        <option value="likert"
-                            {{ old('scoring_type', $institute->scoring_type) == 'likert' ? 'selected' : '' }}>Likert
-                        </option>
-                        <option value="likert2"
-                            {{ old('scoring_type', $institute->scoring_type) == 'likert2' ? 'selected' : '' }}>Likert 2
-                        </option>
-                        <option value="objective"
-                            {{ old('scoring_type', $institute->scoring_type) == 'objective' ? 'selected' : '' }}>Objective
-                        </option>
-                    </select>
+                <div class="mt-4">
+                    <x-input-label for="address" :value="__('Address')" />
+                    <x-text-input id="address" name="address" class="mt-1 block w-full"
+                        value="{{ old('address', $institute->address) }}" required />
+                    <x-input-error :messages="$errors->get('address')" class="mt-2" />
                 </div>
 
+                <div class="mt-4">
+                    <x-input-label for="contactperson" :value="__('Contact Person')" />
+                    <x-text-input id="contactperson" name="contact_person" class="mt-1 block w-full"
+                        value="{{ old('contact_person', $institute->contact_person) }}" required />
+                    <x-input-error :messages="$errors->get('contact_person')" class="mt-2" />
+                </div>
 
-                <div class="flex items-center justify-end space-x-4">
-                    <a href="{{ route('institute.index') }}"
-                        class="inline-block px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300">
-                        Cancel
-                    </a>
+                <div class="mt-4">
+                    <x-input-label for="mobile" :value="__('Mobile')" />
+                    <x-text-input id="mobile" type="number" name="mobile" class="mt-1 block w-full"
+                        value="{{ old('mobile', $institute->mobile) }}" maxlength="12" required />
+                    <x-input-error :messages="$errors->get('mobile')" class="mt-2" />
+                </div>
 
-                    <button type="submit"
-                        class="inline-block px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700">
-                        Update Institute
-                    </button>
+                <div class="mt-4">
+                    <x-input-label for="allowedstudents" :value="__('Allowed Students')" />
+                    <x-text-input id="allowedstudents" type="number" name="allowed_students" class="mt-1 block w-full"
+                        value="{{ old('allowed_students', $institute->allowed_students) }}" maxlength="12" required />
+                    <x-input-error :messages="$errors->get('allowed_students')" class="mt-2" />
+                </div>
+
+                <div class="mt-4">
+                    <x-primary-button>{{ __('Update') }}</x-primary-button>
                 </div>
             </form>
+
         </div>
     </div>
 
-     <!-- CKEditor 5 Script -->
+    <!-- CKEditor 5 Script -->
     <script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
     <script>
         ClassicEditor

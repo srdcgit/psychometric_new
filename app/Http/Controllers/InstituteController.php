@@ -86,25 +86,32 @@ class InstituteController extends Controller
 
     public function update(Request $request, string $id)
     {
-        $institute = Institute::findOrFail($id);
-
         $request->validate([
-            'name' => 'required|string|max:255|unique:institutes,name,' . $institute->id,
-            'address' => 'required|string|max:255|unique:institutes,name,',
-            'mobile' => 'required|',
-            'allowed_students' => 'required|',
-            'contact_person' => 'nullable|string'
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|max:255',
+            'address' => 'required|string',
+            'contact_person' => 'required|string|max:255',
+            'mobile' => 'required|digits_between:10,12',
+            'allowed_students' => 'required|integer|min:1',
         ]);
 
+        $institute = Institute::findOrFail($id);
         $institute->update([
             'name' => $request->name,
+            'email' => $request->email,
             'address' => $request->address,
+            'contact_person' => $request->contact_person,
             'mobile' => $request->mobile,
             'allowed_students' => $request->allowed_students,
-            'contact_person' => $request->description
-
         ]);
 
         return redirect()->route('institute.index')->with('success', 'Institute updated successfully!');
+    }
+    public function delete($id)
+    {
+        $institute = Institute::findOrFail($id);
+        $institute->delete();
+
+        return redirect()->back()->with('success', 'Institute deleted successfully!');
     }
 }
