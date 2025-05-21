@@ -17,7 +17,7 @@
             <div class="mb-4 text-green-600">
                 {{ session('success') }}
             </div>
-        @endif
+        @endif 
 
         <div class="bg-white shadow-sm rounded-lg p-6">
             @if ($institutes->count())
@@ -26,6 +26,7 @@
                         <tr class="bg-gray-100 text-left">
                             <th class="px-4 py-2">#</th>
                             <th class="px-4 py-2">Name</th>
+                            <th class="px-4 py-2">Email</th>
                             <th class="px-4 py-2">Address</th>
                             <th class="px-4 py-2">Mobile</th>
                             <th class="px-4 py-2">Contact Person</th>
@@ -38,6 +39,7 @@
                             <tr class="border-b">
                                 <td class="px-4 py-2">{{ $key + 1 }}</td>
                                 <td class="px-4 py-2">{{ $institute->name }}</td>
+                                <td class="px-4 py-2">{{ $institute->email }}</td>
                                 <td class="px-4 py-2">{{ $institute->address }}</td>
                                 <td class="px-4 py-2">{{ $institute->mobile }}</td>
                                 <td class="px-4 py-2">{!! $institute->contact_person !!}</td>

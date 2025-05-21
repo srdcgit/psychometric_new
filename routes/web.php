@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\CareerPathController;
 use App\Http\Controllers\DomainController;
+use App\Http\Controllers\institute\InstituteStudentController;
 use App\Http\Controllers\InstituteController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\QuestionController;
@@ -29,6 +30,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('question', QuestionController::class);
     Route::resource('careerpath', CareerPathController::class);
     Route::resource('students', UserController::class);
+    Route::resource('institutestudent', InstituteStudentController::class);
 
 
     Route::get('domain/{id}/sections', [QuestionController::class, 'getSections'])->name('domain.sections');
@@ -44,9 +46,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/institute', [InstituteController::class, 'index'])->name('institute.index');
     Route::get('/institute/create', [InstituteController::class, 'create'])->name('institute.create');
     Route::post('/institute/store', [InstituteController::class, 'store'])->name('institute.store');
-    Route::get('/institute/{id}/edit', [InstituteController::class,'edit'])->name('institute.edit');
-    Route::patch('/institute/{id}/update', [InstituteController::class,'update'])->name('institute.update');
-
+    Route::get('/institute/{id}/edit', [InstituteController::class, 'edit'])->name('institute.edit');
+    Route::patch('/institute/{id}/update', [InstituteController::class, 'update'])->name('institute.update');
 });
 
 require __DIR__ . '/auth.php';
