@@ -42,10 +42,16 @@ class InstituteStudentController extends Controller
     {
         $useremail = Auth::user()->email;
         $getinstitute = Institute::where('email', $useremail)->first();
-
-
-
         $getrollid = Roll::where('slug', 'student')->first();
+
+        $totalstudentlimit = $getinstitute->allowed_students;
+        $registered = User::where('register_institute_id', $getinstitute->id)->count();
+        if ($registered >= $totalstudentlimit) {
+            return redirect()
+                ->back()
+                ->withInput()
+                ->with('error', 'Student limit has been reached. You cannot add more students.');
+        }
 
         $request->validate([
             'register_institute_id' => ['required'],
