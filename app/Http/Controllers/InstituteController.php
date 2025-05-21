@@ -74,7 +74,7 @@ class InstituteController extends Controller
             'parental_occupation' => 'null',
         ]);
 
-        return redirect()->route('institute.index')->with('success', 'Institute and student created successfully!');
+        return redirect()->route('institute.index')->with('success', 'Institute and Institute User created successfully!');
     }
 
 
