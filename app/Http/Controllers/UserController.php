@@ -14,16 +14,6 @@ class UserController extends Controller
     /**
      * Display a listing of the resource.
      */
-    // public function index()
-    // {
-    //     $studentRole = Roll::where('slug', 'student')->first();
-
-    //     $students = User::where('rolls_id', $studentRole->id)
-    //         ->with('institute')
-    //         ->paginate(10);
-    //     // dd($students);
-    //     return view('admin.student.index', compact('students'));
-    // }
 
     public function index(Request $request)
     {
