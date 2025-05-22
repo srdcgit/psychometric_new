@@ -14,16 +14,36 @@ class UserController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    // public function index()
+    // {
+    //     $studentRole = Roll::where('slug', 'student')->first();
+
+    //     $students = User::where('rolls_id', $studentRole->id)
+    //         ->with('institute')
+    //         ->paginate(10);
+    //     // dd($students);
+    //     return view('admin.student.index', compact('students'));
+    // }
+
+    public function index(Request $request)
     {
         $studentRole = Roll::where('slug', 'student')->first();
 
-        $students = User::where('rolls_id', $studentRole->id)
-            ->with('institute')
-            ->get();
-        // dd($students);
+        $query = User::where('rolls_id', $studentRole->id)->with('institute');
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                    ->orWhere('email', 'like', "%{$search}%");
+            });
+        }
+
+        $students = $query->paginate(10)->appends($request->query());
+
         return view('admin.student.index', compact('students'));
     }
+
 
     /**
      * Show the form for creating a new resource.
@@ -143,6 +163,4 @@ class UserController extends Controller
 
         return redirect()->back()->with('success', 'Student deleted successfully!');
     }
-
-    
 }
