@@ -15,7 +15,7 @@ class SectionController extends Controller
     public function index()
     {
         $user = Auth::user();
-        $sections = Section::where('uploaded_by', $user->id)->with('domain')->get();
+        $sections = Section::where('uploaded_by', $user->id)->with('domain')->paginate(10);
         return view('admin.section.index', compact('sections'));
     }
 

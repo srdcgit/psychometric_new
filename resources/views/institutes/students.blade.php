@@ -30,42 +30,50 @@
 
         <div class="bg-white shadow-sm rounded-lg p-6">
             @if ($students->count())
-                <table class="w-full table-auto">
-                    <thead>
-                        <tr class="bg-gray-100 text-left">
-                            <th class="px-4 py-2">#</th>
-                            <th class="px-4 py-2">Instituation</th>
-                            <th class="px-4 py-2">Student Name</th>
-                            <th class="px-4 py-2">Email</th>
-                            <th class="px-4 py-2">Age</th>
-                            <th class="px-4 py-2">Class</th>
-                            <th class="px-4 py-2">School</th>
-                            {{-- <th class="px-4 py-2">Location</th>
+                <div class="table-responsive">
+                    <table class="w-full table-auto">
+                        <thead>
+                            <tr class="bg-gray-100 text-left">
+                                <th class="px-4 py-2">#</th>
+                                <th class="px-4 py-2">Instituation</th>
+                                <th class="px-4 py-2">Student Name</th>
+                                <th class="px-4 py-2">Email</th>
+                                <th class="px-4 py-2">Age</th>
+                                <th class="px-4 py-2">Class</th>
+                                <th class="px-4 py-2">School</th>
+                                {{-- <th class="px-4 py-2">Location</th>
                             <th class="px-4 py-2">Subjects/Stream</th>
                             <th class="px-4 py-2">Career Aspiration</th>
                             <th class="px-4 py-2">Parental Occupation</th> --}}
-                            <th class="px-4 py-2">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($students as $key => $student)
-                            <tr class="border-b">
-                                <td class="px-4 py-2">{{ $key + 1 }}</td>
-                                <td class="px-4 py-2">{{ $student->institute->name ?? 'N/A' }}</td>
-                                <td class="px-4 py-2">{{ $student->name }}</td>
-                                <td class="px-4 py-2">{{ $student->email }}</td>
-                                <td class="px-4 py-2">{{ $student->age }}</td>
-                                <td class="px-4 py-2">{{ $student->class }}</td>
-                                <td class="px-4 py-2">{{ $student->school }}</td>
-                                <td class="px-4 py-2 space-x-2">
-                                    <a href="{{ route('institutestudent.show', $student->id) }}"
-                                        class="text-blue-500 hover:underline">view Result</a>
-                                </td>
+                                <th class="px-4 py-2">Actions</th>
                             </tr>
-                        @endforeach
-                    </tbody>
+                        </thead>
+                        <tbody>
+                            @foreach ($students as $student)
+                                <tr class="border-b">
+                                    <td class="px-4 py-2">
+                                        {{ ($students->currentPage() - 1) * $students->perPage() + $loop->iteration }}
+                                    </td>
+                                    <td class="px-4 py-2">{{ $student->institute->name ?? 'N/A' }}</td>
+                                    <td class="px-4 py-2">{{ $student->name }}</td>
+                                    <td class="px-4 py-2">{{ $student->email }}</td>
+                                    <td class="px-4 py-2">{{ $student->age }}</td>
+                                    <td class="px-4 py-2">{{ $student->class }}</td>
+                                    <td class="px-4 py-2">{{ $student->school }}</td>
+                                    <td class="px-4 py-2 space-x-2">
+                                        <a href="{{ route('institutestudent.show', $student->id) }}"
+                                            class="text-blue-500 hover:underline">view Result</a>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
 
-                </table>
+                    </table>
+                </div>
+
+                <div class="mt-4">
+                    {!! $students->links() !!}
+                </div>
             @else
                 <p>No student found.</p>
             @endif

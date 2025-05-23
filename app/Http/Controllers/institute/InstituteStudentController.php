@@ -21,7 +21,7 @@ class InstituteStudentController extends Controller
     {
         $useremail = Auth::user()->email;
         $getinstitute = Institute::where('email', $useremail)->first();
-        $students = User::where('register_institute_id', $getinstitute->id)->get();
+        $students = User::where('register_institute_id', $getinstitute->id)->paginate(10);
 
         return view('institutes.students', compact('students'));
     }

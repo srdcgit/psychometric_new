@@ -15,7 +15,7 @@ class InstituteController extends Controller
     {
         // $institutes = Institute::with('sections')->get();
         //$institutes = Institute::all();
-        $institutes = Institute::withCount('registeredStudents')->get();
+        $institutes = Institute::withCount('registeredStudents')->paginate(10);
 
         return view('admin.institute.index', compact('institutes'));
     }
