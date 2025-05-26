@@ -27,7 +27,7 @@
                                         {{ ($questions->currentPage() - 1) * $questions->perPage() + $loop->iteration }}
                                     </td>
                                     <td class="px-4 py-2">{{ $question->section->name }}</td>
-                                    <td class="px-4 py-2">{{ $question->question }}</td>
+                                    <td class="px-4 py-2">{!! $question->question !!}</td>
                                     <td class="px-4 py-2 space-x-2">
                                         <a href="{{ route('question.edit', $question->id) }}"
                                             class="text-blue-600 hover:underline">Edit</a>

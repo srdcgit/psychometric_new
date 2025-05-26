@@ -15,7 +15,7 @@
                 </div>
             @endif
 
-            <form action="{{ route('question.update', $question->id) }}" method="POST">
+            <form action="{{ route('question.update', $question->id) }}" method="POST" id="questionForm">
                 @csrf
                 @method('PUT')
 
@@ -24,7 +24,7 @@
                     <select name="domain_id" id="domain_id" class="mt-1 block w-full rounded border-gray-300" required>
                         <option value="">Select Domain</option>
                         @foreach ($domains as $domain)
-                            <option value="{{ $domain->id }}"
+                            <option value="{{ $domain->id }}" data-type="{{ $domain->scoring_type }}"
                                 {{ old('domain_id', $question->domain_id) == $domain->id ? 'selected' : '' }}>
                                 {{ $domain->name }}
                             </option>
@@ -48,14 +48,55 @@
 
                 <div class="mb-4">
                     <label for="question" class="block text-sm font-medium text-gray-700">Question</label>
-                    <textarea name="question" id="question" rows="4"
+                    <textarea name="question" id="questions" rows="4"
                         class="mt-1 block w-full border-gray-300 rounded shadow-sm focus:ring focus:ring-indigo-500 sm:text-sm" required>{{ old('question', $question->question) }}</textarea>
+                </div>
+
+                <!-- MCA Options Container -->
+                <div id="mca-options-container"
+                    class="mb-4 {{ $question->domain->scoring_type === 'mcq' ? '' : 'hidden' }}">
+                    <label class="block text-gray-700 font-medium mb-2">Options</label>
+                    <div id="options-list">
+                        @if ($question->options->count() > 0)
+                            @foreach ($question->options as $index => $option)
+                                <div class="option-item mb-2 flex items-center gap-2">
+                                    <input type="text" name="options[]" class="flex-1 border rounded px-3 py-2"
+                                        placeholder="Option text" required value="{{ $option->option_text }}">
+                                    <label class="inline-flex items-center">
+                                        <input type="radio" name="correct_option" value="{{ $index }}"
+                                            {{ $option->is_correct ? 'checked' : '' }} required>
+                                        <span class="ml-2">Correct</span>
+                                    </label>
+                                    <button type="button"
+                                        class="remove-option px-2 py-1 text-red-600 hover:text-red-800"
+                                        onclick="removeOption(this)">×</button>
+                                </div>
+                            @endforeach
+                        @else
+                            <div class="option-item mb-2 flex items-center gap-2">
+                                <input type="text" name="options[]" class="flex-1 border rounded px-3 py-2"
+                                    placeholder="Option text" required>
+                                <label class="inline-flex items-center">
+                                    <input type="radio" name="correct_option" value="0" required>
+                                    <span class="ml-2">Correct</span>
+                                </label>
+                                <button type="button" class="remove-option px-2 py-1 text-red-600 hover:text-red-800"
+                                    onclick="removeOption(this)">×</button>
+                            </div>
+                        @endif
+                    </div>
+                    <button type="button" onclick="addOption()"
+                        class="mt-2 bg-gray-200 text-gray-700 px-4 py-2 rounded hover:bg-gray-300">
+                        + Add Option
+                    </button>
                 </div>
 
                 <div class="mb-4">
                     <label for="is_reverse" class="block text-gray-700 font-medium mb-1">Is Reverse?</label>
-                    <button type="button" id="toggleButton" class="px-4 py-2 rounded">
-                        No
+                    <button type="button" id="toggleButton"
+                        class="px-4 py-2 rounded 
+                        {{ $question->is_reverse ? 'bg-blue-600 text-white' : 'bg-gray-300 text-gray-700' }}">
+                        {{ $question->is_reverse ? 'Yes' : 'No' }}
                     </button>
                     <input type="hidden" name="is_reverse" id="is_reverse"
                         value="{{ old('is_reverse', $question->is_reverse ?? 0) }}">
@@ -75,6 +116,67 @@
     </div>
 
     <script>
+        // Handle domain change
+        document.getElementById('domain_id').addEventListener('change', function() {
+            const scoringType = this.options[this.selectedIndex].getAttribute('data-type');
+            const mcaContainer = document.getElementById('mca-options-container');
+
+            if (scoringType === 'mcq') {
+                mcaContainer.classList.remove('hidden');
+            } else {
+                mcaContainer.classList.add('hidden');
+            }
+        });
+
+        function addOption() {
+            const optionsList = document.getElementById('options-list');
+            const newOption = document.createElement('div');
+            const optionCount = optionsList.children.length;
+
+            newOption.className = 'option-item mb-2 flex items-center gap-2';
+            newOption.innerHTML = `
+                <input type="text" name="options[]" class="flex-1 border rounded px-3 py-2" placeholder="Option text" required>
+                <label class="inline-flex items-center">
+                    <input type="radio" name="correct_option" value="${optionCount}" required>
+                    <span class="ml-2">Correct</span>
+                </label>
+                <button type="button" class="remove-option px-2 py-1 text-red-600 hover:text-red-800" onclick="removeOption(this)">×</button>
+            `;
+
+            optionsList.appendChild(newOption);
+        }
+
+        function removeOption(button) {
+            const optionItem = button.parentElement;
+            const optionsList = optionItem.parentElement;
+
+            if (optionsList.children.length > 1) {
+                optionItem.remove();
+                // Update radio button values
+                Array.from(optionsList.children).forEach((item, index) => {
+                    item.querySelector('input[type="radio"]').value = index;
+                });
+            }
+        }
+
+        function toggleIsReverse() {
+            const button = document.getElementById('toggleButton');
+            const input = document.getElementById('is_reverse');
+            const isOn = input.value === '1';
+
+            if (isOn) {
+                input.value = '0';
+                button.textContent = 'No';
+                button.classList.remove('bg-blue-600', 'text-white');
+                button.classList.add('bg-gray-300', 'text-gray-700');
+            } else {
+                input.value = '1';
+                button.textContent = 'Yes';
+                button.classList.remove('bg-gray-300', 'text-gray-700');
+                button.classList.add('bg-blue-600', 'text-white');
+            }
+        }
+
         // Optional: Load sections dynamically on domain change
         document.getElementById('domain_id').addEventListener('change', function() {
             const domainId = this.value;
@@ -90,34 +192,13 @@
         });
     </script>
 
+    <script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const input = document.getElementById('is_reverse');
-            const button = document.getElementById('toggleButton');
-
-            function updateButtonAppearance() {
-                if (input.value === '1') {
-                    button.textContent = 'Yes';
-                    button.classList.remove('bg-gray-300', 'text-gray-700');
-                    button.classList.add('bg-blue-600', 'text-white');
-                } else {
-                    button.textContent = 'No';
-                    button.classList.remove('bg-blue-600', 'text-white');
-                    button.classList.add('bg-gray-300', 'text-gray-700');
-                }
-            }
-
-            // Initial button setup
-            updateButtonAppearance();
-
-            // Toggle behavior
-            button.addEventListener('click', function() {
-                input.value = input.value === '1' ? '0' : '1';
-                updateButtonAppearance();
+        ClassicEditor
+            .create(document.querySelector('#questions'))
+            .catch(error => {
+                console.error(error);
             });
-        });
     </script>
-
-
 
 </x-app-layout>

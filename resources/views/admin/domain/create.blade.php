@@ -21,6 +21,7 @@
                     <option value="likert">Likert</option>
                     <option value="likert2">Likert 2</option>
                     <option value="objective">Objective</option>
+                    <option value="mcq">MCQ</option>
                 </select>
             </div>
 

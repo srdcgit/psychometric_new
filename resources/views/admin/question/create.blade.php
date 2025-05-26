@@ -4,9 +4,8 @@
     </x-slot>
 
     <div class="py-10 max-w-2xl mx-auto sm:px-6 lg:px-8">
-
         <div class="bg-white shadow rounded p-6">
-            <form method="POST" action="{{ route('question.store') }}">
+            <form method="POST" action="{{ route('question.store') }}" id="questionForm">
                 @csrf
                 <div class="row">
                     <div class="col">
@@ -14,7 +13,7 @@
                         <select name="domain_id" id="domain_id" required class="w-full border rounded px-3 py-2 mt-1">
                             <option value="">Select Domain</option>
                             @foreach ($domains as $d)
-                                <option value="{{ $d->id }}">{{ $d->name }}</option>
+                                <option value="{{ $d->id }}" data-type="{{ $d->scoring_type }}">{{ $d->name }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -27,11 +26,30 @@
                     </div>
                 </div>
 
-
                 <br>
-                <div class="mb-4">
-                    <label for="question" class="block text-gray-700 font-medium">Question</label>
-                    <textarea name="question" id="question" rows="4" class="w-full border rounded px-3 py-2 mt-1" required></textarea>
+                <div class="mb-4" id="question-container">
+                    <label for="editor" class="block text-gray-700 font-medium">Question</label>
+                    <div id="editor"></div>
+                    <input type="hidden" name="question" id="question">
+                    <div id="question-error" class="text-red-500 text-sm mt-1 hidden">Please enter a question</div>
+                </div>
+
+                <!-- MCA Options Container (Initially Hidden) -->
+                <div id="mca-options-container" class="mb-4 hidden">
+                    <label class="block text-gray-700 font-medium mb-2">Options</label>
+                    <div id="options-list">
+                        <div class="option-item mb-2 flex items-center gap-2">
+                            <input type="text" name="options[]" class="flex-1 border rounded px-3 py-2" placeholder="Option text" required>
+                            <label class="inline-flex items-center">
+                                <input type="radio" name="correct_option" value="0" required>
+                                <span class="ml-2">Correct</span>
+                            </label>
+                            <button type="button" class="remove-option px-2 py-1 text-red-600 hover:text-red-800" onclick="removeOption(this)">×</button>
+                        </div>
+                    </div>
+                    <button type="button" onclick="addOption()" class="mt-2 bg-gray-200 text-gray-700 px-4 py-2 rounded hover:bg-gray-300">
+                        + Add Option
+                    </button>
                 </div>
 
                 <div class="mb-4">
@@ -43,26 +61,77 @@
                     <input type="hidden" name="is_reverse" id="is_reverse" value="0">
                 </div>
 
-
-
-                <x-primary-button>{{ __('Create') }}</x-primary-button>
+                <div class="mt-6 flex justify-center gap-4">
+                    <button type="button" id="save-btn" class="btn btn-outline-primary">Save</button>
+                    <x-primary-button type="button" onclick="submitForm()">{{ __('Create') }}</x-primary-button>
+                </div>
             </form>
         </div>
     </div>
 
     {{-- Script  --}}
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
+    
     <script>
         const sectionUrlTemplate = "{{ route('domain.sections', ['id' => '__ID__']) }}";
-    </script>
+        let editor;
 
-    <script>
+        // Initialize CKEditor
+        ClassicEditor
+            .create(document.querySelector('#editor'))
+            .then(newEditor => {
+                editor = newEditor;
+            })
+            .catch(error => {
+                console.error(error);
+            });
+
+        // Save button click handler
+        document.getElementById('save-btn').addEventListener('click', function() {
+            const questionContent = editor.getData();
+            if (!questionContent.trim()) {
+                document.getElementById('question-error').classList.remove('hidden');
+                return;
+            }
+            
+            document.getElementById('question-error').classList.add('hidden');
+            document.getElementById('question').value = questionContent;
+            
+            // Add a hidden input to indicate this is a save action
+            const saveInput = document.createElement('input');
+            saveInput.type = 'hidden';
+            saveInput.name = 'save_action';
+            saveInput.value = 'save';
+            document.getElementById('questionForm').appendChild(saveInput);
+            
+            document.getElementById('questionForm').submit();
+        });
+
+        function submitForm() {
+            const questionContent = editor.getData();
+            if (!questionContent.trim()) {
+                document.getElementById('question-error').classList.remove('hidden');
+                return;
+            }
+            
+            document.getElementById('question-error').classList.add('hidden');
+            document.getElementById('question').value = questionContent;
+            document.getElementById('questionForm').submit();
+        }
+
         $(document).ready(function() {
             $('#domain_id').on('change', function() {
                 var domainId = $(this).val();
                 var $sectionSelect = $('#section_id');
-                console.log(domainId);
-
+                var scoringType = $(this).find(':selected').data('type');
+                
+                // Toggle MCA options container based on domain type
+                if (scoringType === 'mcq') {
+                    $('#mca-options-container').removeClass('hidden');
+                } else {
+                    $('#mca-options-container').addClass('hidden');
+                }
 
                 $sectionSelect.html('<option value="">Loading...</option>');
 
@@ -90,10 +159,38 @@
                 });
             });
         });
-    </script>
 
+        function addOption() {
+            const optionsList = document.getElementById('options-list');
+            const newOption = document.createElement('div');
+            const optionCount = optionsList.children.length;
+            
+            newOption.className = 'option-item mb-2 flex items-center gap-2';
+            newOption.innerHTML = `
+                <input type="text" name="options[]" class="flex-1 border rounded px-3 py-2" placeholder="Option text" required>
+                <label class="inline-flex items-center">
+                    <input type="radio" name="correct_option" value="${optionCount}" required>
+                    <span class="ml-2">Correct</span>
+                </label>
+                <button type="button" class="remove-option px-2 py-1 text-red-600 hover:text-red-800" onclick="removeOption(this)">×</button>
+            `;
+            
+            optionsList.appendChild(newOption);
+        }
 
-    <script>
+        function removeOption(button) {
+            const optionItem = button.parentElement;
+            const optionsList = optionItem.parentElement;
+            
+            if (optionsList.children.length > 1) {
+                optionItem.remove();
+                // Update radio button values
+                Array.from(optionsList.children).forEach((item, index) => {
+                    item.querySelector('input[type="radio"]').value = index;
+                });
+            }
+        }
+
         function toggleIsReverse() {
             const button = document.getElementById('toggleButton');
             const input = document.getElementById('is_reverse');
@@ -112,7 +209,4 @@
             }
         }
     </script>
-
-
-
 </x-app-layout>

@@ -4,12 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Models\Domain;
 use App\Models\Question;
+use App\Models\QuestionOption;
 use App\Models\Roll;
 use App\Models\Section;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-
+use Illuminate\Support\Facades\DB;
 
 class QuestionController extends Controller
 {
@@ -47,22 +48,44 @@ class QuestionController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
+        $validatedData = $request->validate([
             'domain_id' => 'required|exists:domains,id',
             'section_id' => 'required|exists:sections,id',
             'question' => 'required|string|max:1000',
             'is_reverse' => 'required|boolean',
+            'options' => 'sometimes|array',
+            'options.*' => 'required_with:options|string',
+            'correct_option' => 'required_with:options|numeric',
         ]);
 
-        Question::create([
-            'domain_id' => $request->domain_id,
-            'section_id' => $request->section_id,
-            'question' => $request->question,
-            'uploaded_by' => Auth::user()->id,
-            'is_reverse' => $request->is_reverse
-        ]);
+        DB::beginTransaction();
+        try {
+            // Create the question
+            $question = Question::create([
+                'domain_id' => $validatedData['domain_id'],
+                'section_id' => $validatedData['section_id'],
+                'question' => $validatedData['question'],
+                'uploaded_by' => Auth::user()->id,
+                'is_reverse' => $validatedData['is_reverse']
+            ]);
 
-        return redirect()->route('question.index')->with('success', 'Question added successfully.');
+            // If this is an MCA question, store the options
+            if (isset($validatedData['options'])) {
+                foreach ($validatedData['options'] as $index => $optionText) {
+                    QuestionOption::create([
+                        'question_id' => $question->id,
+                        'option_text' => $optionText,
+                        'is_correct' => $index == $validatedData['correct_option']
+                    ]);
+                }
+            }
+
+            DB::commit();
+            return redirect()->route('question.index')->with('success', 'Question added successfully.');
+        } catch (\Exception $e) {
+            DB::rollback();
+            return back()->with('error', 'Failed to create question. ' . $e->getMessage());
+        }
     }
 
     /**
@@ -78,7 +101,7 @@ class QuestionController extends Controller
      */
     public function edit(string $id)
     {
-        $question = Question::findOrFail($id);
+        $question = Question::with('options')->findOrFail($id);
         $domains = Domain::all();
         $sections = Section::where('domain_id', $question->domain_id)->get();
 
@@ -91,22 +114,49 @@ class QuestionController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $request->validate([
+        $validatedData = $request->validate([
             'domain_id' => 'required|exists:domains,id',
             'section_id' => 'required|exists:sections,id',
             'question' => 'required|string|max:1000',
             'is_reverse' => 'required|boolean',
+            'options' => 'sometimes|array',
+            'options.*' => 'required_with:options|string',
+            'correct_option' => 'required_with:options|numeric',
         ]);
 
-        $question = Question::findOrFail($id);
-        $question->update([
-            'domain_id' => $request->domain_id,
-            'section_id' => $request->section_id,
-            'question' => $request->question,
-            'is_reverse' => $request->is_reverse
-        ]);
+        DB::beginTransaction();
+        try {
+            $question = Question::findOrFail($id);
+            
+            // Update question
+            $question->update([
+                'domain_id' => $validatedData['domain_id'],
+                'section_id' => $validatedData['section_id'],
+                'question' => $validatedData['question'],
+                'is_reverse' => $validatedData['is_reverse']
+            ]);
 
-        return redirect()->route('question.index')->with('success', 'Question updated successfully.');
+            // If this is an MCA question, update the options
+            if (isset($validatedData['options'])) {
+                // Delete existing options
+                $question->options()->delete();
+                
+                // Create new options
+                foreach ($validatedData['options'] as $index => $optionText) {
+                    QuestionOption::create([
+                        'question_id' => $question->id,
+                        'option_text' => $optionText,
+                        'is_correct' => $index == $validatedData['correct_option']
+                    ]);
+                }
+            }
+
+            DB::commit();
+            return redirect()->route('question.index')->with('success', 'Question updated successfully.');
+        } catch (\Exception $e) {
+            DB::rollback();
+            return back()->with('error', 'Failed to update question. ' . $e->getMessage());
+        }
     }
 
 

@@ -12,4 +12,14 @@ class Question extends Model
     {
         return $this->belongsTo(Section::class);
     }
+
+    public function domain()
+    {
+        return $this->belongsTo(Domain::class);
+    }
+
+    public function options()
+    {
+        return $this->hasMany(QuestionOption::class);
+    }
 }
