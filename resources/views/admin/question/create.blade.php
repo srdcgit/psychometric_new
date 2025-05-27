@@ -13,7 +13,8 @@
                         <select name="domain_id" id="domain_id" required class="w-full border rounded px-3 py-2 mt-1">
                             <option value="">Select Domain</option>
                             @foreach ($domains as $d)
-                                <option value="{{ $d->id }}" data-type="{{ $d->scoring_type }}">{{ $d->name }}</option>
+                                <option value="{{ $d->id }}" data-type="{{ $d->scoring_type }}">
+                                    {{ $d->name }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -27,9 +28,26 @@
                 </div>
 
                 <br>
+                <style>
+                    .ck-editor__editable {
+                        min-height: 200px;
+                        border: 1px solid #d1d5db !important;
+                        border-radius: 0.375rem !important;
+                    }
+
+                    .ck.ck-toolbar {
+                        border: 1px solid #d1d5db !important;
+                        border-radius: 0.375rem !important;
+                    }
+
+                    .option-editor .ck-editor__editable {
+                        min-height: 100px;
+                    }
+                </style>
+
                 <div class="mb-4" id="question-container">
                     <label for="editor" class="block text-gray-700 font-medium">Question</label>
-                    <div id="editor"></div>
+                    <div id="editor" class="mt-1"></div>
                     <input type="hidden" name="question" id="question">
                     <div id="question-error" class="text-red-500 text-sm mt-1 hidden">Please enter a question</div>
                 </div>
@@ -48,11 +66,13 @@
                                     <input type="radio" name="correct_option" value="0" required>
                                     <span class="ml-2">Correct</span>
                                 </label>
-                                <button type="button" class="remove-option px-2 py-1 text-red-600 hover:text-red-800" onclick="removeOption(this)">×</button>
+                                <button type="button" class="remove-option px-2 py-1 text-red-600 hover:text-red-800"
+                                    onclick="removeOption(this)">×</button>
                             </div>
                         </div>
                     </div>
-                    <button type="button" onclick="addOption()" class="mt-2 bg-gray-200 text-gray-700 px-4 py-2 rounded hover:bg-gray-300">
+                    <button type="button" onclick="addOption()"
+                        class="mt-2 bg-gray-200 text-gray-700 px-4 py-2 rounded hover:bg-gray-300">
                         + Add Option
                     </button>
                 </div>
@@ -79,9 +99,13 @@
 
     {{-- Script  --}}
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
-    
+    <script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/decoupled-document/ckeditor.js"></script>
+
     <script>
+        const sectionUrlTemplate = "{{ route('domain.sections', ['id' => '__ID__']) }}";
+        let optionEditors = [];
+        let mainEditor;
+
         class UploadAdapter {
             constructor(loader) {
                 this.loader = loader;
@@ -94,7 +118,7 @@
                         formData.append('image', file);
 
                         $.ajax({
-                            url: '{{ route("ckeditor.upload") }}',
+                            url: '{{ route('ckeditor.upload') }}',
                             type: 'POST',
                             data: formData,
                             contentType: false,
@@ -126,43 +150,80 @@
             };
         }
 
-        const sectionUrlTemplate = "{{ route('domain.sections', ['id' => '__ID__']) }}";
-        let editor;
-        let optionEditors = [];
+        // Initialize main editor when document is ready
+        $(document).ready(function() {
+            // Initialize CKEditor with image upload support
+            DecoupledEditor
+                .create(document.querySelector('#editor'), {
+                    extraPlugins: [uploadPlugin],
+                    toolbar: {
+                        items: [
+                            'heading',
+                            '|',
+                            'bold',
+                            'italic',
+                            'link',
+                            'bulletedList',
+                            'numberedList',
+                            '|',
+                            'uploadImage',
+                            'blockQuote',
+                            'insertTable',
+                            'undo',
+                            'redo'
+                        ]
+                    },
+                    image: {
+                        toolbar: [
+                            'imageStyle:inline',
+                            'imageStyle:block',
+                            'imageStyle:side',
+                            '|',
+                            'toggleImageCaption',
+                            'imageTextAlternative',
+                            '|',
+                            'resizeImage'
+                        ],
+                        resizeUnit: '%',
+                        resizeOptions: [{
+                            name: 'resizeImage:original',
+                            value: null,
+                            icon: 'original'
+                        },
+                        {
+                            name: 'resizeImage:50',
+                            value: '50',
+                            icon: 'medium'
+                        },
+                        {
+                            name: 'resizeImage:75',
+                            value: '75',
+                            icon: 'large'
+                        }]
+                    }
+                })
+                .then(editor => {
+                    mainEditor = editor;
+                    const toolbarContainer = document.querySelector('#editor');
+                    toolbarContainer.parentNode.insertBefore(
+                        editor.ui.view.toolbar.element,
+                        toolbarContainer
+                    );
+                })
+                .catch(error => {
+                    console.error(error);
+                });
 
-        // Initialize CKEditor with image upload support
-        ClassicEditor
-            .create(document.querySelector('#editor'), {
-                extraPlugins: [uploadPlugin],
-                toolbar: {
-                    items: [
-                        'heading',
-                        '|',
-                        'bold',
-                        'italic',
-                        'link',
-                        'bulletedList',
-                        'numberedList',
-                        '|',
-                        'imageUpload',
-                        'blockQuote',
-                        'insertTable',
-                        'undo',
-                        'redo'
-                    ]
-                }
-            })
-            .then(newEditor => {
-                editor = newEditor;
-            })
-            .catch(error => {
-                console.error(error);
-            });
+            // Initialize the first option editor
+            const firstOptionEditor = document.querySelector('.option-editor');
+            if (firstOptionEditor) {
+                initializeOptionEditor(firstOptionEditor);
+            }
+        });
 
-        // Function to initialize CKEditor for an option
-        function initializeOptionEditor(editorElement) {
-            return ClassicEditor
-                .create(editorElement, {
+        async function initializeOptionEditor(editorElement) {
+            try {
+                const editor = await DecoupledEditor.create(editorElement, {
                     extraPlugins: [uploadPlugin],
                     toolbar: {
                         items: [
@@ -170,33 +231,132 @@
                             'italic',
                             'link',
                             '|',
-                            'imageUpload',
+                            'uploadImage',
                             'undo',
                             'redo'
                         ]
+                    },
+                    image: {
+                        toolbar: [
+                            'imageStyle:inline',
+                            'imageStyle:block',
+                            'imageStyle:side',
+                            '|',
+                            'toggleImageCaption',
+                            'imageTextAlternative',
+                            '|',
+                            'resizeImage'
+                        ],
+                        resizeUnit: '%',
+                        resizeOptions: [{
+                            name: 'resizeImage:original',
+                            value: null,
+                            icon: 'original'
+                        },
+                        {
+                            name: 'resizeImage:50',
+                            value: '50',
+                            icon: 'medium'
+                        },
+                        {
+                            name: 'resizeImage:75',
+                            value: '75',
+                            icon: 'large'
+                        }]
                     }
-                })
-                .then(editor => {
-                    // Store the editor instance
-                    optionEditors.push(editor);
-                    
-                    // Update hidden input when content changes
-                    editor.model.document.on('change:data', () => {
-                        const inputField = editorElement.nextElementSibling;
-                        inputField.value = editor.getData();
-                    });
-                })
-                .catch(error => {
-                    console.error(error);
                 });
+
+                // Store the editor instance
+                optionEditors.push(editor);
+                
+                // Handle the toolbar placement
+                const toolbarContainer = editorElement;
+                toolbarContainer.parentNode.insertBefore(
+                    editor.ui.view.toolbar.element,
+                    toolbarContainer
+                );
+                
+                // Update hidden input when content changes
+                editor.model.document.on('change:data', () => {
+                    const inputField = editorElement.nextElementSibling;
+                    if (inputField) {
+                        inputField.value = editor.getData();
+                    }
+                });
+
+                return editor;
+            } catch (error) {
+                console.error('Error initializing option editor:', error);
+            }
         }
 
-        // Initialize the first option editor when the page loads
-        document.addEventListener('DOMContentLoaded', function() {
-            const firstOptionEditor = document.querySelector('.option-editor');
-            if (firstOptionEditor) {
-                initializeOptionEditor(firstOptionEditor);
+        function submitForm() {
+            if (!mainEditor) {
+                console.error('Editor not initialized');
+                return;
             }
+
+            const questionContent = mainEditor.getData();
+            if (!questionContent.trim()) {
+                document.getElementById('question-error').classList.remove('hidden');
+                return;
+            }
+            
+            document.getElementById('question-error').classList.add('hidden');
+            document.getElementById('question').value = questionContent;
+            
+            // Update all option values before submitting
+            optionEditors.forEach((editor, index) => {
+                if (editor) {
+                    const optionContent = editor.getData();
+                    const hiddenInput = document.querySelectorAll('.option-input')[index];
+                    if (hiddenInput) {
+                        hiddenInput.value = optionContent;
+                    }
+                }
+            });
+            
+            document.getElementById('questionForm').submit();
+        }
+
+        // Domain change handler
+        $(document).ready(function() {
+            $('#domain_id').on('change', function() {
+                var domainId = $(this).val();
+                var $sectionSelect = $('#section_id');
+                var scoringType = $(this).find(':selected').data('type');
+                
+                // Toggle MCA options container based on domain type
+                if (scoringType === 'mcq') {
+                    $('#mca-options-container').removeClass('hidden');
+                } else {
+                    $('#mca-options-container').addClass('hidden');
+                }
+
+                $sectionSelect.html('<option value="">Loading...</option>');
+
+                if (!domainId) {
+                    $sectionSelect.html('<option value="">Select Section</option>');
+                    return;
+                }
+
+                var url = sectionUrlTemplate.replace('__ID__', domainId);
+                $.ajax({
+                    url: url,
+                    method: 'GET',
+                    success: function(sections) {
+                        var options = '<option value="">Select Section</option>';
+                        $.each(sections, function(id, name) {
+                            options += '<option value="' + id + '">' + name + '</option>';
+                        });
+                        $sectionSelect.html(options);
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Failed to load sections:', error);
+                        $sectionSelect.html('<option value="">Error loading sections</option>');
+                    }
+                });
+            });
         });
 
         function addOption() {
@@ -270,72 +430,5 @@
                 button.classList.add('bg-blue-600', 'text-white');
             }
         }
-
-        function submitForm() {
-            const questionContent = editor.getData();
-            if (!questionContent.trim()) {
-                document.getElementById('question-error').classList.remove('hidden');
-                return;
-            }
-            
-            document.getElementById('question-error').classList.add('hidden');
-            document.getElementById('question').value = questionContent;
-            
-            // Update all option values before submitting
-            optionEditors.forEach((editor, index) => {
-                const optionContent = editor.getData();
-                const hiddenInput = document.querySelectorAll('.option-input')[index];
-                hiddenInput.value = optionContent;
-            });
-            
-            // Add a hidden input to indicate this is a save action
-            const saveInput = document.createElement('input');
-            saveInput.type = 'hidden';
-            saveInput.name = 'save_action';
-            saveInput.value = 'save';
-            document.getElementById('questionForm').appendChild(saveInput);
-            
-            document.getElementById('questionForm').submit();
-        }
-
-        $(document).ready(function() {
-            $('#domain_id').on('change', function() {
-                var domainId = $(this).val();
-                var $sectionSelect = $('#section_id');
-                var scoringType = $(this).find(':selected').data('type');
-                
-                // Toggle MCA options container based on domain type
-                if (scoringType === 'mcq') {
-                    $('#mca-options-container').removeClass('hidden');
-                } else {
-                    $('#mca-options-container').addClass('hidden');
-                }
-
-                $sectionSelect.html('<option value="">Loading...</option>');
-
-                if (!domainId) {
-                    $sectionSelect.html('<option value="">Select Section</option>');
-                    return;
-                }
-                // Replace placeholder with actual ID
-                var url = sectionUrlTemplate.replace('__ID__', domainId);
-                $.ajax({
-                    url: url,
-                    method: 'GET',
-                    success: function(sections) {
-                        var options = '<option value="">Select Section</option>';
-                        $.each(sections, function(id, name) {
-                            options += '<option value="' + id + '">' + name +
-                                '</option>';
-                        });
-                        $sectionSelect.html(options);
-                    },
-                    error: function(xhr, status, error) {
-                        console.error('Failed to load sections:', error);
-                        $sectionSelect.html('<option value="">Error loading sections</option>');
-                    }
-                });
-            });
-        });
     </script>
 </x-app-layout>
