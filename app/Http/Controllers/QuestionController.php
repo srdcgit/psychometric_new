@@ -48,15 +48,24 @@ class QuestionController extends Controller
      */
     public function store(Request $request)
     {
-        $validatedData = $request->validate([
+        // Get the domain's scoring type
+        $domain = Domain::findOrFail($request->domain_id);
+        
+        $validationRules = [
             'domain_id' => 'required|exists:domains,id',
             'section_id' => 'required|exists:sections,id',
             'question' => 'required|string|max:1000',
             'is_reverse' => 'required|boolean',
-            'options' => 'sometimes|array',
-            'options.*' => 'required_with:options|string',
-            'correct_option' => 'required_with:options|numeric',
-        ]);
+        ];
+
+        // Add options validation only for MCQ type domains
+        if ($domain->scoring_type === 'mcq') {
+            $validationRules['options'] = 'required|array';
+            $validationRules['options.*'] = 'required|string';
+            $validationRules['correct_option'] = 'required|numeric';
+        }
+
+        $validatedData = $request->validate($validationRules);
 
         DB::beginTransaction();
         try {
@@ -69,8 +78,8 @@ class QuestionController extends Controller
                 'is_reverse' => $validatedData['is_reverse']
             ]);
 
-            // If this is an MCA question, store the options
-            if (isset($validatedData['options'])) {
+            // If this is an MCA question and options are provided, store them
+            if ($domain->scoring_type === 'mcq' && isset($validatedData['options'])) {
                 foreach ($validatedData['options'] as $index => $optionText) {
                     QuestionOption::create([
                         'question_id' => $question->id,
@@ -114,15 +123,24 @@ class QuestionController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $validatedData = $request->validate([
+        // Get the domain's scoring type
+        $domain = Domain::findOrFail($request->domain_id);
+        
+        $validationRules = [
             'domain_id' => 'required|exists:domains,id',
             'section_id' => 'required|exists:sections,id',
             'question' => 'required|string|max:1000',
             'is_reverse' => 'required|boolean',
-            'options' => 'sometimes|array',
-            'options.*' => 'required_with:options|string',
-            'correct_option' => 'required_with:options|numeric',
-        ]);
+        ];
+
+        // Add options validation only for MCQ type domains
+        if ($domain->scoring_type === 'mcq') {
+            $validationRules['options'] = 'required|array';
+            $validationRules['options.*'] = 'required|string';
+            $validationRules['correct_option'] = 'required|numeric';
+        }
+
+        $validatedData = $request->validate($validationRules);
 
         DB::beginTransaction();
         try {
@@ -136,8 +154,8 @@ class QuestionController extends Controller
                 'is_reverse' => $validatedData['is_reverse']
             ]);
 
-            // If this is an MCA question, update the options
-            if (isset($validatedData['options'])) {
+            // If this is an MCA question and options are provided, update them
+            if ($domain->scoring_type === 'mcq') {
                 // Delete existing options
                 $question->options()->delete();
                 

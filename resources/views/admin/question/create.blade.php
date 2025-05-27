@@ -38,13 +38,18 @@
                 <div id="mca-options-container" class="mb-4 hidden">
                     <label class="block text-gray-700 font-medium mb-2">Options</label>
                     <div id="options-list">
-                        <div class="option-item mb-2 flex items-center gap-2">
-                            <input type="text" name="options[]" class="flex-1 border rounded px-3 py-2" placeholder="Option text" required>
-                            <label class="inline-flex items-center">
-                                <input type="radio" name="correct_option" value="0" required>
-                                <span class="ml-2">Correct</span>
-                            </label>
-                            <button type="button" class="remove-option px-2 py-1 text-red-600 hover:text-red-800" onclick="removeOption(this)">×</button>
+                        <div class="option-item mb-2">
+                            <div class="flex items-center gap-2 mb-2">
+                                <div class="flex-1">
+                                    <div class="option-editor"></div>
+                                    <input type="hidden" name="options[]" class="option-input">
+                                </div>
+                                <label class="inline-flex items-center">
+                                    <input type="radio" name="correct_option" value="0" required>
+                                    <span class="ml-2">Correct</span>
+                                </label>
+                                <button type="button" class="remove-option px-2 py-1 text-red-600 hover:text-red-800" onclick="removeOption(this)">×</button>
+                            </div>
                         </div>
                     </div>
                     <button type="button" onclick="addOption()" class="mt-2 bg-gray-200 text-gray-700 px-4 py-2 rounded hover:bg-gray-300">
@@ -62,7 +67,10 @@
                 </div>
 
                 <div class="mt-6 flex justify-center gap-4">
-                    <button type="button" id="save-btn" class="btn btn-outline-primary">Save</button>
+                    <a href="{{ route('question.index') }}"
+                        class="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300">
+                        Cancel
+                    </a>
                     <x-primary-button type="button" onclick="submitForm()">{{ __('Create') }}</x-primary-button>
                 </div>
             </form>
@@ -74,12 +82,76 @@
     <script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
     
     <script>
+        class UploadAdapter {
+            constructor(loader) {
+                this.loader = loader;
+            }
+
+            upload() {
+                return this.loader.file.then(file => {
+                    return new Promise((resolve, reject) => {
+                        const formData = new FormData();
+                        formData.append('image', file);
+
+                        $.ajax({
+                            url: '{{ route("ckeditor.upload") }}',
+                            type: 'POST',
+                            data: formData,
+                            contentType: false,
+                            processData: false,
+                            headers: {
+                                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                            },
+                            success: function(response) {
+                                resolve({
+                                    default: response.url
+                                });
+                            },
+                            error: function(response) {
+                                reject(response.responseText);
+                            }
+                        });
+                    });
+                });
+            }
+
+            abort() {
+                // Abort upload if needed
+            }
+        }
+
+        function uploadPlugin(editor) {
+            editor.plugins.get('FileRepository').createUploadAdapter = (loader) => {
+                return new UploadAdapter(loader);
+            };
+        }
+
         const sectionUrlTemplate = "{{ route('domain.sections', ['id' => '__ID__']) }}";
         let editor;
+        let optionEditors = [];
 
-        // Initialize CKEditor
+        // Initialize CKEditor with image upload support
         ClassicEditor
-            .create(document.querySelector('#editor'))
+            .create(document.querySelector('#editor'), {
+                extraPlugins: [uploadPlugin],
+                toolbar: {
+                    items: [
+                        'heading',
+                        '|',
+                        'bold',
+                        'italic',
+                        'link',
+                        'bulletedList',
+                        'numberedList',
+                        '|',
+                        'imageUpload',
+                        'blockQuote',
+                        'insertTable',
+                        'undo',
+                        'redo'
+                    ]
+                }
+            })
             .then(newEditor => {
                 editor = newEditor;
             })
@@ -87,26 +159,117 @@
                 console.error(error);
             });
 
-        // Save button click handler
-        document.getElementById('save-btn').addEventListener('click', function() {
-            const questionContent = editor.getData();
-            if (!questionContent.trim()) {
-                document.getElementById('question-error').classList.remove('hidden');
-                return;
+        // Function to initialize CKEditor for an option
+        function initializeOptionEditor(editorElement) {
+            return ClassicEditor
+                .create(editorElement, {
+                    extraPlugins: [uploadPlugin],
+                    toolbar: {
+                        items: [
+                            'bold',
+                            'italic',
+                            'link',
+                            '|',
+                            'imageUpload',
+                            'undo',
+                            'redo'
+                        ]
+                    }
+                })
+                .then(editor => {
+                    // Store the editor instance
+                    optionEditors.push(editor);
+                    
+                    // Update hidden input when content changes
+                    editor.model.document.on('change:data', () => {
+                        const inputField = editorElement.nextElementSibling;
+                        inputField.value = editor.getData();
+                    });
+                })
+                .catch(error => {
+                    console.error(error);
+                });
+        }
+
+        // Initialize the first option editor when the page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            const firstOptionEditor = document.querySelector('.option-editor');
+            if (firstOptionEditor) {
+                initializeOptionEditor(firstOptionEditor);
             }
-            
-            document.getElementById('question-error').classList.add('hidden');
-            document.getElementById('question').value = questionContent;
-            
-            // Add a hidden input to indicate this is a save action
-            const saveInput = document.createElement('input');
-            saveInput.type = 'hidden';
-            saveInput.name = 'save_action';
-            saveInput.value = 'save';
-            document.getElementById('questionForm').appendChild(saveInput);
-            
-            document.getElementById('questionForm').submit();
         });
+
+        function addOption() {
+            const optionsList = document.getElementById('options-list');
+            const newOption = document.createElement('div');
+            const optionCount = optionsList.children.length;
+            
+            newOption.className = 'option-item mb-2';
+            newOption.innerHTML = `
+                <div class="flex items-center gap-2 mb-2">
+                    <div class="flex-1">
+                        <div class="option-editor"></div>
+                        <input type="hidden" name="options[]" class="option-input">
+                    </div>
+                    <label class="inline-flex items-center">
+                        <input type="radio" name="correct_option" value="${optionCount}" required>
+                        <span class="ml-2">Correct</span>
+                    </label>
+                    <button type="button" class="remove-option px-2 py-1 text-red-600 hover:text-red-800" onclick="removeOption(this)">×</button>
+                </div>
+            `;
+            
+            optionsList.appendChild(newOption);
+            
+            // Initialize CKEditor for the new option
+            const newEditorElement = newOption.querySelector('.option-editor');
+            initializeOptionEditor(newEditorElement);
+        }
+
+        function removeOption(button) {
+            const optionItem = button.closest('.option-item');
+            const optionsList = optionItem.parentElement;
+            
+            if (optionsList.children.length > 1) {
+                // Find and destroy the CKEditor instance
+                const editorElement = optionItem.querySelector('.option-editor');
+                const editorIndex = Array.from(optionsList.querySelectorAll('.option-editor')).indexOf(editorElement);
+                if (editorIndex !== -1) {
+                    optionEditors[editorIndex].destroy()
+                        .then(() => {
+                            optionEditors.splice(editorIndex, 1);
+                        })
+                        .catch(error => {
+                            console.error(error);
+                        });
+                }
+                
+                optionItem.remove();
+                
+                // Update radio button values
+                Array.from(optionsList.children).forEach((item, index) => {
+                    item.querySelector('input[type="radio"]').value = index;
+                });
+            }
+        }
+
+        function toggleIsReverse() {
+            const button = document.getElementById('toggleButton');
+            const input = document.getElementById('is_reverse');
+            const isOn = input.value === '1';
+
+            if (isOn) {
+                input.value = '0';
+                button.textContent = 'No';
+                button.classList.remove('bg-blue-600', 'text-white');
+                button.classList.add('bg-gray-300', 'text-gray-700');
+            } else {
+                input.value = '1';
+                button.textContent = 'Yes';
+                button.classList.remove('bg-gray-300', 'text-gray-700');
+                button.classList.add('bg-blue-600', 'text-white');
+            }
+        }
 
         function submitForm() {
             const questionContent = editor.getData();
@@ -117,6 +280,21 @@
             
             document.getElementById('question-error').classList.add('hidden');
             document.getElementById('question').value = questionContent;
+            
+            // Update all option values before submitting
+            optionEditors.forEach((editor, index) => {
+                const optionContent = editor.getData();
+                const hiddenInput = document.querySelectorAll('.option-input')[index];
+                hiddenInput.value = optionContent;
+            });
+            
+            // Add a hidden input to indicate this is a save action
+            const saveInput = document.createElement('input');
+            saveInput.type = 'hidden';
+            saveInput.name = 'save_action';
+            saveInput.value = 'save';
+            document.getElementById('questionForm').appendChild(saveInput);
+            
             document.getElementById('questionForm').submit();
         }
 
@@ -159,54 +337,5 @@
                 });
             });
         });
-
-        function addOption() {
-            const optionsList = document.getElementById('options-list');
-            const newOption = document.createElement('div');
-            const optionCount = optionsList.children.length;
-            
-            newOption.className = 'option-item mb-2 flex items-center gap-2';
-            newOption.innerHTML = `
-                <input type="text" name="options[]" class="flex-1 border rounded px-3 py-2" placeholder="Option text" required>
-                <label class="inline-flex items-center">
-                    <input type="radio" name="correct_option" value="${optionCount}" required>
-                    <span class="ml-2">Correct</span>
-                </label>
-                <button type="button" class="remove-option px-2 py-1 text-red-600 hover:text-red-800" onclick="removeOption(this)">×</button>
-            `;
-            
-            optionsList.appendChild(newOption);
-        }
-
-        function removeOption(button) {
-            const optionItem = button.parentElement;
-            const optionsList = optionItem.parentElement;
-            
-            if (optionsList.children.length > 1) {
-                optionItem.remove();
-                // Update radio button values
-                Array.from(optionsList.children).forEach((item, index) => {
-                    item.querySelector('input[type="radio"]').value = index;
-                });
-            }
-        }
-
-        function toggleIsReverse() {
-            const button = document.getElementById('toggleButton');
-            const input = document.getElementById('is_reverse');
-            const isOn = input.value === '1';
-
-            if (isOn) {
-                input.value = '0';
-                button.textContent = 'No';
-                button.classList.remove('bg-blue-600', 'text-white');
-                button.classList.add('bg-gray-300', 'text-gray-700');
-            } else {
-                input.value = '1';
-                button.textContent = 'Yes';
-                button.classList.remove('bg-gray-300', 'text-gray-700');
-                button.classList.add('bg-blue-600', 'text-white');
-            }
-        }
     </script>
 </x-app-layout>

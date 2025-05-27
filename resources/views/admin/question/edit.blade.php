@@ -46,10 +46,10 @@
                     </select>
                 </div>
 
-                <div class="mb-4">
-                    <label for="question" class="block text-sm font-medium text-gray-700">Question</label>
-                    <textarea name="question" id="questions" rows="4"
-                        class="mt-1 block w-full border-gray-300 rounded shadow-sm focus:ring focus:ring-indigo-500 sm:text-sm" required>{{ old('question', $question->question) }}</textarea>
+                <div class="mb-4" id="question-container">
+                    <label for="editor" class="block text-sm font-medium text-gray-700">Question</label>
+                    <div id="editor">{!! old('question', $question->question) !!}</div>
+                    <input type="hidden" name="question" id="question">
                 </div>
 
                 <!-- MCA Options Container -->
@@ -59,29 +59,37 @@
                     <div id="options-list">
                         @if ($question->options->count() > 0)
                             @foreach ($question->options as $index => $option)
-                                <div class="option-item mb-2 flex items-center gap-2">
-                                    <input type="text" name="options[]" class="flex-1 border rounded px-3 py-2"
-                                        placeholder="Option text" required value="{{ $option->option_text }}">
-                                    <label class="inline-flex items-center">
-                                        <input type="radio" name="correct_option" value="{{ $index }}"
-                                            {{ $option->is_correct ? 'checked' : '' }} required>
-                                        <span class="ml-2">Correct</span>
-                                    </label>
-                                    <button type="button"
-                                        class="remove-option px-2 py-1 text-red-600 hover:text-red-800"
-                                        onclick="removeOption(this)">×</button>
+                                <div class="option-item mb-2">
+                                    <div class="flex items-center gap-2 mb-2">
+                                        <div class="flex-1">
+                                            <div class="option-editor">{!! $option->option_text !!}</div>
+                                            <input type="hidden" name="options[]" class="option-input" value="{{ $option->option_text }}">
+                                        </div>
+                                        <label class="inline-flex items-center">
+                                            <input type="radio" name="correct_option" value="{{ $index }}"
+                                                {{ $option->is_correct ? 'checked' : '' }} required>
+                                            <span class="ml-2">Correct</span>
+                                        </label>
+                                        <button type="button"
+                                            class="remove-option px-2 py-1 text-red-600 hover:text-red-800"
+                                            onclick="removeOption(this)">×</button>
+                                    </div>
                                 </div>
                             @endforeach
                         @else
-                            <div class="option-item mb-2 flex items-center gap-2">
-                                <input type="text" name="options[]" class="flex-1 border rounded px-3 py-2"
-                                    placeholder="Option text" required>
-                                <label class="inline-flex items-center">
-                                    <input type="radio" name="correct_option" value="0" required>
-                                    <span class="ml-2">Correct</span>
-                                </label>
-                                <button type="button" class="remove-option px-2 py-1 text-red-600 hover:text-red-800"
-                                    onclick="removeOption(this)">×</button>
+                            <div class="option-item mb-2">
+                                <div class="flex items-center gap-2 mb-2">
+                                    <div class="flex-1">
+                                        <div class="option-editor"></div>
+                                        <input type="hidden" name="options[]" class="option-input">
+                                    </div>
+                                    <label class="inline-flex items-center">
+                                        <input type="radio" name="correct_option" value="0" required>
+                                        <span class="ml-2">Correct</span>
+                                    </label>
+                                    <button type="button" class="remove-option px-2 py-1 text-red-600 hover:text-red-800"
+                                        onclick="removeOption(this)">×</button>
+                                </div>
                             </div>
                         @endif
                     </div>
@@ -95,7 +103,8 @@
                     <label for="is_reverse" class="block text-gray-700 font-medium mb-1">Is Reverse?</label>
                     <button type="button" id="toggleButton"
                         class="px-4 py-2 rounded 
-                        {{ $question->is_reverse ? 'bg-blue-600 text-white' : 'bg-gray-300 text-gray-700' }}">
+                        {{ $question->is_reverse ? 'bg-blue-600 text-white' : 'bg-gray-300 text-gray-700' }}"
+                        onclick="toggleIsReverse()">
                         {{ $question->is_reverse ? 'Yes' : 'No' }}
                     </button>
                     <input type="hidden" name="is_reverse" id="is_reverse"
@@ -107,7 +116,7 @@
                         class="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300">
                         Cancel
                     </a>
-                    <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700">
+                    <button type="submit" onclick="submitForm(); return false;" class="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700">
                         Update Question
                     </button>
                 </div>
@@ -115,7 +124,195 @@
         </div>
     </div>
 
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
+    
     <script>
+        class UploadAdapter {
+            constructor(loader) {
+                this.loader = loader;
+            }
+
+            upload() {
+                return this.loader.file.then(file => {
+                    return new Promise((resolve, reject) => {
+                        const formData = new FormData();
+                        formData.append('image', file);
+
+                        $.ajax({
+                            url: '{{ route("ckeditor.upload") }}',
+                            type: 'POST',
+                            data: formData,
+                            contentType: false,
+                            processData: false,
+                            headers: {
+                                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                            },
+                            success: function(response) {
+                                resolve({
+                                    default: response.url
+                                });
+                            },
+                            error: function(response) {
+                                reject(response.responseText);
+                            }
+                        });
+                    });
+                });
+            }
+
+            abort() {
+                // Abort upload if needed
+            }
+        }
+
+        function uploadPlugin(editor) {
+            editor.plugins.get('FileRepository').createUploadAdapter = (loader) => {
+                return new UploadAdapter(loader);
+            };
+        }
+
+        let editor;
+        let optionEditors = [];
+
+        // Initialize CKEditor for the main question
+        ClassicEditor
+            .create(document.querySelector('#editor'), {
+                extraPlugins: [uploadPlugin],
+                toolbar: {
+                    items: [
+                        'heading',
+                        '|',
+                        'bold',
+                        'italic',
+                        'link',
+                        'bulletedList',
+                        'numberedList',
+                        '|',
+                        'imageUpload',
+                        'blockQuote',
+                        'insertTable',
+                        'undo',
+                        'redo'
+                    ]
+                }
+            })
+            .then(newEditor => {
+                editor = newEditor;
+            })
+            .catch(error => {
+                console.error(error);
+            });
+
+        // Function to initialize CKEditor for an option
+        function initializeOptionEditor(editorElement) {
+            return ClassicEditor
+                .create(editorElement, {
+                    extraPlugins: [uploadPlugin],
+                    toolbar: {
+                        items: [
+                            'bold',
+                            'italic',
+                            'link',
+                            '|',
+                            'imageUpload',
+                            'undo',
+                            'redo'
+                        ]
+                    }
+                })
+                .then(editor => {
+                    // Store the editor instance
+                    optionEditors.push(editor);
+                    
+                    // Update hidden input when content changes
+                    editor.model.document.on('change:data', () => {
+                        const inputField = editorElement.nextElementSibling;
+                        inputField.value = editor.getData();
+                    });
+                })
+                .catch(error => {
+                    console.error(error);
+                });
+        }
+
+        // Initialize all option editors when the page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            const optionEditorElements = document.querySelectorAll('.option-editor');
+            optionEditorElements.forEach(editorElement => {
+                initializeOptionEditor(editorElement);
+            });
+        });
+
+        function addOption() {
+            const optionsList = document.getElementById('options-list');
+            const newOption = document.createElement('div');
+            const optionCount = optionsList.children.length;
+            
+            newOption.className = 'option-item mb-2';
+            newOption.innerHTML = `
+                <div class="flex items-center gap-2 mb-2">
+                    <div class="flex-1">
+                        <div class="option-editor"></div>
+                        <input type="hidden" name="options[]" class="option-input">
+                    </div>
+                    <label class="inline-flex items-center">
+                        <input type="radio" name="correct_option" value="${optionCount}" required>
+                        <span class="ml-2">Correct</span>
+                    </label>
+                    <button type="button" class="remove-option px-2 py-1 text-red-600 hover:text-red-800" onclick="removeOption(this)">×</button>
+                </div>
+            `;
+            
+            optionsList.appendChild(newOption);
+            
+            // Initialize CKEditor for the new option
+            const newEditorElement = newOption.querySelector('.option-editor');
+            initializeOptionEditor(newEditorElement);
+        }
+
+        function removeOption(button) {
+            const optionItem = button.closest('.option-item');
+            const optionsList = optionItem.parentElement;
+            
+            if (optionsList.children.length > 1) {
+                // Find and destroy the CKEditor instance
+                const editorElement = optionItem.querySelector('.option-editor');
+                const editorIndex = Array.from(optionsList.querySelectorAll('.option-editor')).indexOf(editorElement);
+                if (editorIndex !== -1) {
+                    optionEditors[editorIndex].destroy()
+                        .then(() => {
+                            optionEditors.splice(editorIndex, 1);
+                        })
+                        .catch(error => {
+                            console.error(error);
+                        });
+                }
+                
+                optionItem.remove();
+                
+                // Update radio button values
+                Array.from(optionsList.children).forEach((item, index) => {
+                    item.querySelector('input[type="radio"]').value = index;
+                });
+            }
+        }
+
+        function submitForm() {
+            // Get the question content
+            const questionContent = editor.getData();
+            document.getElementById('question').value = questionContent;
+            
+            // Update all option values before submitting
+            optionEditors.forEach((editor, index) => {
+                const optionContent = editor.getData();
+                const hiddenInput = document.querySelectorAll('.option-input')[index];
+                hiddenInput.value = optionContent;
+            });
+            
+            document.getElementById('questionForm').submit();
+        }
+
         // Handle domain change
         document.getElementById('domain_id').addEventListener('change', function() {
             const scoringType = this.options[this.selectedIndex].getAttribute('data-type');
@@ -127,37 +324,6 @@
                 mcaContainer.classList.add('hidden');
             }
         });
-
-        function addOption() {
-            const optionsList = document.getElementById('options-list');
-            const newOption = document.createElement('div');
-            const optionCount = optionsList.children.length;
-
-            newOption.className = 'option-item mb-2 flex items-center gap-2';
-            newOption.innerHTML = `
-                <input type="text" name="options[]" class="flex-1 border rounded px-3 py-2" placeholder="Option text" required>
-                <label class="inline-flex items-center">
-                    <input type="radio" name="correct_option" value="${optionCount}" required>
-                    <span class="ml-2">Correct</span>
-                </label>
-                <button type="button" class="remove-option px-2 py-1 text-red-600 hover:text-red-800" onclick="removeOption(this)">×</button>
-            `;
-
-            optionsList.appendChild(newOption);
-        }
-
-        function removeOption(button) {
-            const optionItem = button.parentElement;
-            const optionsList = optionItem.parentElement;
-
-            if (optionsList.children.length > 1) {
-                optionItem.remove();
-                // Update radio button values
-                Array.from(optionsList.children).forEach((item, index) => {
-                    item.querySelector('input[type="radio"]').value = index;
-                });
-            }
-        }
 
         function toggleIsReverse() {
             const button = document.getElementById('toggleButton');
@@ -190,15 +356,6 @@
                     }
                 });
         });
-    </script>
-
-    <script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
-    <script>
-        ClassicEditor
-            .create(document.querySelector('#questions'))
-            .catch(error => {
-                console.error(error);
-            });
     </script>
 
 </x-app-layout>

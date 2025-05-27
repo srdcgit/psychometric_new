@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CareerPathController;
+use App\Http\Controllers\CKEditorController;
 use App\Http\Controllers\DomainController;
 use App\Http\Controllers\institute\InstituteStudentController;
 use App\Http\Controllers\InstituteController;
@@ -49,6 +50,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/institute/{id}/edit', [InstituteController::class,'edit'])->name('institute.edit');
    Route::post('/institute/{id}/update', [InstituteController::class,'update'])->name('institute.update');
    Route::delete('/admin/institute/{id}', [InstituteController::class, 'delete'])->name('institute.destroy');
+
+   Route::post('ckeditor/upload', [CKEditorController::class, 'upload'])->name('ckeditor.upload');
 
 });
 

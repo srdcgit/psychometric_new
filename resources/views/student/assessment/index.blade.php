@@ -37,22 +37,23 @@
                 @endphp
 
                 @foreach ($sections as $section)
-                    <div class="mb-6 p-4 border rounded">
+                    <div class="mb-6 p-4 border rounded bg-white">
                         @foreach ($section->questions as $question)
                             <div class="mt-4">
-                                <p class="font-medium text-gray-800">{{ $loop->iteration }}. {!! $question->question !!}
-                                </p>
-                                <div class="flex flex-wrap gap-3 mt-2">
+                                <div class="font-medium text-gray-800 mb-3">
+                                    {{ $loop->iteration }}. {!! $question->question !!}
+                                </div>
+                                <div class="flex flex-col gap-3 mt-2 pl-6">
                                     @php
                                         $scoringType = $section->domain->scoring_type;
                                     @endphp
 
                                     @if($scoringType === 'mcq')
                                         @foreach($question->options as $option)
-                                            <label class="inline-flex items-center gap-2">
+                                            <label class="inline-flex items-start gap-2">
                                                 <input type="radio" name="responses[{{ $question->id }}]"
-                                                    value="{{ $option->id }}" required>
-                                                <span>{{ $option->option_text }}</span>
+                                                    value="{{ $option->id }}" required class="mt-1">
+                                                <div class="option-text">{!! $option->option_text !!}</div>
                                             </label>
                                         @endforeach
                                     @else
@@ -109,6 +110,29 @@
     </div>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        /* Style for rich text content in questions and options */
+        .option-text {
+            line-height: 1.5;
+        }
+        .option-text p {
+            margin: 0;
+        }
+        .option-text img {
+            max-width: 100%;
+            height: auto;
+            margin: 8px 0;
+        }
+        .option-text table {
+            border-collapse: collapse;
+            margin: 8px 0;
+        }
+        .option-text table td,
+        .option-text table th {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+    </style>
     <script>
         $(document).ready(function() {
             $('#assessment-form').on('submit', function(e) {
