@@ -62,10 +62,10 @@
                                     <div class="option-editor"></div>
                                     <input type="hidden" name="options[]" class="option-input">
                                 </div>
-                                <label class="inline-flex items-center">
-                                    <input type="radio" name="correct_option" value="0" required>
-                                    <span class="ml-2">Correct</span>
-                                </label>
+                            <label class="inline-flex items-center">
+                                <input type="radio" name="correct_option" value="0" required>
+                                <span class="ml-2">Correct</span>
+                            </label>
                                 <button type="button" class="remove-option px-2 py-1 text-red-600 hover:text-red-800"
                                     onclick="removeOption(this)">×</button>
                             </div>
@@ -100,7 +100,7 @@
     {{-- Script  --}}
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/decoupled-document/ckeditor.js"></script>
-
+    
     <script>
         const sectionUrlTemplate = "{{ route('domain.sections', ['id' => '__ID__']) }}";
         let optionEditors = [];
@@ -209,10 +209,10 @@
                         editor.ui.view.toolbar.element,
                         toolbarContainer
                     );
-                })
-                .catch(error => {
-                    console.error(error);
-                });
+            })
+            .catch(error => {
+                console.error(error);
+            });
 
             // Initialize the first option editor
             const firstOptionEditor = document.querySelector('.option-editor');
@@ -346,8 +346,8 @@
                     method: 'GET',
                     success: function(sections) {
                         var options = '<option value="">Select Section</option>';
-                        $.each(sections, function(id, name) {
-                            options += '<option value="' + id + '">' + name + '</option>';
+                        sections.forEach(function(section) {
+                            options += '<option value="' + section.id + '">' + section.name + '</option>';
                         });
                         $sectionSelect.html(options);
                     },
@@ -371,11 +371,11 @@
                         <div class="option-editor"></div>
                         <input type="hidden" name="options[]" class="option-input">
                     </div>
-                    <label class="inline-flex items-center">
-                        <input type="radio" name="correct_option" value="${optionCount}" required>
-                        <span class="ml-2">Correct</span>
-                    </label>
-                    <button type="button" class="remove-option px-2 py-1 text-red-600 hover:text-red-800" onclick="removeOption(this)">×</button>
+                <label class="inline-flex items-center">
+                    <input type="radio" name="correct_option" value="${optionCount}" required>
+                    <span class="ml-2">Correct</span>
+                </label>
+                <button type="button" class="remove-option px-2 py-1 text-red-600 hover:text-red-800" onclick="removeOption(this)">×</button>
                 </div>
             `;
             

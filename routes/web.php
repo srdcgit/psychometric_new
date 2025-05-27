@@ -53,6 +53,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
    Route::post('ckeditor/upload', [CKEditorController::class, 'upload'])->name('ckeditor.upload');
 
+   Route::post('/questions/bulk-action', [QuestionController::class, 'bulkAction'])->name('question.bulk-action');
+
 });
 
 require __DIR__ . '/auth.php';

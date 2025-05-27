@@ -3,6 +3,21 @@
         <h2 class="text-xl font-semibold text-gray-800">Edit Question</h2>
     </x-slot>
 
+    <style>
+        .ck-editor__editable {
+            min-height: 200px;
+            border: 1px solid #d1d5db !important;
+            border-radius: 0.375rem !important;
+        }
+        .ck.ck-toolbar {
+            border: 1px solid #d1d5db !important;
+            border-radius: 0.375rem !important;
+        }
+        .option-editor .ck-editor__editable {
+            min-height: 100px;
+        }
+    </style>
+
     <div class="py-10 max-w-4xl mx-auto sm:px-6 lg:px-8">
         <div class="bg-white shadow rounded p-6">
             @if ($errors->any())
@@ -125,9 +140,13 @@
     </div>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
+    <script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/decoupled-document/ckeditor.js"></script>
     
     <script>
+        const sectionUrlTemplate = "{{ route('domain.sections', ['id' => '__ID__']) }}";
+        let optionEditors = [];
+        let mainEditor;
+
         class UploadAdapter {
             constructor(loader) {
                 this.loader = loader;
@@ -140,7 +159,7 @@
                         formData.append('image', file);
 
                         $.ajax({
-                            url: '{{ route("ckeditor.upload") }}',
+                            url: '{{ route('ckeditor.upload') }}',
                             type: 'POST',
                             data: formData,
                             contentType: false,
@@ -172,42 +191,80 @@
             };
         }
 
-        let editor;
-        let optionEditors = [];
+        // Initialize main editor when document is ready
+        $(document).ready(function() {
+            // Initialize CKEditor with image upload support
+            DecoupledEditor
+                .create(document.querySelector('#editor'), {
+                    extraPlugins: [uploadPlugin],
+                    toolbar: {
+                        items: [
+                            'heading',
+                            '|',
+                            'bold',
+                            'italic',
+                            'link',
+                            'bulletedList',
+                            'numberedList',
+                            '|',
+                            'uploadImage',
+                            'blockQuote',
+                            'insertTable',
+                            'undo',
+                            'redo'
+                        ]
+                    },
+                    image: {
+                        toolbar: [
+                            'imageStyle:inline',
+                            'imageStyle:block',
+                            'imageStyle:side',
+                            '|',
+                            'toggleImageCaption',
+                            'imageTextAlternative',
+                            '|',
+                            'resizeImage'
+                        ],
+                        resizeUnit: '%',
+                        resizeOptions: [{
+                            name: 'resizeImage:original',
+                            value: null,
+                            icon: 'original'
+                        },
+                        {
+                            name: 'resizeImage:50',
+                            value: '50',
+                            icon: 'medium'
+                        },
+                        {
+                            name: 'resizeImage:75',
+                            value: '75',
+                            icon: 'large'
+                        }]
+                    }
+                })
+                .then(editor => {
+                    mainEditor = editor;
+                    const toolbarContainer = document.querySelector('#editor');
+                    toolbarContainer.parentNode.insertBefore(
+                        editor.ui.view.toolbar.element,
+                        toolbarContainer
+                    );
+                })
+                .catch(error => {
+                    console.error(error);
+                });
 
-        // Initialize CKEditor for the main question
-        ClassicEditor
-            .create(document.querySelector('#editor'), {
-                extraPlugins: [uploadPlugin],
-                toolbar: {
-                    items: [
-                        'heading',
-                        '|',
-                        'bold',
-                        'italic',
-                        'link',
-                        'bulletedList',
-                        'numberedList',
-                        '|',
-                        'imageUpload',
-                        'blockQuote',
-                        'insertTable',
-                        'undo',
-                        'redo'
-                    ]
-                }
-            })
-            .then(newEditor => {
-                editor = newEditor;
-            })
-            .catch(error => {
-                console.error(error);
+            // Initialize all existing option editors
+            const optionEditorElements = document.querySelectorAll('.option-editor');
+            optionEditorElements.forEach(editorElement => {
+                initializeOptionEditor(editorElement);
             });
+        });
 
-        // Function to initialize CKEditor for an option
-        function initializeOptionEditor(editorElement) {
-            return ClassicEditor
-                .create(editorElement, {
+        async function initializeOptionEditor(editorElement) {
+            try {
+                const editor = await DecoupledEditor.create(editorElement, {
                     extraPlugins: [uploadPlugin],
                     toolbar: {
                         items: [
@@ -215,32 +272,130 @@
                             'italic',
                             'link',
                             '|',
-                            'imageUpload',
+                            'uploadImage',
                             'undo',
                             'redo'
                         ]
+                    },
+                    image: {
+                        toolbar: [
+                            'imageStyle:inline',
+                            'imageStyle:block',
+                            'imageStyle:side',
+                            '|',
+                            'toggleImageCaption',
+                            'imageTextAlternative',
+                            '|',
+                            'resizeImage'
+                        ],
+                        resizeUnit: '%',
+                        resizeOptions: [{
+                            name: 'resizeImage:original',
+                            value: null,
+                            icon: 'original'
+                        },
+                        {
+                            name: 'resizeImage:50',
+                            value: '50',
+                            icon: 'medium'
+                        },
+                        {
+                            name: 'resizeImage:75',
+                            value: '75',
+                            icon: 'large'
+                        }]
                     }
-                })
-                .then(editor => {
-                    // Store the editor instance
-                    optionEditors.push(editor);
-                    
-                    // Update hidden input when content changes
-                    editor.model.document.on('change:data', () => {
-                        const inputField = editorElement.nextElementSibling;
-                        inputField.value = editor.getData();
-                    });
-                })
-                .catch(error => {
-                    console.error(error);
                 });
+
+                // Store the editor instance
+                optionEditors.push(editor);
+                
+                // Handle the toolbar placement
+                const toolbarContainer = editorElement;
+                toolbarContainer.parentNode.insertBefore(
+                    editor.ui.view.toolbar.element,
+                    toolbarContainer
+                );
+                
+                // Update hidden input when content changes
+                editor.model.document.on('change:data', () => {
+                    const inputField = editorElement.nextElementSibling;
+                    if (inputField) {
+                        inputField.value = editor.getData();
+                    }
+                });
+
+                return editor;
+            } catch (error) {
+                console.error('Error initializing option editor:', error);
+            }
         }
 
-        // Initialize all option editors when the page loads
-        document.addEventListener('DOMContentLoaded', function() {
-            const optionEditorElements = document.querySelectorAll('.option-editor');
-            optionEditorElements.forEach(editorElement => {
-                initializeOptionEditor(editorElement);
+        function submitForm() {
+            if (!mainEditor) {
+                console.error('Editor not initialized');
+                return;
+            }
+
+            const questionContent = mainEditor.getData();
+            if (!questionContent.trim()) {
+                alert('Please enter a question');
+                return;
+            }
+            
+            document.getElementById('question').value = questionContent;
+            
+            // Update all option values before submitting
+            optionEditors.forEach((editor, index) => {
+                if (editor) {
+                    const optionContent = editor.getData();
+                    const hiddenInput = document.querySelectorAll('.option-input')[index];
+                    if (hiddenInput) {
+                        hiddenInput.value = optionContent;
+                    }
+                }
+            });
+            
+            document.getElementById('questionForm').submit();
+        }
+
+        // Domain change handler
+        $(document).ready(function() {
+            $('#domain_id').on('change', function() {
+                var domainId = $(this).val();
+                var $sectionSelect = $('#section_id');
+                var scoringType = $(this).find(':selected').data('type');
+                
+                // Toggle MCA options container based on domain type
+                if (scoringType === 'mcq') {
+                    $('#mca-options-container').removeClass('hidden');
+                } else {
+                    $('#mca-options-container').addClass('hidden');
+                }
+
+                $sectionSelect.html('<option value="">Loading...</option>');
+
+                if (!domainId) {
+                    $sectionSelect.html('<option value="">Select Section</option>');
+                    return;
+                }
+
+                var url = sectionUrlTemplate.replace('__ID__', domainId);
+                $.ajax({
+                    url: url,
+                    method: 'GET',
+                    success: function(sections) {
+                        var options = '<option value="">Select Section</option>';
+                        $.each(sections, function(id, name) {
+                            options += '<option value="' + id + '">' + name + '</option>';
+                        });
+                        $sectionSelect.html(options);
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Failed to load sections:', error);
+                        $sectionSelect.html('<option value="">Error loading sections</option>');
+                    }
+                });
             });
         });
 
@@ -298,33 +453,6 @@
             }
         }
 
-        function submitForm() {
-            // Get the question content
-            const questionContent = editor.getData();
-            document.getElementById('question').value = questionContent;
-            
-            // Update all option values before submitting
-            optionEditors.forEach((editor, index) => {
-                const optionContent = editor.getData();
-                const hiddenInput = document.querySelectorAll('.option-input')[index];
-                hiddenInput.value = optionContent;
-            });
-            
-            document.getElementById('questionForm').submit();
-        }
-
-        // Handle domain change
-        document.getElementById('domain_id').addEventListener('change', function() {
-            const scoringType = this.options[this.selectedIndex].getAttribute('data-type');
-            const mcaContainer = document.getElementById('mca-options-container');
-
-            if (scoringType === 'mcq') {
-                mcaContainer.classList.remove('hidden');
-            } else {
-                mcaContainer.classList.add('hidden');
-            }
-        });
-
         function toggleIsReverse() {
             const button = document.getElementById('toggleButton');
             const input = document.getElementById('is_reverse');
@@ -342,20 +470,6 @@
                 button.classList.add('bg-blue-600', 'text-white');
             }
         }
-
-        // Optional: Load sections dynamically on domain change
-        document.getElementById('domain_id').addEventListener('change', function() {
-            const domainId = this.value;
-            fetch(`/get-sections/${domainId}`)
-                .then(response => response.json())
-                .then(data => {
-                    const sectionSelect = document.getElementById('section_id');
-                    sectionSelect.innerHTML = '<option value="">Select Section</option>';
-                    for (const [id, name] of Object.entries(data)) {
-                        sectionSelect.innerHTML += `<option value="${id}">${name}</option>`;
-                    }
-                });
-        });
     </script>
 
 </x-app-layout>

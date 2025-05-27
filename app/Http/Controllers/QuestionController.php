@@ -17,19 +17,56 @@ class QuestionController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $user = Auth::user();
+        $query = Question::with(['domain', 'section', 'options'])
+            ->when($request->filled('domain'), function ($q) use ($request) {
+                return $q->where('domain_id', $request->domain);
+            })
+            ->when($request->filled('section'), function ($q) use ($request) {
+                return $q->where('section_id', $request->section);
+            })
+            ->when($request->filled('type'), function ($q) use ($request) {
+                return $q->whereHas('domain', function($query) use ($request) {
+                    $query->where('scoring_type', $request->type);
+                });
+            })
+            ->when($request->filled('date_from'), function ($q) use ($request) {
+                return $q->whereDate('created_at', '>=', $request->date_from);
+            })
+            ->when($request->filled('date_to'), function ($q) use ($request) {
+                return $q->whereDate('created_at', '<=', $request->date_to);
+            })
+            ->when($request->filled('search'), function ($q) use ($request) {
+                $searchTerm = $request->search;
+                return $q->where(function($query) use ($searchTerm) {
+                    $query->where('question', 'like', '%' . $searchTerm . '%')
+                          ->orWhereHas('domain', function($q) use ($searchTerm) {
+                              $q->where('name', 'like', '%' . $searchTerm . '%');
+                          })
+                          ->orWhereHas('section', function($q) use ($searchTerm) {
+                              $q->where('name', 'like', '%' . $searchTerm . '%');
+                          });
+                });
+            })
+            ->latest();
 
-        // Check if user has the 'admin' role
-        $adminRole = Roll::where('slug', 'admin')->first();
+        $perPage = $request->input('per_page', 10);
+        $questions = $query->paginate($perPage);
 
-        // Fetch questions uploaded by the current admin user
-        // $questions = Question::where('uploaded_by', $user->id)->with('section')->get();
-        $questions = Question::where('uploaded_by', $user->id)->with('section')->paginate(10); // Adjust per-page as needed
+        if ($request->ajax()) {
+            return view('admin.question.partials.questions-table', compact('questions'))->render();
+        }
 
+        $domains = Domain::all();
+        $sections = collect(); // Empty collection by default
+        
+        // If domain is selected, get its sections
+        if ($request->filled('domain')) {
+            $sections = Section::where('domain_id', $request->domain)->get();
+        }
 
-        return view('admin.question.index', compact('questions'));
+        return view('admin.question.index', compact('questions', 'domains', 'sections'));
     }
 
     /**
@@ -192,7 +229,40 @@ class QuestionController extends Controller
 
     public function getSections($id)
     {
-        $sections = Section::where('domain_id', $id)->pluck('name', 'id');
+        $sections = Section::where('domain_id', $id)->get(['id', 'name']);
         return response()->json($sections);
+    }
+
+    /**
+     * Handle bulk actions on questions
+     */
+    public function bulkAction(Request $request)
+    {
+        $request->validate([
+            'action' => 'required|in:delete',
+            'questions' => 'required|array',
+            'questions.*' => 'exists:questions,id'
+        ]);
+
+        try {
+            DB::beginTransaction();
+
+            $questions = Question::whereIn('id', $request->questions);
+            $questions->delete();
+            
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Questions deleted successfully'
+            ]);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'message' => 'An error occurred: ' . $e->getMessage()
+            ], 500);
+        }
     }
 }
