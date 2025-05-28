@@ -36,11 +36,47 @@ class AssessmentController extends Controller
             : Domain::with(['sections.questions.options'])->orderBy('id')->first();
 
         $isLastDomain = $domain && $domains->last()->id === $domain->id;
+        $isFirstDomain = $domain && $domains->first()->id === $domain->id;
+
+        // Get previous domain for back button
+        $previousDomain = null;
+        if ($domain) {
+            $previousDomain = Domain::where('id', '<', $domain->id)->orderBy('id', 'desc')->first();
+        }
 
         // Get the sections from the selected domain only
         $sections = $domain->sections ?? [];
 
-        return view('student.assessment.index', compact('sections', 'domain', 'isLastDomain'));
+        // Fetch previously submitted answers for this domain
+        $previousAnswers = [];
+        if ($domain) {
+            $assessments = Assessment::where('student_id', $user->id)
+                ->where('domain_id', $domain->id)
+                ->get();
+
+            foreach ($assessments as $assessment) {
+                if ($assessment->question->domain->scoring_type === 'mcq') {
+                    // For MCQ, store the selected option ID
+                    $option = QuestionOption::where('question_id', $assessment->question_id)
+                        ->where(function($query) use ($assessment) {
+                            $query->where('is_correct', $assessment->response_value == 1);
+                        })
+                        ->first();
+                    if ($option) {
+                        $previousAnswers[$assessment->question_id] = $option->id;
+                    }
+                } else {
+                    // For Likert scales, handle reverse scoring
+                    $value = $assessment->response_value;
+                    if ($assessment->question->is_reverse) {
+                        $value = 6 - $value;
+                    }
+                    $previousAnswers[$assessment->question_id] = $value;
+                }
+            }
+        }
+
+        return view('student.assessment.index', compact('sections', 'domain', 'isLastDomain', 'isFirstDomain', 'previousDomain', 'previousAnswers'));
     }
 
     public function store(Request $request)
@@ -82,6 +118,9 @@ class AssessmentController extends Controller
                 ]
             );
         }
+
+        // Store form data in session
+        $request->flash();
 
         // Determine next domain
         $nextDomain = Domain::where('id', '>', $domainId)->orderBy('id')->first();

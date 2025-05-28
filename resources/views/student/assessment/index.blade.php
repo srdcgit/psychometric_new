@@ -52,7 +52,9 @@
                                         @foreach($question->options as $option)
                                             <label class="inline-flex items-start gap-2">
                                                 <input type="radio" name="responses[{{ $question->id }}]"
-                                                    value="{{ $option->id }}" required class="mt-1">
+                                                    value="{{ $option->id }}" 
+                                                    {{ old('responses.' . $question->id) == $option->id ? 'checked' : '' }}
+                                                    required class="mt-1">
                                                 <div class="option-text">{!! $option->option_text !!}</div>
                                             </label>
                                         @endforeach
@@ -65,7 +67,9 @@
                                             @foreach ($options as $value => $label)
                                                 <label class="inline-flex items-center gap-2">
                                                     <input type="radio" name="responses[{{ $question->id }}]"
-                                                        value="{{ $value }}" required>
+                                                        value="{{ $value }}"
+                                                        {{ old('responses.' . $question->id) == $value ? 'checked' : '' }}
+                                                        required>
                                                     <span>{{ $label }}</span>
                                                 </label>
                                             @endforeach
@@ -83,8 +87,13 @@
                 @endforeach
 
                 <div class="flex justify-between items-center mt-6">
-                    <a href="{{ route('assessment.index') }}"
-                        class="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400">Back</a>
+                    @if ($isFirstDomain)
+                        <a href="{{ route('assessment.index') }}"
+                            class="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400">Back</a>
+                    @else
+                        <a href="{{ route('assessment.domain.view', $previousDomain->id) }}"
+                            class="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400">Previous</a>
+                    @endif
 
                     @if ($isLastDomain)
                         <button type="submit" class="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700">
