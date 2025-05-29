@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 
 class CKEditorController extends Controller
 {
@@ -13,11 +12,17 @@ class CKEditorController extends Controller
             $file = $request->file('image');
             $fileName = time() . '_' . $file->getClientOriginalName();
             
-            // Store the file directly in the storage/app/public folder
-            $path = Storage::disk('public')->putFileAs('ckeditor-images', $file, $fileName);
+            // Create directory if it doesn't exist
+            $uploadPath = public_path('uploads/ckeditor-images');
+            if (!file_exists($uploadPath)) {
+                mkdir($uploadPath, 0777, true);
+            }
             
-            // Generate the correct URL using asset helper
-            $url = asset('storage/' . $path);
+            // Move the file directly to public directory
+            $file->move($uploadPath, $fileName);
+            
+            // Generate URL (relative to public directory)
+            $url = asset('uploads/ckeditor-images/' . $fileName);
             
             return response()->json([
                 'url' => $url
