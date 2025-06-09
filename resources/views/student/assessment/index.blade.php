@@ -43,7 +43,7 @@
                                 <div class="font-medium text-gray-800 mb-3">
                                     {{ $loop->iteration }}. {!! $question->question !!}
                                 </div>
-                                <div class="flex flex-col gap-3 mt-2 pl-6">
+                                <div class="flex flex-wrap gap-3 mt-2 ">
                                     @php
                                         $scoringType = $section->domain->scoring_type;
                                     @endphp
@@ -52,7 +52,7 @@
                                         @foreach($question->options as $option)
                                             <label class="inline-flex items-start gap-2">
                                                 <input type="radio" name="responses[{{ $question->id }}]"
-                                                    value="{{ $option->id }}" 
+                                                    value="{{ $option->id }}"
                                                     {{ old('responses.' . $question->id) == $option->id ? 'checked' : '' }}
                                                     required class="mt-1">
                                                 <div class="option-text">{!! $option->option_text !!}</div>
