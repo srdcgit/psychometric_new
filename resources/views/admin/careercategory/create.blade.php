@@ -1,10 +1,10 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800">Create Career Paths</h2>
+        <h2 class="font-semibold text-xl text-gray-800">Create Career Categories</h2>
     </x-slot>
 
     <div class="max-w-2xl mx-auto p-4">
-        <form method="POST" action="{{ route('careerpath.store') }}">
+            <form method="POST" action="{{ route('careercategory.store') }}">
             @csrf
 
             {{-- <div>
@@ -25,7 +25,7 @@
             </div>
 
             <div class="mt-4">
-                <x-input-label for="name" :value="__('Add Careers')" />
+                <x-input-label for="name" :value="__('Add Career Categories')" />
                 <textarea id="name" name="name" class="block w-full mt-1 rounded"></textarea>
             </div>
 
