@@ -20,6 +20,9 @@
                                 <th class="px-4 py-2">Key Traits</th>
                                 <th class="px-4 py-2">Enjoys</th>
                                 <th class="px-4 py-2">Ideal Environments</th>
+                                <th class="px-4 py-2">Low</th>
+                                <th class="px-4 py-2">Mid</th>
+                                <th class="px-4 py-2">High</th>
                                 <th class="px-4 py-2">Description</th>
                                 <th class="px-4 py-2">Action</th>
                             </tr>
@@ -34,6 +37,9 @@
                                     <td class="px-4 py-2">{{ $section->keytraits ?? 'Null' }}</td>
                                     <td class="px-4 py-2">{{ $section->enjoys ?? 'Null' }}</td>
                                     <td class="px-4 py-2">{{ $section->idealenvironments ?? 'Null' }}</td>
+                                    <td class="px-4 py-2">{{ $section->low ?? 'Null' }}</td>
+                                    <td class="px-4 py-2">{{ $section->mid ?? 'Null' }}</td>
+                                    <td class="px-4 py-2">{{ $section->high ?? 'Null' }}</td>
                                     <td class="px-4 py-2">{!! $section->description ?? 'Null' !!}</td>
                                     <td class="px-4 py-2 space-x-2">
                                         <a href="{{ route('section.edit', $section->id) }}"
