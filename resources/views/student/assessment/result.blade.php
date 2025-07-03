@@ -51,11 +51,17 @@
                                     <div class="text-sm text-gray-700 space-y-1">
                                         <p><span class="font-bold text-gray-800">Average Score:</span>
                                             {{ $section['average'] }}</p>
-                                        <p><span style="font-weight:bold;">Key Traits:</span> {{ $section['section_keytraits'] }}
-                                        </p>
-                                        <p><span style="font-weight:bold;">Enjoys:</span> {{ $section['section_enjoys'] }}</p>
-                                        <p><span style="font-weight:bold;">Ideal Environments:</span>
-                                            {{ $section['section_idealenvironments'] }}</p>
+                                        @if (in_array($domainName, ['OCEAN', 'Work Values']))
+                                            <p><span style="font-weight:bold;">Low:</span> {{ $section['low'] }}</p>
+                                            <p><span style="font-weight:bold;">Mid:</span> {{ $section['mid'] }}</p>
+                                            <p><span style="font-weight:bold;">High:</span> {{ $section['high'] }}</p>
+                                        @else
+                                            <p><span style="font-weight:bold;">Key Traits:</span> {{ $section['section_keytraits'] }}
+                                            </p>
+                                            <p><span style="font-weight:bold;">Enjoys:</span> {{ $section['section_enjoys'] }}</p>
+                                            <p><span style="font-weight:bold;">Ideal Environments:</span>
+                                                {{ $section['section_idealenvironments'] }}</p>
+                                        @endif
                                     </div>
                                 </div>
                             </div>
