@@ -185,20 +185,40 @@ class AssessmentController extends Controller
                 'section_keytraits' => $response->section_keytraits,
                 'section_enjoys' => $response->section_enjoys,
                 'section_idealenvironments' => $response->section_idealenvironments,
+                'low' => optional(\App\Models\Section::find($response->section_id))->low,
+                'mid' => optional(\App\Models\Section::find($response->section_id))->mid,
+                'high' => optional(\App\Models\Section::find($response->section_id))->high,
                 'average' => round($response->total / $response->count, 2),
             ];
         }
 
         $grouped = collect($flatResults)->groupBy('domain_name');
 
-        $groupedResults = $grouped->map(function ($sections) {
+        $groupedResults = $grouped->map(function ($sections, $domainName) {
             $sorted = $sections->sortByDesc('average')->values();
 
-            foreach ($sorted as $index => $section) {
-                $label = $index === 0 ? 'Dominant Trait' : 'Supportive Trait';
-                $section['average_value'] = $section['average']; // keep original number for chart
-                $section['label'] = $label;
-                $sorted[$index] = $section;
+            // For OCEAN and Work Values, assign High/Mid/Low labels by ranking
+            if (in_array($domainName, ['OCEAN', 'Work Values']) && $sorted->count() >= 1) {
+                $labels = ['High', 'Mid', 'Low'];
+                $count = $sorted->count();
+                for ($i = 0; $i < $count; $i++) {
+                    // Assign label based on position: 0=High, 1=Mid, 2=Low (if only 2, 0=High, 1=Low)
+                    $label = $labels[$i] ?? 'Low';
+                    if ($count == 2) {
+                        $label = $i == 0 ? 'High' : 'Low';
+                    }
+                    $section = $sorted[$i];
+                    $section['average_value'] = $section['average'];
+                    $section['label'] = $label;
+                    $sorted[$i] = $section;
+                }
+            } else {
+                foreach ($sorted as $index => $section) {
+                    $label = $index === 0 ? 'Dominant Trait' : 'Supportive Trait';
+                    $section['average_value'] = $section['average'];
+                    $section['label'] = $label;
+                    $sorted[$index] = $section;
+                }
             }
 
             return $sorted->take(3); // Only take top 3 if needed
