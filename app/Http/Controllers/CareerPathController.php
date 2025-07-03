@@ -3,6 +3,7 @@ namespace App\Http\Controllers;
 
 use App\Models\CareerPath;
 use App\Models\Section;
+use App\Models\Career;
 use Illuminate\Http\Request;
 
 class CareerPathController extends Controller
@@ -22,8 +23,9 @@ class CareerPathController extends Controller
      */
     public function create()
     {
-        $sections = Section::all();
-        return view('admin.careerpath.create', compact('sections'));
+        $sections = \App\Models\Section::all();
+        $careers = \App\Models\Career::all();
+        return view('admin.careerpath.create', compact('sections', 'careers'));
     }
 
     /**
@@ -31,18 +33,25 @@ class CareerPathController extends Controller
      */
     public function store(Request $request)
     {
+        // dd($request->all());
         $request->validate([
             'section_id' => 'required|exists:sections,id',
-            'name'       => 'required|string',
+            'name'       => 'required|string|max:255',
+            'careers'    => 'required|array',
+            'careers.*'  => 'exists:careers,id',
         ]);
 
-        CareerPath::create([
-            'name'       => $request->name,
+        $careerPath = CareerPath::create([
             'section_id' => $request->section_id,
+            'name'       => $request->name,
         ]);
 
-        return redirect()->route('careerpath.index')->with('success', 'Career created successfully!');
+        // Attach selected careers
+        $careerPath->careers()->attach($request->careers);
 
+        // dd($careerPath);
+
+        return redirect()->route('careerpath.index')->with('success', 'Career Path created successfully!');
     }
 
     /**

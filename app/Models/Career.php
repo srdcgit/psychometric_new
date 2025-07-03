@@ -16,4 +16,9 @@ class Career extends Model
     {
         return $this->belongsTo(CareerCategory::class, 'career_category_id');
     }
+
+    public function careerPaths()
+    {
+        return $this->belongsToMany(CareerPath::class, 'career_career_path');
+    }
 }

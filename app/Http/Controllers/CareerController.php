@@ -20,10 +20,12 @@ class CareerController extends Controller
      * Show the form for creating a new resource.
      */
     public function create()
-    {
-        $career_categories = CareerCategory::all();
-        return view('admin.career.create', compact('career_categories'));
-    }
+{
+    $sections = Section::all();
+    $careers = Career::all();
+    return view('admin.careerpath.create', compact('sections', 'careers'));
+}
+
 
     /**
      * Store a newly created resource in storage.
