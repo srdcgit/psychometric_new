@@ -11,8 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('career_categories', function (Blueprint $table) {
+        Schema::create('careers', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('career_category_id')->constrained('career_categories');
             $table->string('name');
             $table->timestamps();
         });
@@ -23,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('career_categories');
+        Schema::dropIfExists('careers');
     }
 };

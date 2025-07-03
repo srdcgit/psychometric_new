@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\CareerCategory;
-use App\Models\Section;
+
 class CareerCategoryController extends Controller
 {
     /**
@@ -21,8 +21,7 @@ class CareerCategoryController extends Controller
      */
     public function create()
     {
-        
-        return view('admin.careercategory.create', compact(''));
+        return view('admin.careercategory.create');
     }
 
     /**
@@ -30,7 +29,13 @@ class CareerCategoryController extends Controller
      */
     public function store(Request $request)
     {
-        
+        $request->validate([
+            'name' => 'required|string|max:255',
+        ]);
+
+        CareerCategory::create($request->all());
+
+        return redirect()->route('careercategory.index')->with('success', 'Career Category created successfully');
     }
 
     /**
@@ -38,7 +43,8 @@ class CareerCategoryController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $career = CareerCategory::find($id);
+        return view('admin.careercategory.show', compact('career'));
     }
 
     /**
@@ -46,7 +52,8 @@ class CareerCategoryController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $career = CareerCategory::find($id);
+        return view('admin.careercategory.edit', compact('career'));
     }
 
     /**
@@ -54,7 +61,13 @@ class CareerCategoryController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $request->validate([
+            'name' => 'required|string|max:255',
+        ]);
+
+        $career = CareerCategory::find($id);
+        $career->update($request->all());
+        return redirect()->route('careercategory.index')->with('success', 'Career Category updated successfully');
     }
 
     /**
@@ -62,6 +75,8 @@ class CareerCategoryController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $career = CareerCategory::find($id);
+        $career->delete();
+        return redirect()->route('careercategory.index')->with('success', 'Career Category deleted successfully');
     }
 }

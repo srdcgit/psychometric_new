@@ -1,15 +1,15 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Career Category') }}
+            {{ __('Career') }}
         </h2>
     </x-slot>
 
     <div class="max-w-7xl mx-auto py-10 sm:px-6 lg:px-8">
         <div class="mb-6">
-            <a href="{{ route('careercategory.create') }}"
+            <a href="{{ route('career.create') }}"
                 class="inline-block px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700">
-                + Add New Career Category
+                + Add New Career
             </a>
         </div>
 
@@ -20,28 +20,30 @@
         @endif
 
         <div class="bg-white shadow-sm rounded-lg p-6">
-            @if ($careercategories->count())
+            @if ($careers->count())
                 <div class="table-responsive">
                     <table class="w-full table-auto">
                         <thead>
                             <tr class="bg-gray-100 text-left">
                                 <th class="px-4 py-2">#</th>
                                 <th class="px-4 py-2">Name</th>
+                                <th class="px-4 py-2">Career Category</th>
                                 <th class="px-4 py-2">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach ($careercategories as $career)
+                            @foreach ($careers as $career)
                                 <tr class="border-b">
                                     <td class="px-4 py-2">
-                                        {{ ($careercategories->currentPage() - 1) * $careercategories->perPage() + $loop->iteration }}
+                                        {{ ($careers->currentPage() - 1) * $careers->perPage() + $loop->iteration }}
                                     </td>
                                     <td class="px-4 py-2">{!! $career->name ?? 'Null' !!}</td>
+                                        <td class="px-4 py-2">{!! $career->careerCategory->name ?? 'Null' !!}</td>
                                     <td class="px-4 py-2 space-x-2">
-                                            <a href="{{ route('careercategory.edit', $career->id) }}"
+                                            <a href="{{ route('career.edit', $career->id) }}"
                                             class="text-blue-500 hover:underline">Edit</a>
 
-                                        <form action="{{ route('careercategory.destroy', $career->id) }}" method="POST"
+                                        <form action="{{ route('career.destroy', $career->id) }}" method="POST"
                                             class="inline delete-form">
                                             @csrf
                                             @method('DELETE')
@@ -60,14 +62,18 @@
 
 
                 <div class="mt-4">
-                    {!! $careercategories->links() !!}
+                    {!! $careers->links() !!}
                 </div>
             @else
-                <p>No Career Categories found.</p>
+                <p>No Careers found.</p>
             @endif
         </div>
     </div>
-
+    <script>
+        $(document).ready(function() {
+            $('#career_category_id').select2();
+        });
+    </script>
 
     <!-- Include SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -83,7 +89,7 @@
 
                     Swal.fire({
                         title: 'Are you sure?',
-                        text: "This will permanently delete the Career Category.",
+                        text: "This will permanently delete the Career.",
                         icon: 'warning',
                         showCancelButton: true,
                         confirmButtonColor: '#d33',

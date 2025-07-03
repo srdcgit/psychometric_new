@@ -1,10 +1,10 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800">Create Career Categories</h2>
+        <h2 class="font-semibold text-xl text-gray-800">Create Careers</h2>
     </x-slot>
 
     <div class="max-w-2xl mx-auto p-4">
-            <form method="POST" action="{{ route('careercategory.store') }}">
+        <form method="POST" action="{{ route('career.store') }}">
             @csrf
 
             {{-- <div>
@@ -13,10 +13,19 @@
                 <x-input-error :messages="$errors->get('name')" class="mt-2" />
             </div> --}}
 
-            
+            <div class="mt-4">
+                <x-input-label for="career_category_id" :value="__('Career Categories')" />
+
+                <select name="career_category_id" id="career_category_id" required>
+                    <option value="">Select Option</option>
+                    @foreach ($career_categories as $career_category)
+                    <option value="{{ $career_category->id }}">{!! $career_category->name !!}</option>
+                   @endforeach
+                </select>
+            </div>
 
             <div class="mt-4">
-                <x-input-label for="name" :value="__('Add Career Categories')" />
+                <x-input-label for="name" :value="__('Add Careers')" />
                 <textarea id="name" name="name" class="block w-full mt-1 rounded"></textarea>
             </div>
 

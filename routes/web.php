@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\CareerPathController;
 use App\Http\Controllers\CareerCategoryController;
+use App\Http\Controllers\CareerController;
 use App\Http\Controllers\CKEditorController;
 use App\Http\Controllers\DomainController;
 use App\Http\Controllers\institute\InstituteStudentController;
@@ -32,6 +33,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('question', QuestionController::class);
     Route::resource('careerpath', CareerPathController::class);
     Route::resource('careercategory', CareerCategoryController::class);
+    Route::resource('career', CareerController::class);
     Route::resource('students', UserController::class);
     Route::resource('institutestudent', InstituteStudentController::class);
 
