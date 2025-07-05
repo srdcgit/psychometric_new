@@ -26,7 +26,7 @@
                         <thead>
                             <tr class="bg-gray-100 text-left">
                                 <th class="px-4 py-2">#</th>
-                                <th class="px-4 py-2">Name</th>
+                                <th class="px-4 py-2">Careers</th>
                                 <th class="px-4 py-2">Section Name</th>
                                 <th class="px-4 py-2">Actions</th>
                             </tr>
@@ -37,7 +37,17 @@
                                     <td class="px-4 py-2">
                                         {{ ($careerpaths->currentPage() - 1) * $careerpaths->perPage() + $loop->iteration }}
                                     </td>
-                                    <td class="px-4 py-2">{!! $career->name ?? 'Null' !!}</td>
+                                    <td class="px-4 py-2">
+                                        @if($career->careers->count() > 0)
+                                            @foreach($career->careers as $careerItem)
+                                                <span class="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded mr-1 mb-1">
+                                                    {!! $careerItem->name !!}
+                                                </span>
+                                            @endforeach
+                                        @else
+                                            <span class="text-gray-500">No careers assigned</span>
+                                        @endif
+                                    </td>
                                     <td class="px-4 py-2">{{ $career->section->name  }}</td>
                                     <td class="px-4 py-2 space-x-2">
                                         <a href="{{ route('careerpath.edit', $career->id) }}"

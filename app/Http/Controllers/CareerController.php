@@ -23,7 +23,8 @@ class CareerController extends Controller
 {
     $sections = Section::all();
     $careers = Career::all();
-    return view('admin.careerpath.create', compact('sections', 'careers'));
+    $career_categories = \App\Models\CareerCategory::all();
+    return view('admin.career.create', compact('sections', 'careers', 'career_categories'));
 }
 
 
@@ -60,7 +61,8 @@ class CareerController extends Controller
     {
         $career = Career::find($id);
         $career_categories = CareerCategory::all();
-        return view('admin.career.edit', compact('career', 'career_categories'));
+        $career_categories = \App\Models\CareerCategory::all();
+        return view('admin.career.edit', compact('career', 'career_categories', 'career_categories'));
     }
 
     /**

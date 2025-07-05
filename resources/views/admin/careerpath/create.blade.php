@@ -19,6 +19,8 @@
                     @endforeach
                 </select>
             </div>
+            
+            <br>
 
             <div class="form-group">
                 <label for="careers">Add Careers</label>
@@ -26,8 +28,8 @@
 
                 <div class="multi-select-wrapper">
                     <div class="selected-options" id="selectedCareers"></div>
-
-                    <input type="text" id="searchCareerInput" class="search-input form-control mb-2" placeholder="Search Careers">
+                    <input type="text" id="searchCareerInput" class="search-input form-control mb-2"
+                        placeholder="Search Careers">
 
                     <div class="options-list" id="careerOptionsList"></div>
                 </div>
@@ -36,7 +38,7 @@
             <!-- Hidden Select Field for Careers -->
             <select name="careers[]" id="careers-select" multiple class="d-none">
                 @foreach ($careers as $career)
-                    <option value="{{ $career->id }}">{{ strip_tags($career->name) }}</option>
+                    <option value="{{ $career->id }}">{!! $career->name !!}</option>
                 @endforeach
             </select>
 
@@ -51,8 +53,59 @@
     {{-- Select2 CSS & JS --}}
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    
+    <style>
+        .multi-select-wrapper {
+            position: relative;
+        }
+        
+        .selected-options {
+            min-height: 40px;
+            border: 1px solid #d1d5db;
+            border-radius: 0.375rem;
+            padding: 8px;
+            background-color: white;
+        }
+        
+        .search-input {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 0.375rem;
+            font-size: 14px;
+        }
+        
+        .options-list {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #d1d5db;
+            border-radius: 0.375rem;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 10;
+            display: none;
+        }
+        
+        .options-list div {
+            padding: 8px 12px;
+            cursor: pointer;
+            border-bottom: 1px solid #f3f4f6;
+        }
+        
+        .options-list div:hover {
+            background-color: #f3f4f6;
+        }
+        
+        .options-list div:last-child {
+            border-bottom: none;
+        }
+    </style>
+    
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', function() {
             const careers = @json($careers);
             const selectedCareersDiv = document.getElementById('selectedCareers');
             const searchCareerInput = document.getElementById('searchCareerInput');
@@ -63,15 +116,17 @@
 
             function renderCareerOptions(filter = '') {
                 careerOptionsList.innerHTML = '';
-                const filtered = careers.filter(c =>
-                    c.name.toLowerCase().includes(filter.toLowerCase()) &&
-                    !selectedCareers.some(sel => sel.id === c.id)
-                );
+                const filtered = careers.filter(c => {
+                    const cleanName = c.name.replace(/<[^>]*>/g, '').trim();
+                    return cleanName.toLowerCase().includes(filter.toLowerCase()) &&
+                        !selectedCareers.some(sel => sel.id === c.id);
+                });
 
                 if (filtered.length > 0) {
                     filtered.forEach(career => {
                         const option = document.createElement('div');
-                        option.textContent = career.name;
+                        const cleanName = career.name.replace(/<[^>]*>/g, '').trim();
+                        option.textContent = cleanName;
                         option.dataset.id = career.id;
                         option.onclick = () => selectCareer(career);
                         careerOptionsList.appendChild(option);
@@ -88,13 +143,26 @@
 
                 selectedCareers.forEach(career => {
                     const span = document.createElement('span');
-                    span.innerHTML = `${career.name} <i onclick="removeCareer(${career.id})">&times;</i>`;
+                    span.className = 'inline-flex items-center bg-blue-100 text-blue-800 text-sm px-3 py-1 rounded-full mr-2 mb-2';
+                    
+                    const cleanName = career.name.replace(/<[^>]*>/g, '').trim();
+                    const text = document.createTextNode(cleanName);
+                    span.appendChild(text);
+
+                    const removeIcon = document.createElement('button');
+                    removeIcon.type = 'button';
+                    removeIcon.className = 'ml-2 text-blue-600 hover:text-blue-800 font-bold text-lg leading-none';
+                    removeIcon.innerHTML = '×';
+                    removeIcon.onclick = () => removeCareer(career.id);
+
+                    span.appendChild(removeIcon);
                     selectedCareersDiv.appendChild(span);
 
                     const option = hiddenCareerSelect.querySelector(`option[value="${career.id}"]`);
                     if (option) option.selected = true;
                 });
             }
+
 
             function selectCareer(career) {
                 if (!selectedCareers.find(c => c.id === career.id)) {
@@ -121,7 +189,7 @@
             });
 
             // Restore old input if available
-            @if(old('careers'))
+            @if (old('careers'))
                 const oldCareers = @json(old('careers'));
                 oldCareers.forEach(id => {
                     const career = careers.find(c => c.id == id);
@@ -130,7 +198,7 @@
                 renderSelectedCareers();
             @endif
         });
-        </script>
+    </script>
 
 
 </x-app-layout>

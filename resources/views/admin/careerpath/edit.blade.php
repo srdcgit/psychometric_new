@@ -3,69 +3,198 @@
         <h2 class="text-xl font-semibold text-gray-800">Edit Career Paths</h2>
     </x-slot>
 
-    <div class="py-10 max-w-4xl mx-auto sm:px-6 lg:px-8">
-        <div class="bg-white shadow rounded p-6">
-            @if ($errors->any())
-                <div class="mb-4 text-red-600">
-                    <ul class="list-disc pl-5">
-                        @foreach ($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
+    <div class="max-w-2xl mx-auto p-4">
+        <form action="{{ route('careerpath.update', $career->id) }}" method="POST">
+            @csrf
+            @method('PUT')
+
+            {{-- Section --}}
+            <div class="mt-4">
+                <x-input-label for="section_id" :value="__('Section')" />
+                <select name="section_id" id="section_id" required class="block w-full mt-1">
+                    <option value="">Select Option</option>
+                    @foreach ($sections as $section)
+                        <option value="{{ $section->id }}" {{ old('section_id', $career->section_id) == $section->id ? 'selected' : '' }}>
+                            {{ $section->name }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+            
+            <br>
+
+            <div class="form-group">
+                <label for="careers">Add Careers</label>
+                <small class="text-muted">(Search and select multiple careers.)</small>
+
+                <div class="multi-select-wrapper">
+                    <div class="selected-options" id="selectedCareers"></div>
+
+                    <input type="text" id="searchCareerInput" class="search-input form-control mb-2"
+                        placeholder="Search Careers">
+
+                    <div class="options-list" id="careerOptionsList"></div>
                 </div>
-            @endif
+            </div>
 
-            <form action="{{ route('careerpath.update', $careerpath->id) }}" method="POST">
-                @csrf
-                @method('PUT')
+            <!-- Hidden Select Field for Careers -->
+            <select name="careers[]" id="careers-select" multiple class="d-none">
+                @foreach ($careers as $career_option)
+                    <option value="{{ $career_option->id }}">{!! $career_option->name !!}</option>
+                @endforeach
+            </select>
 
-                {{-- <div class="mb-4">
-                    <label for="name" class="block text-sm font-medium text-gray-700">Section Name</label>
-                    <input type="text" name="name" id="name" value="{{ old('name', $career->name) }}"
-                           class="mt-1 block w-full border-gray-300 rounded shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
-                </div> --}}
-
-                <div class="mb-4">
-                    <label for="section_id" class="block text-sm font-medium text-gray-700">Domain</label>
-                    <select name="section_id" id="section_id" required
-                            class="mt-1 block w-full border-gray-300 rounded shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
-                        <option value="">Select Domain</option>
-                        @foreach ($sections as $section)
-                            <option value="{{ $section->id }}"
-                                {{ old('section_id', $career->section_id) == $section->id ? 'selected' : '' }}>
-                                {{ $section->name }}
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
-
-                <div class="mb-4">
-                    <label for="name" class="block text-sm font-medium text-gray-700">Careers</label>
-                    <textarea name="name" id="name" rows="4"
-                              class="mt-1 block w-full border-gray-300 rounded shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">{{ old('name', $career->name) }}</textarea>
-                </div>
-
-                <div class="flex justify-end space-x-4">
-                    <a href="{{ route('careerpath.index') }}"
-                       class="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300">
-                        Cancel
-                    </a>
-                    <button type="submit"
-                            class="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700">
-                        Update Career
-                    </button>
-                </div>
-            </form>
-        </div>
+            {{-- Submit --}}
+            <div class="mt-4">
+                <x-primary-button>{{ __('Update') }}</x-primary-button>
+            </div>
+        </form>
     </div>
 
-     <!-- CKEditor 5 Script -->
-    <script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
+    <style>
+        .multi-select-wrapper {
+            position: relative;
+        }
+        
+        .selected-options {
+            min-height: 40px;
+            border: 1px solid #d1d5db;
+            border-radius: 0.375rem;
+            padding: 8px;
+            background-color: white;
+        }
+        
+        .search-input {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 0.375rem;
+            font-size: 14px;
+        }
+        
+        .options-list {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #d1d5db;
+            border-radius: 0.375rem;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 10;
+            display: none;
+        }
+        
+        .options-list div {
+            padding: 8px 12px;
+            cursor: pointer;
+            border-bottom: 1px solid #f3f4f6;
+        }
+        
+        .options-list div:hover {
+            background-color: #f3f4f6;
+        }
+        
+        .options-list div:last-child {
+            border-bottom: none;
+        }
+    </style>
+    
     <script>
-        ClassicEditor
-            .create(document.querySelector('#name'))
-            .catch(error => {
-                console.error(error);
+        document.addEventListener('DOMContentLoaded', function() {
+            const careers = @json($careers);
+            const selectedCareersDiv = document.getElementById('selectedCareers');
+            const searchCareerInput = document.getElementById('searchCareerInput');
+            const careerOptionsList = document.getElementById('careerOptionsList');
+            const hiddenCareerSelect = document.getElementById('careers-select');
+
+            let selectedCareers = [];
+
+            // Load existing selected careers
+            @if($career->careers)
+                const existingCareers = @json($career->careers);
+                existingCareers.forEach(career => {
+                    selectedCareers.push(career);
+                });
+            @endif
+
+            function renderCareerOptions(filter = '') {
+                careerOptionsList.innerHTML = '';
+                const filtered = careers.filter(c => {
+                    const cleanName = c.name.replace(/<[^>]*>/g, '').trim();
+                    return cleanName.toLowerCase().includes(filter.toLowerCase()) &&
+                        !selectedCareers.some(sel => sel.id === c.id);
+                });
+
+                if (filtered.length > 0) {
+                    filtered.forEach(career => {
+                        const option = document.createElement('div');
+                        const cleanName = career.name.replace(/<[^>]*>/g, '').trim();
+                        option.textContent = cleanName;
+                        option.dataset.id = career.id;
+                        option.onclick = () => selectCareer(career);
+                        careerOptionsList.appendChild(option);
+                    });
+                    careerOptionsList.style.display = 'block';
+                } else {
+                    careerOptionsList.style.display = 'none';
+                }
+            }
+
+            function renderSelectedCareers() {
+                selectedCareersDiv.innerHTML = '';
+                Array.from(hiddenCareerSelect.options).forEach(opt => opt.selected = false);
+
+                selectedCareers.forEach(career => {
+                    const span = document.createElement('span');
+                    span.className = 'inline-flex items-center bg-blue-100 text-blue-800 text-sm px-3 py-1 rounded-full mr-2 mb-2';
+                    
+                    const cleanName = career.name.replace(/<[^>]*>/g, '').trim();
+                    const text = document.createTextNode(cleanName);
+                    span.appendChild(text);
+
+                    const removeIcon = document.createElement('button');
+                    removeIcon.type = 'button';
+                    removeIcon.className = 'ml-2 text-blue-600 hover:text-blue-800 font-bold text-lg leading-none';
+                    removeIcon.innerHTML = '×';
+                    removeIcon.onclick = () => removeCareer(career.id);
+
+                    span.appendChild(removeIcon);
+                    selectedCareersDiv.appendChild(span);
+
+                    const option = hiddenCareerSelect.querySelector(`option[value="${career.id}"]`);
+                    if (option) option.selected = true;
+                });
+            }
+
+            function selectCareer(career) {
+                if (!selectedCareers.find(c => c.id === career.id)) {
+                    selectedCareers.push(career);
+                    renderSelectedCareers();
+                    searchCareerInput.value = '';
+                    renderCareerOptions();
+                }
+            }
+
+            function removeCareer(id) {
+                selectedCareers = selectedCareers.filter(c => c.id !== id);
+                renderSelectedCareers();
+                renderCareerOptions();
+            }
+
+            searchCareerInput.addEventListener('input', e => renderCareerOptions(e.target.value));
+            searchCareerInput.addEventListener('focus', () => renderCareerOptions(searchCareerInput.value));
+
+            document.addEventListener('click', e => {
+                if (!e.target.closest('.multi-select-wrapper')) {
+                    careerOptionsList.style.display = 'none';
+                }
             });
+
+            // Initial render
+            renderSelectedCareers();
+            renderCareerOptions();
+        });
     </script>
 </x-app-layout>

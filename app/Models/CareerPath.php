@@ -11,8 +11,6 @@ class CareerPath extends Model
     protected $table = 'career_paths';
     protected $fillable = [
         'section_id',
-        'name',
-
     ];
 
     public function section()
