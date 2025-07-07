@@ -89,7 +89,16 @@
                                                 @foreach ($paths as $path)
                                                     <tr>
                                                         <td class="px-4 py-2 border" style="font-weight:bold;">{{ $sec['section_name'] }}</td>
-                                                        <td class="px-4 py-2 border text-center">{!! $path->name !!}
+                                                        <td class="px-4 py-2 border text-center">
+                                                            @if($path->careers->count() > 0)
+                                                                @foreach($path->careers as $career)
+                                                                    <span class="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded mr-1 mb-1">
+                                                                        {!! $career->name !!}
+                                                                    </span>
+                                                                @endforeach
+                                                            @else
+                                                                <span class="text-gray-500">No careers assigned</span>
+                                                            @endif
                                                         </td>
                                                     </tr>
                                                 @endforeach

@@ -150,7 +150,7 @@ class AssessmentController extends Controller
 
     private function renderResult($userId)
     {
-        $careerpaths = CareerPath::with('section')->get()->groupBy('section_id');
+        $careerpaths = CareerPath::with(['section', 'careers'])->get()->groupBy('section_id');
 
         $responses = DB::table('assessments')
             ->join('sections', 'assessments.section_id', '=', 'sections.id')
