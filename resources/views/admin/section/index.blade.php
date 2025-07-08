@@ -16,6 +16,7 @@
                             <tr class="bg-gray-100">
                                 <th class="px-4 py-2">#</th>
                                 <th class="px-4 py-2">Name</th>
+                                <th class="px-4 py-2">Code</th>
                                 <th class="px-4 py-2">Domain</th>
                                 <th class="px-4 py-2">Key Traits</th>
                                 <th class="px-4 py-2">Enjoys</th>
@@ -32,6 +33,7 @@
                                 <tr class="border-b">
                                     <td class="px-4 py-2">{{ ($sections->currentPage() - 1) * $sections->perPage() + $loop->iteration }}</td>
                                     <td class="px-4 py-2">{{ $section->name }}</td>
+                                    <td class="px-4 py-2">{{ $section->code }}</td>
                                     <td class="px-4 py-2">{{ $section->domain->name ?? 'No Domain Found' }}</td>
 
                                     <td class="px-4 py-2">{{ $section->keytraits ?? 'Null' }}</td>

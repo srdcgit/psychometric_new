@@ -15,6 +15,12 @@
                 </div>
 
                 <div class="mb-4">
+                    <label for="code" class="block text-gray-700 font-medium">Code</label>
+                    <input type="text" name="code" id="code" required
+                        class="w-full border rounded px-3 py-2 mt-1">
+                </div>
+
+                <div class="mb-4">
                     <label for="domain_id" class="block text-gray-700 font-medium">Domain</label>
                     <select name="domain_id" id="domain_id" required class="w-full border rounded px-3 py-2 mt-1">
                         <option value="">Select Domain</option>

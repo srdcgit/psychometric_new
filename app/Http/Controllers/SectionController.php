@@ -49,6 +49,7 @@ class SectionController extends Controller
 
         $request->validate([
             'name' => 'required|string|max:255',
+            'code' => 'required|string',
             'domain_id' => 'required',
             'keytraits' => 'nullable|string',
             'enjoys' => 'nullable|string',
@@ -61,6 +62,7 @@ class SectionController extends Controller
 
         $data = [
             'name' => $request->name,
+            'code' => $request->code,
             'domain_id' => $domainId,
             'description' => $request->description,
             'uploaded_by' => Auth::id(),
@@ -129,6 +131,7 @@ class SectionController extends Controller
 
         $request->validate([
             'name' => 'required|string|max:255',
+            'code' => 'required|string',
             'domain_id' => 'required',
             'keytraits' => 'nullable|string',
             'enjoys' => 'nullable|string',
@@ -141,6 +144,7 @@ class SectionController extends Controller
 
         $data = [
             'name' => $request->name,
+            'code' => $request->code,
             'domain_id' => $domainId,
             'description' => $request->description,
         ];
