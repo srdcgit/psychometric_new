@@ -1,12 +1,18 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="text-xl font-semibold text-gray-800">Sections</h2>
+        {{-- <h2 class="text-xl font-semibold text-gray-800">Sections</h2> --}}
+        <div class="flex justify-between items-center">
+            <h2 class="text-xl font-semibold text-gray-800">Sections</h2>
+            <a href="{{ route('section.create') }}" class="bg-indigo-600 text-white px-4 py-2 rounded inline-block hover:bg-indigo-700 transition-colors">
+                + Add New Sections
+            </a>
+        </div>
     </x-slot>
 
     <div class="py-10 max-w-7xl mx-auto sm:px-6 lg:px-8">
-        <a href="{{ route('section.create') }}" class="bg-indigo-600 text-white px-4 py-2 rounded mb-4 inline-block">
+        {{-- <a href="{{ route('section.create') }}" class="bg-indigo-600 text-white px-4 py-2 rounded mb-4 inline-block">
             + Add Section
-        </a>
+        </a> --}}
 
         <div class="bg-white shadow rounded p-6">
             @if ($sections->count())
