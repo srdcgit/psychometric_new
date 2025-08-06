@@ -188,6 +188,7 @@ class AssessmentController extends Controller
                 'low' => optional(\App\Models\Section::find($response->section_id))->low,
                 'mid' => optional(\App\Models\Section::find($response->section_id))->mid,
                 'high' => optional(\App\Models\Section::find($response->section_id))->high,
+                'total' => $response->total,
                 'average' => round($response->total / $response->count, 2),
             ];
         }
@@ -267,7 +268,15 @@ class AssessmentController extends Controller
                     } else {
                         $label = $index === 0 ? 'Dominant Trait' : 'Supportive Trait';
                     }
-                    $section['average_value'] = $section['average'];
+                    
+                    // For APTITUDE domain, use total sum instead of average
+                    if ($domainName === 'APTITUDE') {
+                        $section['average_value'] = $section['total']; // Use total sum of correct answers
+                        $section['average'] = $section['total']; // Also update the display field
+                    } else {
+                        $section['average_value'] = $section['average'];
+                    }
+                    
                     $section['label'] = $label;
                     $sorted[$index] = $section;
                 }
