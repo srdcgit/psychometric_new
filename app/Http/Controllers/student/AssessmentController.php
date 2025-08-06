@@ -197,8 +197,38 @@ class AssessmentController extends Controller
         $groupedResults = $grouped->map(function ($sections, $domainName) {
             $sorted = $sections->sortByDesc('average')->values();
 
-            // For OCEAN and Work Values, assign High/Mid/Low labels by ranking
-            if (in_array($domainName, ['OCEAN', 'Work Values']) && $sorted->count() >= 1) {
+            // For OCEAN domain, assign High/Mid/Low labels based on score ranges
+            if ($domainName === 'OCEAN') {
+                foreach ($sorted as $index => $section) {
+                    $average = $section['average'];
+                    
+                    // Assign label based on score ranges
+                    if ($average >= 1 && $average <= 2) {
+                        $label = 'Low';
+                        $relevantDescription = $section['low'];
+                    } elseif ($average >= 2.1 && $average <= 3.9) {
+                        $label = 'Mid';
+                        $relevantDescription = $section['mid'];
+                    } elseif ($average >= 4 && $average <= 5) {
+                        $label = 'High';
+                        $relevantDescription = $section['high'];
+                    } else {
+                        // Fallback for scores outside expected ranges
+                        $label = 'Mid';
+                        $relevantDescription = $section['mid'];
+                    }
+                    
+                    $section['average_value'] = $average;
+                    $section['label'] = $label;
+                    $section['relevant_description'] = $relevantDescription;
+                    $sorted[$index] = $section;
+                }
+                
+                // Return all sections for OCEAN domain (no limit)
+                return $sorted;
+            } 
+            // For Work Values, keep existing ranking-based logic
+            elseif ($domainName === 'Work Values' && $sorted->count() >= 1) {
                 $labels = ['High', 'Mid', 'Low'];
                 $count = $sorted->count();
                 for ($i = 0; $i < $count; $i++) {
@@ -212,16 +242,36 @@ class AssessmentController extends Controller
                     $section['label'] = $label;
                     $sorted[$i] = $section;
                 }
+                
+                // Store all sections (including Low) for chart display
+                $allSectionsForChart = $sorted;
+                
+                // Filter out sections with label 'Low' for card display
+                $filteredForCards = $sorted->filter(function($section) {
+                    return $section['label'] !== 'Low';
+                })->values();
+                
+                // Return filtered sections for cards, but include all sections for chart
+                return [
+                    'cards' => $filteredForCards,
+                    'chart' => $allSectionsForChart
+                ];
             } else {
                 foreach ($sorted as $index => $section) {
-                    $label = $index === 0 ? 'Dominant Trait' : 'Supportive Trait';
+                    // For VARK domain, use Primary/Secondary labels, for others use Dominant/Supportive
+                    if ($domainName === 'VARK') {
+                        $label = $index === 0 ? 'Primary' : 'Secondary';
+                    } else {
+                        $label = $index === 0 ? 'Dominant Trait' : 'Supportive Trait';
+                    }
                     $section['average_value'] = $section['average'];
                     $section['label'] = $label;
                     $sorted[$index] = $section;
                 }
             }
 
-            return $sorted->take(3); // Only take top 3 if needed
+            // For non-OCEAN domains, keep the top 3 limit
+            return $domainName === 'OCEAN' ? $sorted : $sorted->take(3);
         });
 
         return view('student.assessment.result', compact('careerpaths'), [

@@ -41,7 +41,11 @@
                 <div class="bg-white shadow-xl rounded-3xl p-8 mb-12 border border-gray-200 transition hover:shadow-2xl" style="padding-top:20px;width:65%;margin:auto">
                     {{-- Section Cards --}}
                     <div class="flex flex-wrap -mx-4">
-                        @foreach ($sections as $section)
+                        @php
+                            // For Work Values domain, use 'cards' data, for others use $sections directly
+                            $displaySections = $domainName === 'Work Values' ? $sections['cards'] : $sections;
+                        @endphp
+                        @foreach ($displaySections as $section)
                             <div class="w-full sm:w-1/2 lg:w-1/3 px-4 mb-6">
                                 <div
                                     class="h-full bg-gray-50 rounded-xl p-6 border border-gray-200 shadow-sm hover:shadow-md transition">
@@ -51,7 +55,9 @@
                                     <div class="text-sm text-gray-700 space-y-1">
                                         <p><span class="font-bold text-gray-800">Average Score:</span>
                                             {{ $section['average'] }}</p>
-                                        @if (in_array($domainName, ['OCEAN', 'Work Values']))
+                                        @if ($domainName === 'OCEAN')
+                                            <p><span style="font-weight:bold;">{{ $section['label'] }}:</span> {{ $section['relevant_description'] }}</p>
+                                        @elseif ($domainName === 'Work Values')
                                             <p><span style="font-weight:bold;">Low:</span> {{ $section['low'] }}</p>
                                             <p><span style="font-weight:bold;">Mid:</span> {{ $section['mid'] }}</p>
                                             <p><span style="font-weight:bold;">High:</span> {{ $section['high'] }}</p>
@@ -69,7 +75,11 @@
                     </div>
 
                     {{-- After all section cards --}}
-                    @if (!empty($sections))
+                    @php
+                        // For Work Values domain, use 'cards' data, for others use $sections directly
+                        $careerPathSections = $domainName === 'Work Values' ? $sections['cards'] : $sections;
+                    @endphp
+                    @if (!empty($careerPathSections) && $domainName !== 'GOAL ORIENTATION')
                         <div class="mt-10">
                             <h4 class="text-2xl font-semibold text-indigo-700 mb-4" style="margin-left:20px;">💼 Suggested Career Paths</h4>
 
@@ -79,7 +89,7 @@
 
                                     </thead>
                                     <tbody>
-                                        @foreach ($sections as $sec)
+                                        @foreach ($careerPathSections as $sec)
                                             @php
                                                 $sectionId = $sec['section_id'] ?? null;
                                                 $paths = $careerpaths[$sectionId] ?? collect();
@@ -106,6 +116,35 @@
                                         @endforeach
                                     </tbody>
                                 </table>
+                            </div>
+                        </div>
+                    @endif
+
+                    {{-- Recommendations for GOAL ORIENTATION Domain --}}
+                    @if ($domainName === 'GOAL ORIENTATION')
+                        <div class="mt-10">
+                            <h4 class="text-2xl font-semibold text-indigo-700 mb-4" style="margin-left:20px;">🎯 Recommendations</h4>
+                            
+                            <div class="grid md:grid-cols-2 gap-6">
+                                <!-- Short Term Recommendations -->
+                                <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-6 border border-blue-200 shadow-sm">
+                                    <h5 class="text-lg font-semibold text-blue-800 mb-3 flex items-center">
+                                        <span class="mr-2">⏰</span> Short Term
+                                    </h5>
+                                    <p class="text-gray-700 leading-relaxed">
+                                        Aim for short milestones, and rewards. Match with roles needing daily targets.
+                                    </p>
+                                </div>
+                                
+                                <!-- Long Term Recommendations -->
+                                <div class="bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl p-6 border border-green-200 shadow-sm">
+                                    <h5 class="text-lg font-semibold text-green-800 mb-3 flex items-center">
+                                        <span class="mr-2">🎯</span> Long Term
+                                    </h5>
+                                    <p class="text-gray-700 leading-relaxed">
+                                        Use Vision boards, planning tools, long-term mentorship. Ideal for research, entrepreneurship, civil services.
+                                    </p>
+                                </div>
                             </div>
                         </div>
                     @endif
@@ -165,13 +204,16 @@
 
             if (!ctx) return;
 
+            // For Work Values domain, use 'chart' data, for others use sections directly
+            const chartSections = domain === 'Work Values' ? sections.chart : sections;
+
             new Chart(ctx, {
                 type: 'bar',
                 data: {
-                    labels: sections.map(s => s.section_name),
+                    labels: chartSections.map(s => s.section_name),
                     datasets: [{
                         label: 'Average Score',
-                        data: sections.map(s => s.average_value),
+                        data: chartSections.map(s => s.average_value),
                         backgroundColor: '#6366f1'
                     }]
                 },
