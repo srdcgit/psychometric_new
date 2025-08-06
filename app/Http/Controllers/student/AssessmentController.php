@@ -225,7 +225,10 @@ class AssessmentController extends Controller
                 }
                 
                 // Return all sections for OCEAN domain (no limit)
-                return $sorted;
+                return [
+                    'cards' => $sorted,
+                    'chart' => $sorted
+                ];
             } 
             // For Work Values, keep existing ranking-based logic
             elseif ($domainName === 'Work Values' && $sorted->count() >= 1) {
@@ -268,10 +271,14 @@ class AssessmentController extends Controller
                     $section['label'] = $label;
                     $sorted[$index] = $section;
                 }
+                
+                // For all other domains, return both cards (top 3) and chart (all sections)
+                $cardsData = $sorted->take(3);
+                return [
+                    'cards' => $cardsData,
+                    'chart' => $sorted
+                ];
             }
-
-            // For non-OCEAN domains, keep the top 3 limit
-            return $domainName === 'OCEAN' ? $sorted : $sorted->take(3);
         });
 
         return view('student.assessment.result', compact('careerpaths'), [

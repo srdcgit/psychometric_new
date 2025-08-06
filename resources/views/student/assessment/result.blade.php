@@ -42,8 +42,8 @@
                     {{-- Section Cards --}}
                     <div class="flex flex-wrap -mx-4">
                         @php
-                            // For Work Values domain, use 'cards' data, for others use $sections directly
-                            $displaySections = $domainName === 'Work Values' ? $sections['cards'] : $sections;
+                            // For all domains, use 'cards' data
+                            $displaySections = $sections['cards'];
                         @endphp
                         @foreach ($displaySections as $section)
                             <div class="w-full sm:w-1/2 lg:w-1/3 px-4 mb-6">
@@ -76,8 +76,8 @@
 
                     {{-- After all section cards --}}
                     @php
-                        // For Work Values domain, use 'cards' data, for others use $sections directly
-                        $careerPathSections = $domainName === 'Work Values' ? $sections['cards'] : $sections;
+                        // For all domains, use 'cards' data
+                        $careerPathSections = $sections['cards'];
                     @endphp
                     @if (!empty($careerPathSections) && $domainName !== 'GOAL ORIENTATION')
                         <div class="mt-10">
@@ -204,8 +204,8 @@
 
             if (!ctx) return;
 
-            // For Work Values domain, use 'chart' data, for others use sections directly
-            const chartSections = domain === 'Work Values' ? sections.chart : sections;
+            // For all domains, use 'chart' data (all sections)
+            const chartSections = sections.chart;
 
             new Chart(ctx, {
                 type: 'bar',
