@@ -53,7 +53,13 @@
                                     <p class="text-gray-700 text-sm mb-3">{!! $section['section_description'] !!}</p>
                                     <br>
                                     <div class="text-sm text-gray-700 space-y-1">
-                                        <p><span class="font-bold text-gray-800">Average Score:</span>
+                                        <p><span class="font-bold text-gray-800">
+                                            @if ($domainName === 'APTITUDE')
+                                                Total Score:
+                                            @else
+                                                Average Score:
+                                            @endif
+                                        </span>
                                             {{ $section['average'] }}</p>
                                         @if ($domainName === 'OCEAN')
                                             <p><span style="font-weight:bold;">{{ $section['label'] }}:</span> {{ $section['relevant_description'] }}</p>
@@ -212,7 +218,7 @@
                 data: {
                     labels: chartSections.map(s => s.section_name),
                     datasets: [{
-                        label: 'Average Score',
+                        label: domain === 'APTITUDE' ? 'Total Score' : 'Average Score',
                         data: chartSections.map(s => s.average_value),
                         backgroundColor: '#6366f1'
                     }]

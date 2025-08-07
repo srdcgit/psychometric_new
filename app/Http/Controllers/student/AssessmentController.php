@@ -281,8 +281,12 @@ class AssessmentController extends Controller
                     $sorted[$index] = $section;
                 }
                 
-                // For all other domains, return both cards (top 3) and chart (all sections)
-                $cardsData = $sorted->take(3);
+                // For APTITUDE domain, return top 2 sections for cards, for others return top 3
+                if ($domainName === 'APTITUDE') {
+                    $cardsData = $sorted->take(2);
+                } else {
+                    $cardsData = $sorted->take(3);
+                }
                 return [
                     'cards' => $cardsData,
                     'chart' => $sorted
