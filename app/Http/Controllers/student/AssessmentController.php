@@ -231,8 +231,8 @@ class AssessmentController extends Controller
                     'chart' => $sorted
                 ];
             } 
-            // For Work Values, keep existing ranking-based logic
-            elseif ($domainName === 'Work Values' && $sorted->count() >= 1) {
+            // For WORK VALUES, keep existing ranking-based logic
+            elseif ($domainName === 'WORK VALUES' && $sorted->count() >= 1) {
                 $labels = ['High', 'Mid', 'Low'];
                 $count = $sorted->count();
                 for ($i = 0; $i < $count; $i++) {

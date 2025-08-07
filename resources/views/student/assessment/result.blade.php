@@ -63,7 +63,7 @@
                                             {{ $section['average'] }}</p>
                                         @if ($domainName === 'OCEAN')
                                             <p><span style="font-weight:bold;">{{ $section['label'] }}:</span> {{ $section['relevant_description'] }}</p>
-                                        @elseif ($domainName === 'Work Values')
+                                        @elseif ($domainName === 'WORK VALUES')
                                             <p><span style="font-weight:bold;">Low:</span> {{ $section['low'] }}</p>
                                             <p><span style="font-weight:bold;">Mid:</span> {{ $section['mid'] }}</p>
                                             <p><span style="font-weight:bold;">High:</span> {{ $section['high'] }}</p>
