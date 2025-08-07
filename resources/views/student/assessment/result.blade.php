@@ -64,9 +64,13 @@
                                         @if ($domainName === 'OCEAN')
                                             <p><span style="font-weight:bold;">{{ $section['label'] }}:</span> {{ $section['relevant_description'] }}</p>
                                         @elseif ($domainName === 'WORK VALUES')
-                                            <p><span style="font-weight:bold;">Low:</span> {{ $section['low'] }}</p>
-                                            <p><span style="font-weight:bold;">Mid:</span> {{ $section['mid'] }}</p>
-                                            <p><span style="font-weight:bold;">High:</span> {{ $section['high'] }}</p>
+                                            @if ($section['label'] === 'Low')
+                                                <p><span style="font-weight:bold;">Low:</span> {{ $section['low'] }}</p>
+                                            @elseif ($section['label'] === 'Mid')
+                                                <p><span style="font-weight:bold;">Mid:</span> {{ $section['mid'] }}</p>
+                                            @elseif ($section['label'] === 'High')
+                                                <p><span style="font-weight:bold;">High:</span> {{ $section['high'] }}</p>
+                                            @endif
                                         @else
                                             <p><span style="font-weight:bold;">Key Traits:</span> {{ $section['section_keytraits'] }}
                                             </p>
