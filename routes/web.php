@@ -46,6 +46,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('assessment/store', [AssessmentController::class, 'store'])->name('assessment.store');
 
     Route::get('/assessment/result', [AssessmentController::class, 'result'])->name('assessment.result');
+    Route::get('/assessment/report', [AssessmentController::class, 'report'])->name('assessment.report');
+    Route::get('/assessment/report/pdf', [AssessmentController::class, 'reportPdf'])->name('assessment.report.pdf');
 
     //Institutes
     Route::get('/institute', [InstituteController::class, 'index'])->name('institute.index');

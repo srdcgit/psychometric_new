@@ -14,7 +14,13 @@
 
 
     <div class="max-w-7xl mx-auto py-12 px-6">
-        <h1 class="text-4xl font-bold text-center text-indigo-700 mb-12" style="margin-top:-50px;padding:15px">📊 Assessment Results</h1>
+        <div class="flex items-center justify-between mb-12" style="margin-top:-50px;padding:15px">
+            <h1 class="text-4xl font-bold text-center text-indigo-700">📊 Assessment Results</h1>
+            <div class="space-x-2">
+                <a href="{{ route('assessment.report') }}" target="_blank" class="inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">View Full Report</a>
+                <a href="{{ route('assessment.report.pdf') }}" class="inline-flex items-center px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-800">Download PDF</a>
+            </div>
+        </div>
 
         <!-- Tabs -->
         <div class="mb-8">
