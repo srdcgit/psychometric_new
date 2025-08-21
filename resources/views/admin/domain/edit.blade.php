@@ -36,6 +36,13 @@
                 </div>
 
                 <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700" for="instruction">Instruction</label>
+                    <textarea name="instruction" id="instruction"
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                        rows="4">{{ old('instruction', $domain->instruction) }}</textarea>
+                </div>
+
+                <div class="mb-4">
                     <label class="block text-sm font-medium text-gray-700" for="scoring_type">Scoring Type</label>
                     <select name="scoring_type" id="scoring_type" required
                         class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
@@ -68,11 +75,18 @@
         </div>
     </div>
 
-     <!-- CKEditor 5 Script -->
+    <!-- CKEditor 5 Script -->
     <script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
     <script>
+        
         ClassicEditor
             .create(document.querySelector('#description'))
+            .catch(error => {
+                console.error(error);
+            });
+
+        ClassicEditor
+            .create(document.querySelector('#instruction'))
             .catch(error => {
                 console.error(error);
             });

@@ -30,6 +30,12 @@
                 <textarea id="description" name="description" class="block w-full mt-1 rounded"></textarea>
             </div>
 
+
+            <div class="mt-4">
+                <x-input-label for="instruction" :value="__('Instruction')" />
+                <textarea id="instruction" name="instruction" class="block w-full mt-1 rounded"></textarea>
+            </div>
+
             <div class="mt-4">
                 <x-primary-button>{{ __('Create') }}</x-primary-button>
             </div>
@@ -41,6 +47,12 @@
     <script>
         ClassicEditor
             .create(document.querySelector('#description'))
+            .catch(error => {
+                console.error(error);
+            });
+
+        ClassicEditor
+            .create(document.querySelector('#instruction'))
             .catch(error => {
                 console.error(error);
             });

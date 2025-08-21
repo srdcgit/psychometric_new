@@ -196,6 +196,14 @@ class AssessmentController extends Controller
         $grouped = collect($flatResults)->groupBy('domain_name');
 
         $groupedResults = $grouped->map(function ($sections, $domainName) {
+            // Get domain instruction from the first section's domain
+            $domainDescription = '';
+            if ($sections->isNotEmpty()) {
+                $firstSection = $sections->first();
+                $domain = Domain::find($firstSection['domain_id']);
+                $domainDescription = $domain ? $domain->description : '';
+            }
+            
             $sorted = $sections->sortByDesc('average')->values();
 
             // For OCEAN domain, assign High/Mid/Low labels based on score ranges
@@ -228,7 +236,8 @@ class AssessmentController extends Controller
                 // Return all sections for OCEAN domain (no limit)
                 return [
                     'cards' => $sorted,
-                    'chart' => $sorted
+                    'chart' => $sorted,
+                    'description' => $domainDescription
                 ];
             } 
             // For WORK VALUES, keep existing ranking-based logic
@@ -258,7 +267,8 @@ class AssessmentController extends Controller
                 // Return filtered sections for cards, but include all sections for chart
                 return [
                     'cards' => $filteredForCards,
-                    'chart' => $allSectionsForChart
+                    'chart' => $allSectionsForChart,
+                    'description' => $domainDescription
                 ];
             } else {
                 foreach ($sorted as $index => $section) {
@@ -289,7 +299,8 @@ class AssessmentController extends Controller
                 }
                 return [
                     'cards' => $cardsData,
-                    'chart' => $sorted
+                    'chart' => $sorted,
+                    'description' => $domainDescription
                 ];
             }
         });
@@ -348,6 +359,14 @@ class AssessmentController extends Controller
         $grouped = collect($flatResults)->groupBy('domain_name');
 
         $groupedResults = $grouped->map(function ($sections, $domainName) {
+            // Get domain description from the first section's domain
+            $domainDescription = '';
+            if ($sections->isNotEmpty()) {
+                $firstSection = $sections->first();
+                $domain = Domain::find($firstSection['domain_id']);
+                $domainDescription = $domain ? $domain->description : '';
+            }
+            
             $sorted = $sections->sortByDesc('average')->values();
 
             if ($domainName === 'OCEAN') {
@@ -373,7 +392,8 @@ class AssessmentController extends Controller
                 }
                 return [
                     'cards' => $sorted,
-                    'chart' => $sorted
+                    'chart' => $sorted,
+                    'description' => $domainDescription
                 ];
             } elseif ($domainName === 'WORK VALUES' && $sorted->count() >= 1) {
                 $labels = ['High', 'Mid', 'Low'];
@@ -394,7 +414,8 @@ class AssessmentController extends Controller
                 })->values();
                 return [
                     'cards' => $filteredForCards,
-                    'chart' => $allSectionsForChart
+                    'chart' => $allSectionsForChart,
+                    'description' => $domainDescription
                 ];
             } else {
                 foreach ($sorted as $index => $section) {
@@ -419,7 +440,8 @@ class AssessmentController extends Controller
                 }
                 return [
                     'cards' => $cardsData,
-                    'chart' => $sorted
+                    'chart' => $sorted,
+                    'description' => $domainDescription
                 ];
             }
         });

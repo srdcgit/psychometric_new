@@ -40,6 +40,7 @@ class DomainController extends Controller
         Domain::create([
             'name' =>$request->name,
             'description' =>$request->description,
+            'instruction' =>$request->instruction,
             'scoring_type' =>$request->scoring_type,
             'uploaded_by' => Auth::user()->id,
         ]);
@@ -75,6 +76,7 @@ class DomainController extends Controller
         $request->validate([
             'name' => 'required|string|max:255|unique:domains,name,' . $domain->id,
             'description' => 'nullable|string',
+            'instruction' => 'nullable|string',
             'scoring_type' => 'nullable|string',
         ]);
 

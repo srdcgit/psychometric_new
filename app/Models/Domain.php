@@ -11,6 +11,7 @@ class Domain extends Model
     protected $fillable = [
         'name',
         'description',
+        'instruction',
         'scoring_type',
         'uploaded_by'
     ];

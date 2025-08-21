@@ -174,6 +174,21 @@
     @foreach ($groupedResults as $domainName => $sections)
         @php $slug = Str::slug($domainName); @endphp
         <h2>{{ $domainName }}</h2>
+
+        <div>
+            @if(isset($sections['description']) && $sections['description'])
+                <div class="meta">
+                    <div class="meta">
+                        <div class="meta">
+                            <p class="meta">
+                                <strong>Description:</strong> {!! $sections['description'] !!}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            @endif
+        </div>
+
         @foreach ($sections['cards'] ?? [] as $section)
             <div class="section">
                 <h3>{{ $section['section_name'] }} @if (isset($section['label']))
