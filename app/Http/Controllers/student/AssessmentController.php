@@ -150,7 +150,18 @@ class AssessmentController extends Controller
 
     private function renderResult($userId)
     {
-        $careerpaths = CareerPath::with(['section', 'careers'])->get()->groupBy('section_id');
+        $careerpaths = CareerPath::with(['sections', 'careers'])->get()->reduce(function ($carry, $path) {
+            foreach ($path->sections as $section) {
+                if (!isset($carry[$section->id])) {
+                    $carry[$section->id] = collect();
+                }
+                // Avoid duplicates
+                if (!$carry[$section->id]->contains(fn($p) => $p->id === $path->id)) {
+                    $carry[$section->id]->push($path);
+                }
+            }
+            return $carry;
+        }, []);
 
         $responses = DB::table('assessments')
             ->join('sections', 'assessments.section_id', '=', 'sections.id')
@@ -313,7 +324,18 @@ class AssessmentController extends Controller
     private function buildResultData($userId)
     {
         $student = User::with(['rolls', 'institute'])->find($userId);
-        $careerpaths = CareerPath::with(['section', 'careers'])->get()->groupBy('section_id');
+        $careerpaths = CareerPath::with(['sections', 'careers'])->get()->reduce(function ($carry, $path) {
+            foreach ($path->sections as $section) {
+                if (!isset($carry[$section->id])) {
+                    $carry[$section->id] = collect();
+                }
+                // Avoid duplicates
+                if (!$carry[$section->id]->contains(fn($p) => $p->id === $path->id)) {
+                    $carry[$section->id]->push($path);
+                }
+            }
+            return $carry;
+        }, []);
 
         $responses = DB::table('assessments')
             ->join('sections', 'assessments.section_id', '=', 'sections.id')
