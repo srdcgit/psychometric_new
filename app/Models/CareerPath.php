@@ -10,12 +10,12 @@ class CareerPath extends Model
     use HasFactory;
     protected $table = 'career_paths';
     protected $fillable = [
-        'section_id',
+        // section_id removed - now handled via pivot table
     ];
 
-    public function section()
+    public function sections()
     {
-        return $this->belongsTo(Section::class);
+        return $this->belongsToMany(Section::class, 'career_path_section');
     }
 
     public function careers()

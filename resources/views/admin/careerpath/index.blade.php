@@ -54,7 +54,17 @@
                                             <span class="text-gray-500">No careers assigned</span>
                                         @endif
                                     </td>
-                                    <td class="px-4 py-2">{{ $career->section->name  }}</td>
+                                    <td class="px-4 py-2">
+                                        @if($career->sections->count() > 0)
+                                            @foreach($career->sections as $section)
+                                                <span class="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded mr-1 mb-1">
+                                                    {!! $section->name !!}
+                                                </span>
+                                            @endforeach
+                                        @else
+                                            <span class="text-gray-500">No sections assigned</span>
+                                        @endif
+                                    </td>
                                     <td class="px-4 py-2 space-x-2">
                                         <a href="{{ route('careerpath.edit', $career->id) }}"
                                             class="text-blue-500 hover:underline">Edit</a>

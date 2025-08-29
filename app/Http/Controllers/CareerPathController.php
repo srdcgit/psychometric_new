@@ -14,7 +14,7 @@ class CareerPathController extends Controller
     public function index()
     {
         $sections    = Section::all();
-        $careerpaths = CareerPath::with(['section', 'careers'])->paginate(10);
+        $careerpaths = CareerPath::with(['sections', 'careers'])->paginate(10);
         return view('admin.careerpath.index', compact('sections', 'careerpaths'));
     }
 
@@ -37,21 +37,23 @@ class CareerPathController extends Controller
 
         //dd($request->all());
         $request->validate([
-            'section_id' => 'required|exists:sections,id',
+            'sections' => 'required|array',
+            // 'sections.*' => 'exists:sections,id',
             'careers'    => 'required|array',
             // 'careers.*'  => 'exists:careers,id',
         ]);
 
-        $careerPath = CareerPath::create([
-            'section_id' => $request->section_id,
-        ]);
+        // Create a single career path and attach many sections and careers
+        $careerPath = CareerPath::create([]);
 
-        // Attach selected careers
+        // Attach the sections and careers to this career path
+        $careerPath->sections()->attach($request->sections);
         $careerPath->careers()->attach($request->careers);
 
-        // dd($careerPath);
+        $sectionCount = count($request->sections);
+        $careerCount = count($request->careers);
 
-        return redirect()->route('careerpath.index')->with('success', 'Career Path created successfully!');
+        return redirect()->route('careerpath.index')->with('success', "Career Path created for {$sectionCount} section(s) with {$careerCount} career(s)!");
     }
 
     /**
@@ -82,18 +84,18 @@ class CareerPathController extends Controller
         $career = CareerPath::findOrFail($id);
 
         $request->validate([
-            'section_id' => 'required|exists:sections,id',
+            'sections' => 'required|array',
+            'sections.*' => 'exists:sections,id',
             'careers'    => 'required|array',
         ]);
 
-        $career->update([
-            'section_id' => $request->section_id,
-        ]);
+        // Sync the sections (many-to-many)
+        $career->sections()->sync($request->sections);
 
         // Sync selected careers
         $career->careers()->sync($request->careers);
 
-        return redirect()->route('careerpath.index')->with('success', 'Career Path updated successfully.');
+        return redirect()->route('careerpath.index')->with('success', 'Career Path updated successfully with selected sections.');
     }
 
     /**
