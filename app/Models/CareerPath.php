@@ -15,7 +15,9 @@ class CareerPath extends Model
 
     public function sections()
     {
-        return $this->belongsToMany(Section::class, 'career_path_section');
+        return $this->belongsToMany(Section::class, 'career_path_section')
+                    ->withPivot('order')
+                    ->orderBy('career_path_section.order');
     }
 
     public function careers()

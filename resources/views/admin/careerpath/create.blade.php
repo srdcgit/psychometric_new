@@ -171,6 +171,15 @@
                     const option = hiddenSectionSelect.querySelector(`option[value="${section.id}"]`);
                     if (option) option.selected = true;
                 });
+
+                // Update the order of options in the hidden select to match the selection order
+                selectedSections.forEach((section, index) => {
+                    const option = hiddenSectionSelect.querySelector(`option[value="${section.id}"]`);
+                    if (option) {
+                        // Move the option to the end to maintain order
+                        hiddenSectionSelect.appendChild(option);
+                    }
+                });
             }
 
             function selectSection(section) {

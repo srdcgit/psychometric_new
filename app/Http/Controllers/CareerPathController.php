@@ -46,8 +46,14 @@ class CareerPathController extends Controller
         // Create a single career path and attach many sections and careers
         $careerPath = CareerPath::create([]);
 
-        // Attach the sections and careers to this career path
-        $careerPath->sections()->attach($request->sections);
+        // Attach the sections with order based on their position in the array
+        $sectionData = [];
+        foreach ($request->sections as $index => $sectionId) {
+            $sectionData[$sectionId] = ['order' => $index + 1];
+        }
+        $careerPath->sections()->attach($sectionData);
+        
+        // Attach the careers to this career path
         $careerPath->careers()->attach($request->careers);
 
         $sectionCount = count($request->sections);
@@ -89,8 +95,12 @@ class CareerPathController extends Controller
             'careers'    => 'required|array',
         ]);
 
-        // Sync the sections (many-to-many)
-        $career->sections()->sync($request->sections);
+        // Sync the sections with order based on their position in the array
+        $sectionData = [];
+        foreach ($request->sections as $index => $sectionId) {
+            $sectionData[$sectionId] = ['order' => $index + 1];
+        }
+        $career->sections()->sync($sectionData);
 
         // Sync selected careers
         $career->careers()->sync($request->careers);

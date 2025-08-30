@@ -132,7 +132,7 @@
                 });
             @endif
 
-            // Load existing selected sections
+            // Load existing selected sections (they are already ordered by pivot.order from the model)
             @if($career->sections && $career->sections->count() > 0)
                 const existingSections = @json($career->sections);
                 existingSections.forEach(section => {
@@ -235,6 +235,15 @@
 
                     const option = hiddenSectionSelect.querySelector(`option[value="${section.id}"]`);
                     if (option) option.selected = true;
+                });
+
+                // Update the order of options in the hidden select to match the selection order
+                selectedSections.forEach((section, index) => {
+                    const option = hiddenSectionSelect.querySelector(`option[value="${section.id}"]`);
+                    if (option) {
+                        // Move the option to the end to maintain order
+                        hiddenSectionSelect.appendChild(option);
+                    }
                 });
             }
 
