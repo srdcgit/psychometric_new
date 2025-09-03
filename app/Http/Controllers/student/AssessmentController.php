@@ -280,7 +280,7 @@ class AssessmentController extends Controller
                     'cards' => $filteredForCards,
                     'chart' => $allSectionsForChart,
                     'description' => $domainDescription
-                ];
+                ]; 
             } else {
                 foreach ($sorted as $index => $section) {
                     // For VARK domain, use Primary/Secondary labels, for others use Dominant/Supportive

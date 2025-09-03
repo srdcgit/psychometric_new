@@ -127,25 +127,29 @@
                                             @php
                                                 $sectionId = $sec['section_id'] ?? null;
                                                 $paths = $careerpaths[$sectionId] ?? collect();
+                                                // Combine careers across all paths for this section and de-duplicate
+                                                $combinedCareers = collect();
+                                                foreach ($paths as $p) {
+                                                    $combinedCareers = $combinedCareers->merge($p->careers);
+                                                }
+                                                $combinedCareers = $combinedCareers->unique('id')->values();
                                             @endphp
 
                                             @if ($paths->isNotEmpty())
-                                                @foreach ($paths as $path)
-                                                    <tr>
-                                                        <td class="px-4 py-2 border" style="font-weight:bold;">{{ $sec['section_name'] }}</td>
-                                                        <td class="px-4 py-2 border text-center">
-                                                            @if($path->careers->count() > 0)
-                                                                @foreach($path->careers as $career)
-                                                                    <span class="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded mr-1 mb-1">
-                                                                        {!! $career->name !!}
-                                                                    </span>
-                                                                @endforeach
-                                                            @else
-                                                                <span class="text-gray-500">No careers assigned</span>
-                                                            @endif
-                                                        </td>
-                                                    </tr>
-                                                @endforeach
+                                                <tr>
+                                                    <td class="px-4 py-2 border" style="font-weight:bold;">{{ $sec['section_name'] }}</td>
+                                                    <td class="px-4 py-2 border text-center">
+                                                        @if($combinedCareers->count() > 0)
+                                                            @foreach($combinedCareers as $career)
+                                                                <span class="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded mr-1 mb-1">
+                                                                    {!! $career->name !!}
+                                                                </span>
+                                                            @endforeach
+                                                        @else
+                                                            <span class="text-gray-500">No careers assigned</span>
+                                                        @endif
+                                                    </td>
+                                                </tr>
                                             @endif
                                         @endforeach
                                     </tbody>

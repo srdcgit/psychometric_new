@@ -188,7 +188,7 @@
                 </div>
             @endif
         </div>
-
+ 
         @foreach ($sections['cards'] ?? [] as $section)
             <div class="section">
                 <h3>{{ $section['section_name'] }} @if (isset($section['label']))

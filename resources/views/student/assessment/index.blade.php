@@ -12,7 +12,7 @@
             <form id="assessment-form">
                 @csrf
                 <input type="hidden" name="domain_id" value="{{ $domain->id }}">
-
+ 
                 @php
                     $likertScales = [
                         'likert' => [
