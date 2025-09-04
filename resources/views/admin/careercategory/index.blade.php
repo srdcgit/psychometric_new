@@ -33,6 +33,9 @@
                             <tr class="bg-gray-100 text-left">
                                 <th class="px-4 py-2">#</th>
                                 <th class="px-4 py-2">Name</th>
+                                <th class="px-4 py-2">Hook</th>
+                                <th class="px-4 py-2">What is it?</th>
+                                <th class="px-4 py-2">Example roles</th>
                                 <th class="px-4 py-2">Actions</th>
                             </tr>
                         </thead>
@@ -43,6 +46,9 @@
                                         {{ ($careercategories->currentPage() - 1) * $careercategories->perPage() + $loop->iteration }}
                                     </td>
                                     <td class="px-4 py-2">{!! $career->name ?? 'Null' !!}</td>
+                                    <td class="px-4 py-2">{!! \Illuminate\Support\Str::limit(strip_tags($career->hook), 60) !!}</td>
+                                    <td class="px-4 py-2">{!! \Illuminate\Support\Str::limit(strip_tags($career->what_is_it), 60) !!}</td>
+                                    <td class="px-4 py-2">{!! \Illuminate\Support\Str::limit(strip_tags($career->example_roles), 60) !!}</td>
                                     <td class="px-4 py-2 space-x-2">
                                             <a href="{{ route('careercategory.edit', $career->id) }}"
                                             class="text-blue-500 hover:underline">Edit</a>

@@ -15,6 +15,6 @@ class CareerCategory extends Model
      * @var string
      */
     protected $table = 'career_categories';
-    protected $fillable = ['name']; // Add actual fields only, not _token
+    protected $fillable = ['name', 'hook', 'what_is_it', 'example_roles', 'subjects', 'core_apptitudes_to_highlight', 'value_and_personality_edge', 'why_it_could_fit_you', 'early_actions', 'india_study_pathways', 'future_trends']; // Add actual fields only, not _token
 
 }

@@ -29,11 +29,35 @@ class CareerCategoryController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
+        $validated = $request->validate([
+            'name' => 'required|string',
+            'hook' => 'nullable|string',
+            'what_is_it' => 'nullable|string',
+            'example_roles' => 'nullable|string',
+            'subjects' => 'nullable|string',
+            'core_apptitudes_to_highlight' => 'nullable|string',
+            'value_and_personality_edge' => 'nullable|string',
+            'why_it_could_fit_you' => 'nullable|string',
+            'early_actions' => 'nullable|string',
+            'india_study_pathways' => 'nullable|string',
+            'future_trends' => 'nullable|string',
         ]);
 
-        CareerCategory::create($request->all());
+        CareerCategory::create(
+            collect($validated)->only([
+                'name',
+                'hook',
+                'what_is_it',
+                'example_roles',
+                'subjects',
+                'core_apptitudes_to_highlight',
+                'value_and_personality_edge',
+                'why_it_could_fit_you',
+                'early_actions',
+                'india_study_pathways',
+                'future_trends',
+            ])->toArray()
+        );
 
         return redirect()->route('careercategory.index')->with('success', 'Career Category created successfully');
     }
@@ -61,12 +85,36 @@ class CareerCategoryController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
+        $validated = $request->validate([
+            'name' => 'required|string',
+            'hook' => 'nullable|string',
+            'what_is_it' => 'nullable|string',
+            'example_roles' => 'nullable|string',
+            'subjects' => 'nullable|string',
+            'core_apptitudes_to_highlight' => 'nullable|string',
+            'value_and_personality_edge' => 'nullable|string',
+            'why_it_could_fit_you' => 'nullable|string',
+            'early_actions' => 'nullable|string',
+            'india_study_pathways' => 'nullable|string',
+            'future_trends' => 'nullable|string',
         ]);
 
         $career = CareerCategory::find($id);
-        $career->update($request->all());
+        $career->update(
+            collect($validated)->only([
+                'name',
+                'hook',
+                'what_is_it',
+                'example_roles',
+                'subjects',
+                'core_apptitudes_to_highlight',
+                'value_and_personality_edge',
+                'why_it_could_fit_you',
+                'early_actions',
+                'india_study_pathways',
+                'future_trends',
+            ])->toArray()
+        );
         return redirect()->route('careercategory.index')->with('success', 'Career Category updated successfully');
     }
 
