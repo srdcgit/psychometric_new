@@ -126,7 +126,9 @@
                                         @foreach ($careerPathSections as $sec)
                                             @php
                                                 $sectionId = $sec['section_id'] ?? null;
-                                                $paths = $careerpaths[$sectionId] ?? collect();
+                                                $paths = ($careerpaths[$sectionId] ?? collect())->filter(function ($p) {
+                                                    return $p->sections && $p->sections->count() === 1;
+                                                })->values();
                                                 // Combine careers across all paths for this section and de-duplicate
                                                 $combinedCareers = collect();
                                                 foreach ($paths as $p) {
