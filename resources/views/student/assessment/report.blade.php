@@ -161,33 +161,40 @@
                 </div>
 
                 @if (!empty($sections['cards']) && $domainName !== 'GOAL ORIENTATION')
+                    @php
+                        $careerPathSections = $sections['cards'];
+                    @endphp
                     <div class="mt-6">
                         <h4 class="text-xl font-semibold text-indigo-700 mb-2">Suggested Career Paths</h4>
                         <div class="overflow-x-auto">
                             <table class="min-w-full text-sm text-left border border-gray-300 rounded-lg">
                                 <tbody>
-                                    @foreach ($sections['cards'] as $sec)
+                                    @foreach ($careerPathSections as $sec)
                                         @php
                                             $sectionId = $sec['section_id'] ?? null;
-                                            $paths = $careerpaths[$sectionId] ?? collect();
+                                            $paths = ($careerpaths[$sectionId] ?? collect())->filter(function ($p) {
+                                                return $p->sections && $p->sections->count() === 1;
+                                            })->values();
+                                            $combinedCareers = collect();
+                                            foreach ($paths as $p) {
+                                                $combinedCareers = $combinedCareers->merge($p->careers);
+                                            }
+                                            $combinedCareers = $combinedCareers->unique('id')->values();
                                         @endphp
+
                                         @if ($paths->isNotEmpty())
-                                            @foreach ($paths as $path)
-                                                <tr>
-                                                    <td class="px-4 py-2 border font-semibold">
-                                                        {{ $sec['section_name'] }}</td>
-                                                    <td class="px-4 py-2 border">
-                                                        @if ($path->careers->count() > 0)
-                                                            @foreach ($path->careers as $career)
-                                                                <span
-                                                                    class="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded mr-1 mb-1">{!! $career->name !!}</span>
-                                                            @endforeach
-                                                        @else
-                                                            <span class="text-gray-500">No careers assigned</span>
-                                                        @endif
-                                                    </td>
-                                                </tr>
-                                            @endforeach
+                                            <tr>
+                                                <td class="px-4 py-2 border font-semibold">{{ $sec['section_name'] }}</td>
+                                                <td class="px-4 py-2 border">
+                                                    @if($combinedCareers->count() > 0)
+                                                        @foreach($combinedCareers as $career)
+                                                            <span class="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded mr-1 mb-1">{!! $career->name !!}</span>
+                                                        @endforeach
+                                                    @else
+                                                        <span class="text-gray-500">No careers assigned</span>
+                                                    @endif
+                                                </td>
+                                            </tr>
                                         @endif
                                     @endforeach
                                 </tbody>

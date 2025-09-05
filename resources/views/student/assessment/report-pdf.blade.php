@@ -219,29 +219,37 @@
         @endforeach
 
         @if (!empty($sections['cards']) && $domainName !== 'GOAL ORIENTATION')
+            @php
+                $careerPathSections = $sections['cards'];
+            @endphp
             <h3>Suggested Career Paths</h3>
             <table>
                 <tbody>
-                    @foreach ($sections['cards'] as $sec)
+                    @foreach ($careerPathSections as $sec)
                         @php
                             $sectionId = $sec['section_id'] ?? null;
-                            $paths = $careerpaths[$sectionId] ?? collect();
+                            $paths = ($careerpaths[$sectionId] ?? collect())->filter(function ($p) {
+                                return $p->sections && $p->sections->count() === 1;
+                            })->values();
+                            $combinedCareers = collect();
+                            foreach ($paths as $p) {
+                                $combinedCareers = $combinedCareers->merge($p->careers);
+                            }
+                            $combinedCareers = $combinedCareers->unique('id')->values();
                         @endphp
                         @if ($paths->isNotEmpty())
-                            @foreach ($paths as $path)
-                                <tr>
-                                    <td style="width: 30%">{{ $sec['section_name'] }}</td>
-                                    <td>
-                                        @if ($path->careers->count() > 0)
-                                            @foreach ($path->careers as $career)
-                                                <span class="badge">{!! $career->name !!}</span>
-                                            @endforeach
-                                        @else
-                                            <span class="meta">No careers assigned</span>
-                                        @endif
-                                    </td>
-                                </tr>
-                            @endforeach
+                            <tr>
+                                <td style="width: 30%">{{ $sec['section_name'] }}</td>
+                                <td>
+                                    @if($combinedCareers->count() > 0)
+                                        @foreach($combinedCareers as $career)
+                                            <span class="badge">{!! $career->name !!}</span>
+                                        @endforeach
+                                    @else
+                                        <span class="meta">No careers assigned</span>
+                                    @endif
+                                </td>
+                            </tr>
                         @endif
                     @endforeach
                 </tbody>
