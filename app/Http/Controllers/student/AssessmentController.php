@@ -150,7 +150,7 @@ class AssessmentController extends Controller
 
     private function renderResult($userId)
     {
-        $careerpaths = CareerPath::with(['sections', 'careers'])->get()->reduce(function ($carry, $path) {
+        $careerpaths = CareerPath::with(['sections', 'careers.careerCategory'])->get()->reduce(function ($carry, $path) {
             foreach ($path->sections as $section) {
                 if (!isset($carry[$section->id])) {
                     $carry[$section->id] = collect();
@@ -324,7 +324,7 @@ class AssessmentController extends Controller
     private function buildResultData($userId)
     {
         $student = User::with(['rolls', 'institute'])->find($userId);
-        $careerpaths = CareerPath::with(['sections', 'careers'])->get()->reduce(function ($carry, $path) {
+        $careerpaths = CareerPath::with(['sections', 'careers.careerCategory'])->get()->reduce(function ($carry, $path) {
             foreach ($path->sections as $section) {
                 if (!isset($carry[$section->id])) {
                     $carry[$section->id] = collect();

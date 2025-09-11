@@ -224,7 +224,7 @@
             @endphp
             <h3>Suggested Career Paths</h3>
             <table>
-                <tbody>
+                <tbody> 
                     @foreach ($careerPathSections as $sec)
                         @php
                             $sectionId = $sec['section_id'] ?? null;
@@ -233,17 +233,26 @@
                             })->values();
                             $combinedCareers = collect();
                             foreach ($paths as $p) {
-                                $combinedCareers = $combinedCareers->merge($p->careers);
+                                // Ensure career categories are loaded before merging
+                                $careersWithCategories = $p->careers->load('careerCategory');
+                                $combinedCareers = $combinedCareers->merge($careersWithCategories);
                             }
                             $combinedCareers = $combinedCareers->unique('id')->values();
-                        @endphp
+                        @endphp 
                         @if ($paths->isNotEmpty())
                             <tr>
                                 <td style="width: 30%">{{ $sec['section_name'] }}</td>
                                 <td>
                                     @if($combinedCareers->count() > 0)
                                         @foreach($combinedCareers as $career)
-                                            <span class="badge">{!! $career->name !!}</span>
+                                            <span class="badge">
+                                                {!! $career->name !!}
+                                                @if($career->careerCategory)
+                                                    <small style="display: block; font-size: 0.8em; color: #666;">
+                                                        {!! $career->careerCategory->name !!}
+                                                    </small>
+                                                @endif
+                                            </span>
                                         @endforeach
                                     @else
                                         <span class="meta">No careers assigned</span>
@@ -278,13 +287,75 @@
     @endforeach
 
     <br><br>
+   
 
+
+
+
+    
     <div class="meta">
         <h2>Integrated Analysis</h2>
         <p>{{ $student->name }} demonstrates high emotional stability, creativity, conscientiousness, and social
             engagement. His preference for autonomy and long-term orientation aligns well with careers requiring deep
             engagement and self-direction.</p>
     </div>
+
+    @php
+        $allCategoryCountsBySection = [];
+        foreach ($groupedResults as $domainName => $sections) {
+            $careerPathSections = $sections['cards'] ?? [];
+            foreach ($careerPathSections as $sec) {
+                $sectionId = $sec['section_id'] ?? null;
+                $paths = ($careerpaths[$sectionId] ?? collect())
+                    ->filter(function ($p) {
+                        return $p->sections && $p->sections->count() === 1;
+                    })
+                    ->values();
+
+                if ($paths->isEmpty()) {
+                    continue;
+                }
+
+                $combinedCareers = collect();
+                foreach ($paths as $p) {
+                    $combinedCareers = $combinedCareers->merge($p->careers->load('careerCategory'));
+                }
+                $combinedCareers = $combinedCareers->unique('id')->values();
+
+                $counts = $combinedCareers
+                    ->map(function ($career) {
+                        return optional($career->careerCategory)->name;
+                    })
+                    ->filter()
+                    ->countBy()
+                    ->filter(function ($count) {
+                        return $count > 1;
+                    })
+                    ->sortDesc();
+
+                if ($counts->isNotEmpty()) {
+                    $allCategoryCountsBySection[] = [
+                        'domain' => $domainName,
+                        'section' => $sec['section_name'],
+                        'counts' => $counts,
+                    ];
+                }
+            }
+        }
+    @endphp
+
+    @if (!empty($allCategoryCountsBySection))
+        <div style="margin-top: 8px;">
+            <h2>Repeated Career Categories (by Section)</h2>
+            @foreach ($allCategoryCountsBySection as $entry)
+                <div class="meta"><strong>{!! $entry['domain'] !!} — {!! $entry['section'] !!}:</strong>
+                    @foreach ($entry['counts'] as $catName => $count)
+                        <span class="badge">{!! $catName !!} ({{ $count }})</span>
+                    @endforeach
+                </div>
+            @endforeach
+        </div>
+    @endif
 
     <div class="meta">
         <h2>Counselor's Remarks</h2>

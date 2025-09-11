@@ -188,7 +188,14 @@
                                                 <td class="px-4 py-2 border">
                                                     @if($combinedCareers->count() > 0)
                                                         @foreach($combinedCareers as $career)
-                                                            <span class="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded mr-1 mb-1">{!! $career->name !!}</span>
+                                                            <span class="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded mr-1 mb-1">
+                                                                {!! $career->name !!}
+                                                                @if($career->careerCategory)
+                                                                    <small style="display: block; font-size: 0.7em; color: #666; margin-top: 2px;">
+                                                                        {!! $career->careerCategory->name !!}
+                                                                    </small>
+                                                                @endif
+                                                            </span>
                                                         @endforeach
                                                     @else
                                                         <span class="text-gray-500">No careers assigned</span>
@@ -224,6 +231,68 @@
                 conscientiousness, and social engagement. His preference for autonomy and long-term orientation aligns
                 well with careers requiring deep engagement and self-direction.</p>
         </div>
+
+        @php
+            $allCategoryCountsBySection = [];
+            foreach ($groupedResults as $domainName => $sections) {
+                $careerPathSections = $sections['cards'] ?? [];
+                foreach ($careerPathSections as $sec) {
+                    $sectionId = $sec['section_id'] ?? null;
+                    $paths = ($careerpaths[$sectionId] ?? collect())
+                        ->filter(function ($p) {
+                            return $p->sections && $p->sections->count() === 1;
+                        })
+                        ->values();
+
+                    if ($paths->isEmpty()) {
+                        continue;
+                    }
+
+                    $combinedCareers = collect();
+                    foreach ($paths as $p) {
+                        $combinedCareers = $combinedCareers->merge($p->careers->load('careerCategory'));
+                    }
+                    $combinedCareers = $combinedCareers->unique('id')->values();
+
+                    $counts = $combinedCareers
+                        ->map(function ($career) {
+                            return optional($career->careerCategory)->name;
+                        })
+                        ->filter()
+                        ->countBy()
+                        ->filter(function ($count) {
+                            return $count > 1;
+                        })
+                        ->sortDesc();
+
+                    if ($counts->isNotEmpty()) {
+                        $allCategoryCountsBySection[] = [
+                            'domain' => $domainName,
+                            'section' => $sec['section_name'],
+                            'counts' => $counts,
+                        ];
+                    }
+                }
+            }
+        @endphp
+
+        @if (!empty($allCategoryCountsBySection))
+            <div class="mt-4">
+                <h2 class="text-2xl font-semibold text-gray-800 mb-2">Repeated Career Categories (by Section)</h2>
+                <div class="space-y-2">
+                    @foreach ($allCategoryCountsBySection as $entry)
+                        <div class="text-sm">
+                            <span class="font-semibold">{!! $entry['domain'] !!} — {!! $entry['section'] !!}:</span>
+                            @foreach ($entry['counts'] as $catName => $count)
+                                <span class="inline-block bg-green-100 text-green-800 text-xs px-2 py-1 rounded mr-1 mb-1">
+                                    {!! $catName !!} ({{ $count }})
+                                </span>
+                            @endforeach
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+        @endif
 
         <div class="mt-4">
             <h2 class="text-2xl font-semibold text-gray-800 mb-4">Counselor's Remarks</h2>
