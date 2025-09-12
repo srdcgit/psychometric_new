@@ -37,6 +37,12 @@
             </div>
 
             <div class="mt-4">
+                <x-input-label for="domain_weightage" :value="__('Domain Weightage')" />
+                <x-text-input id="domain_weightage" type="number" name="domain_weightage" class="mt-1 block w-full" required />
+                <x-input-error :messages="$errors->get('domain_weightage')" class="mt-2" />
+            </div>
+
+            <div class="mt-4">
                 <x-primary-button>{{ __('Create') }}</x-primary-button>
             </div>
         </form>

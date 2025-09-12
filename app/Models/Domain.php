@@ -13,6 +13,7 @@ class Domain extends Model
         'description',
         'instruction',
         'scoring_type',
+        'domain_weightage',
         'uploaded_by'
     ];
 

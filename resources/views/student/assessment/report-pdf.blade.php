@@ -346,14 +346,14 @@
 
     @if (!empty($allCategoryCountsBySection))
         <div style="margin-top: 8px;">
-            <h2>Repeated Career Categories (by Section)</h2>
+            <h2>Repeated Career Categories (by Section)</h2> 
             @foreach ($allCategoryCountsBySection as $entry)
                 <div class="meta"><strong>{!! $entry['domain'] !!} — {!! $entry['section'] !!}:</strong>
                     @foreach ($entry['counts'] as $catName => $count)
                         <span class="badge">{!! $catName !!} ({{ $count }})</span>
                     @endforeach
-                </div>
-            @endforeach
+                </div> 
+            @endforeach 
         </div>
     @endif
 

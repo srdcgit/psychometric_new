@@ -35,6 +35,7 @@ class DomainController extends Controller
             'name' => 'required|string|max:255|unique:domains,name',
             'description' => 'nullable|string',
             'scoring_type' => 'nullable|string',
+            'domain_weightage' => 'nullable|integer',
         ]);
 
         Domain::create([
@@ -42,6 +43,7 @@ class DomainController extends Controller
             'description' =>$request->description,
             'instruction' =>$request->instruction,
             'scoring_type' =>$request->scoring_type,
+            'domain_weightage' =>$request->domain_weightage,
             'uploaded_by' => Auth::user()->id,
         ]);
 
@@ -78,6 +80,7 @@ class DomainController extends Controller
             'description' => 'nullable|string',
             'instruction' => 'nullable|string',
             'scoring_type' => 'nullable|string',
+            'domain_weightage' => 'nullable|integer',
         ]);
 
         $domain->update($request->all());

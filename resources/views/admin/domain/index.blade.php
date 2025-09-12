@@ -35,6 +35,7 @@
                                 <th class="px-4 py-2">Name</th>
                                 <th class="px-4 py-2">Score Type</th>
                                 <th class="px-4 py-2">Description</th>
+                                <th class="px-4 py-2">Domain Weightage</th>
                                 <th class="px-4 py-2">Actions</th>
                             </tr>
                         </thead>
@@ -45,6 +46,7 @@
                                     <td class="px-4 py-2">{{ $domain->name ?? 'Null' }}</td>
                                     <td class="px-4 py-2">{{ $domain->scoring_type ?? 'Null' }}</td>
                                     <td class="px-4 py-2">{!! $domain->description ?? 'null' !!}</td>
+                                    <td class="px-4 py-2">{{ $domain->domain_weightage ?? 'Null' }}</td>
                                     <td class="px-4 py-2 space-x-2">
                                         <a href="{{ route('domain.edit', $domain->id) }}"
                                             class="text-blue-500 hover:underline">Edit</a>
