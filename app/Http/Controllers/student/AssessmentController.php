@@ -383,10 +383,14 @@ class AssessmentController extends Controller
         $groupedResults = $grouped->map(function ($sections, $domainName) {
             // Get domain description from the first section's domain
             $domainDescription = '';
+            $domainWeightage = null;
             if ($sections->isNotEmpty()) {
                 $firstSection = $sections->first();
                 $domain = Domain::find($firstSection['domain_id']);
-                $domainDescription = $domain ? $domain->description : '';
+                if ($domain) {
+                    $domainDescription = $domain->description;
+                    $domainWeightage = $domain->domain_weightage;
+                }
             }
             
             $sorted = $sections->sortByDesc('average')->values();
@@ -415,7 +419,8 @@ class AssessmentController extends Controller
                 return [
                     'cards' => $sorted,
                     'chart' => $sorted,
-                    'description' => $domainDescription
+                    'description' => $domainDescription,
+                    'domain_weightage' => $domainWeightage,
                 ];
             } elseif ($domainName === 'WORK VALUES' && $sorted->count() >= 1) {
                 $labels = ['High', 'Mid', 'Low'];
@@ -437,8 +442,9 @@ class AssessmentController extends Controller
                 return [
                     'cards' => $filteredForCards,
                     'chart' => $allSectionsForChart,
-                    'description' => $domainDescription
-                ];
+                    'description' => $domainDescription,
+                    'domain_weightage' => $domainWeightage,
+                ]; 
             } else {
                 foreach ($sorted as $index => $section) {
                     if ($domainName === 'VARK') {
@@ -463,7 +469,8 @@ class AssessmentController extends Controller
                 return [
                     'cards' => $cardsData,
                     'chart' => $sorted,
-                    'description' => $domainDescription
+                    'description' => $domainDescription,
+                    'domain_weightage' => $domainWeightage,
                 ];
             }
         });

@@ -287,7 +287,96 @@
     @endforeach
 
     <br><br>
-   
+   @if(!empty($groupedResults))
+        @php
+            $repeatedTotalsByDomain = collect($allCategoryCountsBySection ?? [])->groupBy('domain')->map(function($entries){
+                $sum = 0;
+                foreach ($entries as $e) {
+                    $counts = $e['counts'];
+                    $sum += (is_object($counts) && method_exists($counts, 'values')) ? array_sum($counts->values()->all()) : array_sum((array)$counts);
+                }
+                return $sum;
+            });
+
+            $domainRepeatedRows = [];
+            foreach ($groupedResults as $domainName => $sections) {
+                $weight = (float) ($sections['domain_weightage'] ?? 0);
+                $repeated = (int) ($repeatedTotalsByDomain[$domainName] ?? 0);
+                $domainRepeatedRows[] = [
+                    'domain' => $domainName,
+                    'repeated_total' => $repeated,
+                    'weight' => $weight,
+                    'weighted' => $repeated * $weight,
+                ];
+            }
+        @endphp
+        @php
+            $repeatedByDomain = collect($allCategoryCountsBySection ?? [])->groupBy('domain');
+        @endphp
+        <div class="meta">
+            <h2>Calculation part</h2>
+            <h3>Repeated Career Categories (aggregated by domain)</h3>
+            @foreach($groupedResults as $domainName => $sections)
+                @php
+                    $weight = (float) ($sections['domain_weightage'] ?? 0);
+                    $entries = $repeatedByDomain->get($domainName, collect());
+                    // Aggregate counts per category across all sections for this domain
+                    $perCategoryTotals = [];
+                    foreach ($entries as $e) {
+                        $counts = $e['counts'];
+                        $arr = (is_object($counts) && method_exists($counts, 'all')) ? $counts->all() : (array) $counts;
+                        foreach ($arr as $cat => $cnt) {
+                            if (!isset($perCategoryTotals[$cat])) { $perCategoryTotals[$cat] = 0; }
+                            $perCategoryTotals[$cat] += (int) $cnt;
+                        }
+                    }
+                    // Compute weighted scores per category and sort desc
+                    $ranked = collect($perCategoryTotals)
+                        ->map(function($cnt, $cat) use ($weight){
+                            return [ 'category' => $cat, 'count' => (int)$cnt, 'weighted' => (float)$cnt * $weight ];
+                        })
+                        ->sortByDesc('weighted')
+                        ->values();
+                @endphp
+                <div style="margin: 8px 0;">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <h3 style="margin:0;">{{ $domainName }}</h3>
+                        <div class="meta">
+                            <span style="margin-right: 8px;"><strong>Weightage:</strong> {{ rtrim(rtrim(number_format($weight, 2, '.', ''), '0'), '.') }}</span>
+                        </div>
+                    </div>
+                    @if($ranked->count() > 0)
+                        <ol class="meta" style="margin-left: 18px;">
+                            @foreach($ranked as $index => $row)
+                                <li>
+                                    <strong>{!! $row['category'] !!}</strong>
+                                    <span>— total {{ $row['count'] }}, weighted {{ rtrim(rtrim(number_format($row['weighted'], 2, '.', ''), '0'), '.') }}</span>
+                                    @if($index === 0)
+                                        <span class="badge">Top scorer</span>
+                                    @elseif($index === 1)
+                                        <span class="badge">Second</span>
+                                    @endif
+                                </li>
+                            @endforeach
+                        </ol>
+                        <div class="meta">Based on sum of repeated counts across sections × domain weightage.</div>
+                        <div class="meta" style="margin-top:4px;">
+                            <strong>Per-section breakdown:</strong>
+                            @foreach($entries as $entry)
+                                <div class="meta"><strong>{!! $entry['section'] !!}:</strong>
+                                    @foreach ($entry['counts'] as $catName => $count)
+                                        <span class="badge">{!! $catName !!} ({{ $count }})</span>
+                                    @endforeach
+                                </div>
+                            @endforeach
+                        </div>
+                    @else
+                        <div class="meta">No repeated categories found for this domain.</div>
+                    @endif
+                </div>
+            @endforeach
+        </div>
+    @endif
 
 
 
