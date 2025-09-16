@@ -260,9 +260,9 @@
                         })
                         ->filter()
                         ->countBy()
-                        ->filter(function ($count) {
-                            return $count > 1;
-                        })
+                        // ->filter(function ($count) {
+                        //     return $count > 1;
+                        // })
                         ->sortDesc();
 
                     if ($counts->isNotEmpty()) {
