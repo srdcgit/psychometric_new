@@ -381,7 +381,6 @@
                                             </li>
                                         @endforeach
                                     </ol>
-                                    <div class="mt-2 text-xs text-gray-500">Based on sum of repeated counts across sections × domain weightage.</div>
                                     <div class="mt-3">
                                         <details>
                                             <summary class="cursor-pointer text-xs text-gray-600">Show per-section breakdown</summary>
