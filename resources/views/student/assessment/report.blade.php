@@ -278,7 +278,7 @@
 
         @if (!empty($allCategoryCountsBySection))
             <div class="mt-4">
-                <h2 class="text-2xl font-semibold text-gray-800 mb-2">Repeated Career Categories (by Section)</h2>
+                <h2 class="text-2xl font-semibold text-gray-800 mb-2">All Career Clusters</h2>
                 <div class="space-y-2">
                     @foreach ($allCategoryCountsBySection as $entry)
                         <div class="text-sm">
@@ -336,7 +336,7 @@
                     $repeatedByDomain = collect($allCategoryCountsBySection ?? [])->groupBy('domain');
                 @endphp
                 <div class="bg-white rounded-xl border border-gray-200 p-4 mt-4">
-                    <h3 class="text-lg font-semibold mb-3">Repeated Career Categories (aggregated by domain)</h3>
+                    <h3 class="text-lg font-semibold mb-3">All Career Clusters (by domain)</h3>
                     <div class="space-y-6">
                         @foreach($groupedResults as $domainName => $sections)
                             @php
@@ -381,7 +381,7 @@
                                             </li>
                                         @endforeach
                                     </ol>
-                                    <div class="mt-3">
+                                    {{-- <div class="mt-3">
                                         <details>
                                             <summary class="cursor-pointer text-xs text-gray-600">Show per-section breakdown</summary>
                                             <div class="mt-2 space-y-1">
@@ -395,7 +395,7 @@
                                                 @endforeach
                                             </div>
                                         </details>
-                                    </div>
+                                    </div> --}}
                                 @else
                                     <div class="text-xs text-gray-500">No repeated categories found for this domain.</div>
                                 @endif
@@ -403,6 +403,57 @@
                         @endforeach
                     </div>
                 </div>
+            @endif
+        </div>
+
+        <div class="mt-4">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4">Career Clusters with Total Weightage</h2>
+            @php
+                // Build domain -> entries map if not already available
+                $repeatedByDomain = collect($allCategoryCountsBySection ?? [])->groupBy('domain');
+
+                // Aggregate overall totals per category across all domains using domain weightage
+                $overallCategoryWeightages = [];
+                foreach ($groupedResults as $domainName => $sections) {
+                    $weight = (float) ($sections['domain_weightage'] ?? 0);
+                    if ($weight === 0) { continue; }
+
+                    $entries = $repeatedByDomain->get($domainName, collect());
+                    foreach ($entries as $e) {
+                        $counts = $e['counts'];
+                        $arr = (is_object($counts) && method_exists($counts, 'all')) ? $counts->all() : (array) $counts;
+                        foreach ($arr as $cat => $cnt) {
+                            if (!isset($overallCategoryWeightages[$cat])) { $overallCategoryWeightages[$cat] = 0; }
+                            $overallCategoryWeightages[$cat] += ((int)$cnt) * $weight;
+                        }
+                    }
+                }
+
+                // Sort categories by total weighted value (desc)
+                arsort($overallCategoryWeightages);
+            @endphp
+
+            @if(!empty($overallCategoryWeightages))
+                <div class="overflow-x-auto">
+                    <table class="min-w-full text-sm text-left border border-gray-300 rounded-lg">
+                        <thead class="bg-gray-100">
+                            <tr>
+                                <th class="px-4 py-2 border">Career Cluster</th>
+                                <th class="px-4 py-2 border text-right">Total Weightage</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($overallCategoryWeightages as $catName => $totalWeighted)
+                                <tr>
+                                    <td class="px-4 py-2 border font-semibold">{!! $catName !!}</td>
+                                    <td class="px-4 py-2 border text-right">{{ rtrim(rtrim(number_format($totalWeighted, 2, '.', ''), '0'), '.') }}</td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            @else
+                <div class="text-sm text-gray-500">No career clusters to display.</div>
             @endif
         </div>
 
