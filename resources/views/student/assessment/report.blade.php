@@ -493,7 +493,6 @@
             <h2 class="text-2xl font-semibold text-gray-800 mb-4">Top Career Clusters</h2>
             @foreach ($overallCategoryWeightages as $catName => $totalWeighted)
                 @php
-
                     $roles = optional($categoryDetails->get($catName))->example_roles;
                     $hook = optional($categoryDetails->get($catName))->hook;
                     $what_is_it = optional($categoryDetails->get($catName))->what_is_it;
@@ -510,78 +509,77 @@
                 <div class="bg-white rounded-xl border border-gray-200 p-4 mb-4">
                     <div class="flex items-start justify-between">
                         <div>
-                            <h3 class="text-lg font-semibold text-gray-800">{!! $catName !!}</h3>
+                            <h3 class="text-lg font-semibold text-gray-800">{!! $catName !!} @if (!empty($hook))
+                                    - {!! $hook !!}
+                                @endif
+                            </h3>
                         </div>
-                        <span class="inline-flex items-center px-2 py-1 rounded text-[11px] bg-indigo-50 text-indigo-700 border border-indigo-200">
+                        <span
+                            class="inline-flex items-center px-2 py-1 rounded text-[11px] bg-indigo-50 text-indigo-700 border border-indigo-200">
                             Total Weightage: {{ rtrim(rtrim(number_format($totalWeighted, 2, '.', ''), '0'), '.') }}
                         </span>
                     </div>
 
-                    <div class="mt-3 grid md:grid-cols-2 gap-4 text-sm">
-                        @if(!empty($roles))
+                    <div class="mt-3 grid md:grid-cols-1 gap-4 text-sm">
+
+                        @if (!empty($what_is_it))
+                            <div>
+                                <div class="text-gray-700">{!! $what_is_it !!}</div>
+                            </div>
+                        @endif
+
+                        @if (!empty($roles))
                             <div>
                                 <div class="font-semibold text-gray-700 mb-1">Example Roles</div>
                                 <div class="text-gray-700 leading-relaxed">{!! $roles !!}</div>
                             </div>
                         @endif
 
-                        @if(!empty($hook))
-                            <div>
-                                <div class="font-semibold text-gray-700 mb-1">Hook</div>
-                                <div class="text-gray-700">{!! $hook !!}</div>
-                            </div>
-                        @endif
 
-                        @if(!empty($what_is_it))
-                            <div>
-                                <div class="font-semibold text-gray-700 mb-1">What is it</div>
-                                <div class="text-gray-700">{!! $what_is_it !!}</div>
-                            </div>
-                        @endif
 
-                        @if(!empty($subjects))
+                        @if (!empty($subjects))
                             <div>
                                 <div class="font-semibold text-gray-700 mb-1">Subjects</div>
                                 <div class="text-gray-700">{!! $subjects !!}</div>
                             </div>
                         @endif
 
-                        @if(!empty($core_apptitudes_to_highlight))
+                        @if (!empty($core_apptitudes_to_highlight))
                             <div>
                                 <div class="font-semibold text-gray-700 mb-1">Core aptitudes to highlight</div>
                                 <div class="text-gray-700">{!! $core_apptitudes_to_highlight !!}</div>
                             </div>
                         @endif
 
-                        @if(!empty($value_and_personality_edge))
+                        @if (!empty($value_and_personality_edge))
                             <div>
                                 <div class="font-semibold text-gray-700 mb-1">Value and personality edge</div>
                                 <div class="text-gray-700">{!! $value_and_personality_edge !!}</div>
                             </div>
                         @endif
 
-                        @if(!empty($why_it_could_fit_you))
+                        @if (!empty($why_it_could_fit_you))
                             <div>
                                 <div class="font-semibold text-gray-700 mb-1">Why it could fit you</div>
                                 <div class="text-gray-700">{!! $why_it_could_fit_you !!}</div>
                             </div>
                         @endif
 
-                        @if(!empty($early_actions))
+                        @if (!empty($early_actions))
                             <div>
                                 <div class="font-semibold text-gray-700 mb-1">Early actions</div>
                                 <div class="text-gray-700">{!! $early_actions !!}</div>
                             </div>
                         @endif
 
-                        @if(!empty($india_study_pathways))
+                        @if (!empty($india_study_pathways))
                             <div>
                                 <div class="font-semibold text-gray-700 mb-1">India study pathways</div>
                                 <div class="text-gray-700">{!! $india_study_pathways !!}</div>
                             </div>
                         @endif
 
-                        @if(!empty($future_trends))
+                        @if (!empty($future_trends))
                             <div>
                                 <div class="font-semibold text-gray-700 mb-1">Future trends</div>
                                 <div class="text-gray-700">{!! $future_trends !!}</div>

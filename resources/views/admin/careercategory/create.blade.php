@@ -77,7 +77,7 @@
     </div>
 
     <!-- CKEditor 5 Script -->
-    {{-- <script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
+    <script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
     <script>
         const editorIds = [
             '#name',
@@ -98,7 +98,7 @@
                 ClassicEditor.create(el).catch(console.error);
             }
         });
-    </script> --}}
+    </script>
 
 
 </x-app-layout>

@@ -528,7 +528,7 @@
             <div class="section" style="margin-bottom: 10px;">
                 <div class="row" style="justify-content: space-between; align-items: center;">
                     <div class="col" style="flex: none;">
-                        <h3 style="margin:0; font-size: 14px;">{!! $catName !!}</h3>
+                        <h3 style="margin:0; font-size: 14px;">{!! $catName !!}@if(!empty($hook)) - {!! $hook !!}@endif</h3>
                     </div>
                     <div class="col" style="flex: none;">
                         <span class="badge">Total Weightage: {{ rtrim(rtrim(number_format($totalWeighted, 2, '.', ''), '0'), '.') }}</span>
@@ -536,70 +536,65 @@
                 </div>
 
                 <div class="meta" style="margin-top: 6px;">
-                    <table>
-                        <tbody>
-                            @if(!empty($roles))
-                                <tr>
-                                    <th style="width: 28%;">Example Roles</th>
-                                    <td>{!! $roles !!}</td>
-                                </tr>
-                            @endif
-                            @if(!empty($hook))
-                                <tr>
-                                    <th>Hook</th>
-                                    <td>{!! $hook !!}</td>
-                                </tr>
-                            @endif
-                            @if(!empty($what_is_it))
-                                <tr>
-                                    <th>What is it</th>
-                                    <td>{!! $what_is_it !!}</td>
-                                </tr>
-                            @endif
-                            @if(!empty($subjects))
-                                <tr>
-                                    <th>Subjects</th>
-                                    <td>{!! $subjects !!}</td>
-                                </tr>
-                            @endif
-                            @if(!empty($core_apptitudes_to_highlight))
-                                <tr>
-                                    <th>Core aptitudes to highlight</th>
-                                    <td>{!! $core_apptitudes_to_highlight !!}</td>
-                                </tr>
-                            @endif
-                            @if(!empty($value_and_personality_edge))
-                                <tr>
-                                    <th>Value and personality edge</th>
-                                    <td>{!! $value_and_personality_edge !!}</td>
-                                </tr>
-                            @endif
-                            @if(!empty($why_it_could_fit_you))
-                                <tr>
-                                    <th>Why it could fit you</th>
-                                    <td>{!! $why_it_could_fit_you !!}</td>
-                                </tr>
-                            @endif
-                            @if(!empty($early_actions))
-                                <tr>
-                                    <th>Early actions</th>
-                                    <td>{!! $early_actions !!}</td>
-                                </tr>
-                            @endif
-                            @if(!empty($india_study_pathways))
-                                <tr>
-                                    <th>India study pathways</th>
-                                    <td>{!! $india_study_pathways !!}</td>
-                                </tr>
-                            @endif
-                            @if(!empty($future_trends))
-                                <tr>
-                                    <th>Future trends</th>
-                                    <td>{!! $future_trends !!}</td>
-                                </tr>
-                            @endif
-                        </tbody>
-                    </table>
+                    @if(!empty($what_is_it))
+                        <div style="margin-bottom:6px;">{!! $what_is_it !!}</div>
+                    @endif
+
+                    @if(!empty($roles))
+                        <div style="margin-bottom:6px;">
+                            <strong>Example Roles:</strong>
+                            <div>{!! $roles !!}</div>
+                        </div>
+                    @endif
+
+                    @if(!empty($subjects))
+                        <div style="margin-bottom:6px;">
+                            <strong>Subjects:</strong>
+                            <div>{!! $subjects !!}</div>
+                        </div>
+                    @endif
+
+                    @if(!empty($core_apptitudes_to_highlight))
+                        <div style="margin-bottom:6px;">
+                            <strong>Core aptitudes to highlight:</strong>
+                            <div>{!! $core_apptitudes_to_highlight !!}</div>
+                        </div>
+                    @endif
+
+                    @if(!empty($value_and_personality_edge))
+                        <div style="margin-bottom:6px;">
+                            <strong>Value and personality edge:</strong>
+                            <div>{!! $value_and_personality_edge !!}</div>
+                        </div>
+                    @endif
+
+                    @if(!empty($why_it_could_fit_you))
+                        <div style="margin-bottom:6px;">
+                            <strong>Why it could fit you:</strong>
+                            <div>{!! $why_it_could_fit_you !!}</div>
+                        </div>
+                    @endif
+
+                    @if(!empty($early_actions))
+                        <div style="margin-bottom:6px;">
+                            <strong>Early actions:</strong>
+                            <div>{!! $early_actions !!}</div>
+                        </div>
+                    @endif
+
+                    @if(!empty($india_study_pathways))
+                        <div style="margin-bottom:6px;">
+                            <strong>India study pathways:</strong>
+                            <div>{!! $india_study_pathways !!}</div>
+                        </div>
+                    @endif
+
+                    @if(!empty($future_trends))
+                        <div style="margin-bottom:6px;">
+                            <strong>Future trends:</strong>
+                            <div>{!! $future_trends !!}</div>
+                        </div>
+                    @endif
                 </div>
             </div>
         @endforeach
