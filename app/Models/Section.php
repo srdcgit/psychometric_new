@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Section extends Model
 {
     use HasFactory;
-    protected $fillable = ['name', 'code', 'description', 'keytraits', 'enjoys', 'idealenvironments', 'low', 'mid', 'high', 'domain_id', 'uploaded_by'];
+    protected $fillable = ['name', 'code', 'description', 'image', 'keytraits', 'enjoys', 'idealenvironments', 'low', 'mid', 'high', 'domain_id', 'uploaded_by'];
 
     public function domain()
     {

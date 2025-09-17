@@ -5,7 +5,7 @@
 
     <div class="py-10 max-w-2xl mx-auto sm:px-6 lg:px-8">
         <div class="bg-white shadow rounded p-6">
-            <form method="POST" action="{{ route('section.store') }}">
+            <form method="POST" action="{{ route('section.store') }}" enctype="multipart/form-data">
                 @csrf
 
                 <div class="mb-4">
@@ -65,6 +65,14 @@
                     <textarea name="description" id="description" rows="3" class="w-full border rounded px-3 py-2 mt-1"></textarea>
                 </div>
 
+                <div class="mb-4">
+                    <label for="image" class="block text-gray-700 font-medium">Image</label>
+                    <input type="file" accept="image/*" name="image" id="image" class="w-full border rounded px-3 py-2 mt-1">
+                    <div class="mt-2">
+                        <img id="image-preview" src="#" alt="Preview" style="display:none;max-height:120px;"/>
+                    </div>
+                </div>
+
                 <x-primary-button>{{ __('Create') }}</x-primary-button>
             </form>
         </div>
@@ -85,6 +93,18 @@
         }
         document.getElementById('domain_id').addEventListener('change', toggleFields);
         window.addEventListener('DOMContentLoaded', toggleFields);
+        // Preview selected image
+        document.getElementById('image').addEventListener('change', function (e) {
+            const [file] = this.files;
+            const img = document.getElementById('image-preview');
+            if (file) {
+                img.src = URL.createObjectURL(file);
+                img.style.display = '';
+            } else {
+                img.src = '#';
+                img.style.display = 'none';
+            }
+        });
         ClassicEditor
             .create(document.querySelector('#description'))
             .catch(error => {

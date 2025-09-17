@@ -58,6 +58,7 @@ class SectionController extends Controller
             'low' => 'nullable|string',
             'mid' => 'nullable|string',
             'high' => 'nullable|string',
+            'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
         ]);
 
         $data = [
@@ -82,6 +83,12 @@ class SectionController extends Controller
             $data['keytraits'] = $request->keytraits;
             $data['enjoys'] = $request->enjoys;
             $data['idealenvironments'] = $request->idealenvironments;
+        }
+
+        // Handle image upload
+        if ($request->hasFile('image')) {
+            $path = $request->file('image')->store('sections', 'public');
+            $data['image'] = $path;
         }
 
         Section::create($data);
@@ -140,6 +147,7 @@ class SectionController extends Controller
             'low' => 'nullable|string',
             'mid' => 'nullable|string',
             'high' => 'nullable|string',
+            'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
         ]);
 
         $data = [
@@ -163,6 +171,16 @@ class SectionController extends Controller
             $data['keytraits'] = $request->keytraits;
             $data['enjoys'] = $request->enjoys;
             $data['idealenvironments'] = $request->idealenvironments;
+        }
+
+        // Handle image upload (replace existing if new provided)
+        if ($request->hasFile('image')) {
+            // delete old image if exists
+            if (!empty($section->image)) {
+                \Illuminate\Support\Facades\Storage::disk('public')->delete($section->image);
+            }
+            $path = $request->file('image')->store('sections', 'public');
+            $data['image'] = $path;
         }
 
         $section->update($data);

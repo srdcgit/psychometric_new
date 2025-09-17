@@ -15,7 +15,7 @@
                 </div>
             @endif
 
-            <form action="{{ route('section.update', $section->id) }}" method="POST">
+            <form action="{{ route('section.update', $section->id) }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 @method('PUT')
 
@@ -81,6 +81,18 @@
                               class="mt-1 block w-full border-gray-300 rounded shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">{{ old('description', $section->description) }}</textarea>
                 </div>
 
+                <div class="mb-4">
+                    <label for="image" class="block text-sm font-medium text-gray-700">Image</label>
+                    <input type="file" accept="image/*" name="image" id="image"
+                           class="mt-1 block w-full border-gray-300 rounded shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                    <div class="mt-2">
+                        @if($section->image)
+                            <img src="{{ asset('storage/' . $section->image) }}" alt="Current Image" style="max-height:120px;"/>
+                        @endif
+                        <img id="image-preview" src="#" alt="Preview" style="display:none;max-height:120px;"/>
+                    </div>
+                </div>
+
                 <div class="flex justify-end space-x-4">
                     <a href="{{ route('section.index') }}"
                        class="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300">
@@ -110,6 +122,18 @@
         }
         document.getElementById('domain_id').addEventListener('change', toggleFields);
         window.addEventListener('DOMContentLoaded', toggleFields);
+        // Preview newly selected image
+        document.getElementById('image').addEventListener('change', function () {
+            const [file] = this.files;
+            const img = document.getElementById('image-preview');
+            if (file) {
+                img.src = URL.createObjectURL(file);
+                img.style.display = '';
+            } else {
+                img.src = '#';
+                img.style.display = 'none';
+            }
+        });
         ClassicEditor
             .create(document.querySelector('#description'))
             .catch(error => {
