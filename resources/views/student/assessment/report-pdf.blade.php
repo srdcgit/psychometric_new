@@ -424,59 +424,35 @@
                     @endif
 
                     @if(!empty($roles))
-                        <div style="margin-bottom:6px;">
-                            <strong>Example Roles:</strong>
-                            <div>{!! $roles !!}</div>
-                        </div>
+                        <div style="margin-bottom:6px;"><strong>Example Roles</strong> - <span>{!! $roles !!}</span></div>
                     @endif
 
                     @if(!empty($subjects))
-                        <div style="margin-bottom:6px;">
-                            <strong>Subjects:</strong>
-                            <div>{!! $subjects !!}</div>
-                        </div>
+                        <div style="margin-bottom:6px;"><strong>Subjects</strong> - <span>{!! $subjects !!}</span></div>
                     @endif
 
                     @if(!empty($core_apptitudes_to_highlight))
-                        <div style="margin-bottom:6px;">
-                            <strong>Core aptitudes to highlight:</strong>
-                            <div>{!! $core_apptitudes_to_highlight !!}</div>
-                        </div>
+                        <div style="margin-bottom:6px;"><strong>Core aptitudes to highlight</strong> - <span>{!! $core_apptitudes_to_highlight !!}</span></div>
                     @endif
 
                     @if(!empty($value_and_personality_edge))
-                        <div style="margin-bottom:6px;">
-                            <strong>Value and personality edge:</strong>
-                            <div>{!! $value_and_personality_edge !!}</div>
-                        </div>
+                        <div style="margin-bottom:6px;"><strong>Value and personality edge</strong> - <span>{!! $value_and_personality_edge !!}</span></div>
                     @endif
 
                     @if(!empty($why_it_could_fit_you))
-                        <div style="margin-bottom:6px;">
-                            <strong>Why it could fit you:</strong>
-                            <div>{!! $why_it_could_fit_you !!}</div>
-                        </div>
+                        <div style="margin-bottom:6px;"><strong>Why it could fit you</strong> - <span>{!! $why_it_could_fit_you !!}</span></div>
                     @endif
 
                     @if(!empty($early_actions))
-                        <div style="margin-bottom:6px;">
-                            <strong>Early actions:</strong>
-                            <div>{!! $early_actions !!}</div>
-                        </div>
+                        <div style="margin-bottom:6px;"><strong>Early actions</strong> - <span>{!! $early_actions !!}</span></div>
                     @endif
 
                     @if(!empty($india_study_pathways))
-                        <div style="margin-bottom:6px;">
-                            <strong>India study pathways:</strong>
-                            <div>{!! $india_study_pathways !!}</div>
-                        </div>
+                        <div style="margin-bottom:6px;"><strong>India study pathways</strong> - <span>{!! $india_study_pathways !!}</span></div>
                     @endif
 
                     @if(!empty($future_trends))
-                        <div style="margin-bottom:6px;">
-                            <strong>Future trends:</strong>
-                            <div>{!! $future_trends !!}</div>
-                        </div>
+                        <div style="margin-bottom:6px;"><strong>Future trends</strong> - <span>{!! $future_trends !!}</span></div>
                     @endif
                 </div>
             </div>

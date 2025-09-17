@@ -391,59 +391,48 @@
 
                         @if (!empty($roles))
                             <div>
-                                <div class="font-semibold text-gray-700 mb-1">Example Roles</div>
-                                <div class="text-gray-700 leading-relaxed">{!! $roles !!}</div>
+                                <div class="text-gray-700 mb-1"><span class="font-semibold">Example Roles</span> - <span>{!! $roles !!}</span></div>
                             </div>
                         @endif
-
-
-
                         @if (!empty($subjects))
                             <div>
-                                <div class="font-semibold text-gray-700 mb-1">Subjects</div>
-                                <div class="text-gray-700">{!! $subjects !!}</div>
+                                <div class="text-gray-700 mb-1"><span class="font-semibold">Subjects</span> - <span>{!! $subjects !!}</span></div>
                             </div>
                         @endif
 
                         @if (!empty($core_apptitudes_to_highlight))
                             <div>
-                                <div class="font-semibold text-gray-700 mb-1">Core aptitudes to highlight</div>
-                                <div class="text-gray-700">{!! $core_apptitudes_to_highlight !!}</div>
+                                <div class="text-gray-700 mb-1"><span class="font-semibold">Core aptitudes to highlight</span> - <span>{!! $core_apptitudes_to_highlight !!}</span></div>
                             </div>
                         @endif
 
                         @if (!empty($value_and_personality_edge))
                             <div>
-                                <div class="font-semibold text-gray-700 mb-1">Value and personality edge</div>
-                                <div class="text-gray-700">{!! $value_and_personality_edge !!}</div>
+                                <div class="text-gray-700 mb-1"><span class="font-semibold">Value and personality edge</span> - <span>{!! $value_and_personality_edge !!}</span></div>
                             </div>
                         @endif
 
                         @if (!empty($why_it_could_fit_you))
                             <div>
-                                <div class="font-semibold text-gray-700 mb-1">Why it could fit you</div>
-                                <div class="text-gray-700">{!! $why_it_could_fit_you !!}</div>
+                                <div class="text-gray-700 mb-1"><span class="font-semibold">Why it could fit you</span> - <span>{!! $why_it_could_fit_you !!}</span></div>
                             </div>
                         @endif
 
                         @if (!empty($early_actions))
                             <div>
-                                <div class="font-semibold text-gray-700 mb-1">Early actions</div>
-                                <div class="text-gray-700">{!! $early_actions !!}</div>
+                                <div class="text-gray-700 mb-1"><span class="font-semibold">Early actions</span> - <span>{!! $early_actions !!}</span></div>
                             </div>
                         @endif
 
                         @if (!empty($india_study_pathways))
                             <div>
-                                <div class="font-semibold text-gray-700 mb-1">India study pathways</div>
-                                <div class="text-gray-700">{!! $india_study_pathways !!}</div>
+                                <div class="text-gray-700 mb-1"><span class="font-semibold">India study pathways</span> - <span>{!! $india_study_pathways !!}</span></div>
                             </div>
                         @endif
 
                         @if (!empty($future_trends))
                             <div>
-                                <div class="font-semibold text-gray-700 mb-1">Future trends</div>
-                                <div class="text-gray-700">{!! $future_trends !!}</div>
+                                <div class="text-gray-700 mb-1"><span class="font-semibold">Future trends</span> - <span>{!! $future_trends !!}</span></div>
                             </div>
                         @endif
                     </div>
