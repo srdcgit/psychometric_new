@@ -345,117 +345,7 @@
         }
     @endphp
 
-    @if (!empty($allCategoryCountsBySection))
-        <div style="margin-top: 8px;">
-            <h2>All Career Clusters</h2>
-            @foreach ($allCategoryCountsBySection as $entry)
-                <div class="meta"><strong>{!! $entry['domain'] !!} — {!! $entry['section'] !!}:</strong>
-                    @foreach ($entry['counts'] as $catName => $count)
-                        <span class="badge">{!! $catName !!} ({{ $count }})</span>
-                    @endforeach
-                </div>
-            @endforeach
-        </div>
-    @endif
-
-    @if (!empty($groupedResults))
-        @php
-            $repeatedTotalsByDomain = collect($allCategoryCountsBySection ?? [])
-                ->groupBy('domain')
-                ->map(function ($entries) {
-                    $sum = 0;
-                    foreach ($entries as $e) {
-                        $counts = $e['counts'];
-                        $sum +=
-                            is_object($counts) && method_exists($counts, 'values')
-                                ? array_sum($counts->values()->all())
-                                : array_sum((array) $counts);
-                    }
-                    return $sum;
-                });
-
-            $domainRepeatedRows = [];
-            foreach ($groupedResults as $domainName => $sections) {
-                $weight = (float) ($sections['domain_weightage'] ?? 0);
-                $repeated = (int) ($repeatedTotalsByDomain[$domainName] ?? 0);
-                $domainRepeatedRows[] = [
-                    'domain' => $domainName,
-                    'repeated_total' => $repeated,
-                    'weight' => $weight,
-                    'weighted' => $repeated * $weight,
-                ];
-            }
-        @endphp
-        @php
-            $repeatedByDomain = collect($allCategoryCountsBySection ?? [])->groupBy('domain');
-        @endphp
-        <div class="meta">
-            <h2>Calculation part</h2>
-            <h3>All Career Clusters (by domain)</h3>
-            @foreach ($groupedResults as $domainName => $sections)
-                @php
-                    $weight = (float) ($sections['domain_weightage'] ?? 0);
-                    $entries = $repeatedByDomain->get($domainName, collect());
-                    // Aggregate counts per category across all sections for this domain
-                    $perCategoryTotals = [];
-                    foreach ($entries as $e) {
-                        $counts = $e['counts'];
-                        $arr = is_object($counts) && method_exists($counts, 'all') ? $counts->all() : (array) $counts;
-                        foreach ($arr as $cat => $cnt) {
-                            if (!isset($perCategoryTotals[$cat])) {
-                                $perCategoryTotals[$cat] = 0;
-                            }
-                            $perCategoryTotals[$cat] += (int) $cnt;
-                        }
-                    }
-                    // Compute weighted scores per category and sort desc
-                    $ranked = collect($perCategoryTotals)
-                        ->map(function ($cnt, $cat) use ($weight) {
-                            return ['category' => $cat, 'count' => (int) $cnt, 'weighted' => (float) $cnt * $weight];
-                        })
-                        ->sortByDesc('weighted')
-                        ->values();
-                @endphp
-                <div style="margin: 8px 0;">
-                    <div style="display:flex; justify-content:space-between; align-items:center;">
-                        <h3 style="margin:0;">{{ $domainName }}</h3>
-                        <div class="meta">
-                            <span style="margin-right: 8px;"><strong>Weightage:</strong>
-                                {{ rtrim(rtrim(number_format($weight, 2, '.', ''), '0'), '.') }}</span>
-                        </div>
-                    </div>
-                    @if ($ranked->count() > 0)
-                        <ol class="meta" style="margin-left: 18px;">
-                            @foreach ($ranked as $index => $row)
-                                <li>
-                                    <strong>{!! $row['category'] !!}</strong>
-                                    <span>— total {{ $row['count'] }}, weighted
-                                        {{ rtrim(rtrim(number_format($row['weighted'], 2, '.', ''), '0'), '.') }}</span>
-                                    @if ($index === 0)
-                                        <span class="badge">Top scorer</span>
-                                    @elseif($index === 1)
-                                        <span class="badge">Second</span>
-                                    @endif
-                                </li>
-                            @endforeach
-                        </ol>
-                        {{-- <div class="meta" style="margin-top:4px;">
-                        <strong>Per-section breakdown:</strong>
-                        @foreach ($entries as $entry)
-                            <div class="meta"><strong>{!! $entry['section'] !!}:</strong>
-                                @foreach ($entry['counts'] as $catName => $count)
-                                    <span class="badge">{!! $catName !!} ({{ $count }})</span>
-                                @endforeach
-                            </div>
-                        @endforeach
-                    </div> --}}
-                    @else
-                        <div class="meta">No repeated categories found for this domain.</div>
-                    @endif
-                </div>
-            @endforeach
-        </div>
-    @endif
+   
 
     <div class="meta">
         <h2>Career Clusters with Total Weightage</h2>
@@ -506,7 +396,7 @@
     </div>
 
     <div class="meta" style="margin-top: 10px;">
-        <h2>Top Career Clusters</h2>
+        <h2>Customized Career Recommendation</h2>
         @php
             $categoryDetails = \App\Models\CareerCategory::whereIn('name', array_keys($overallCategoryWeightages ?? []))
                 ->get()
@@ -530,9 +420,7 @@
                     <div class="col" style="flex: none;">
                         <h3 style="margin:0; font-size: 14px;">{!! $catName !!}@if(!empty($hook)) - {!! $hook !!}@endif</h3>
                     </div>
-                    <div class="col" style="flex: none;">
-                        <span class="badge">Total Weightage: {{ rtrim(rtrim(number_format($totalWeighted, 2, '.', ''), '0'), '.') }}</span>
-                    </div>
+                   
                 </div>
 
                 <div class="meta" style="margin-top: 6px;">
