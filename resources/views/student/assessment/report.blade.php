@@ -196,12 +196,12 @@
                                                             <span
                                                                 class="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded mr-1 mb-1">
                                                                 {!! $career->name !!}
-                                                                @if ($career->careerCategory)
+                                                                {{-- @if ($career->careerCategory)
                                                                     <small
                                                                         style="display: block; font-size: 0.7em; color: #666; margin-top: 2px;">
                                                                         {!! $career->careerCategory->name !!}
                                                                     </small>
-                                                                @endif
+                                                                @endif --}}
                                                             </span>
                                                         @endforeach
                                                     @else

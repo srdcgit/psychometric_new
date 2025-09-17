@@ -249,11 +249,6 @@
                                         @foreach ($combinedCareers as $career)
                                             <span class="badge">
                                                 {!! $career->name !!}
-                                                @if ($career->careerCategory)
-                                                    <small style="display: block; font-size: 0.8em; color: #666;">
-                                                        {!! $career->careerCategory->name !!}
-                                                    </small>
-                                                @endif
                                             </span>
                                         @endforeach
                                     @else
