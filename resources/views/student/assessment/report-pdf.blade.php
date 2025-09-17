@@ -505,6 +505,106 @@
         @endif
     </div>
 
+    <div class="meta" style="margin-top: 10px;">
+        <h2>Top Career Clusters</h2>
+        @php
+            $categoryDetails = \App\Models\CareerCategory::whereIn('name', array_keys($overallCategoryWeightages ?? []))
+                ->get()
+                ->keyBy('name');
+        @endphp
+        @foreach (($overallCategoryWeightages ?? []) as $catName => $totalWeighted)
+            @php
+                $roles = optional($categoryDetails->get($catName))->example_roles;
+                $hook = optional($categoryDetails->get($catName))->hook;
+                $what_is_it = optional($categoryDetails->get($catName))->what_is_it;
+                $subjects = optional($categoryDetails->get($catName))->subjects;
+                $core_apptitudes_to_highlight = optional($categoryDetails->get($catName))->core_apptitudes_to_highlight;
+                $value_and_personality_edge = optional($categoryDetails->get($catName))->value_and_personality_edge;
+                $why_it_could_fit_you = optional($categoryDetails->get($catName))->why_it_could_fit_you;
+                $early_actions = optional($categoryDetails->get($catName))->early_actions;
+                $india_study_pathways = optional($categoryDetails->get($catName))->india_study_pathways;
+                $future_trends = optional($categoryDetails->get($catName))->future_trends;
+            @endphp
+            <div class="section" style="margin-bottom: 10px;">
+                <div class="row" style="justify-content: space-between; align-items: center;">
+                    <div class="col" style="flex: none;">
+                        <h3 style="margin:0; font-size: 14px;">{!! $catName !!}</h3>
+                    </div>
+                    <div class="col" style="flex: none;">
+                        <span class="badge">Total Weightage: {{ rtrim(rtrim(number_format($totalWeighted, 2, '.', ''), '0'), '.') }}</span>
+                    </div>
+                </div>
+
+                <div class="meta" style="margin-top: 6px;">
+                    <table>
+                        <tbody>
+                            @if(!empty($roles))
+                                <tr>
+                                    <th style="width: 28%;">Example Roles</th>
+                                    <td>{!! $roles !!}</td>
+                                </tr>
+                            @endif
+                            @if(!empty($hook))
+                                <tr>
+                                    <th>Hook</th>
+                                    <td>{!! $hook !!}</td>
+                                </tr>
+                            @endif
+                            @if(!empty($what_is_it))
+                                <tr>
+                                    <th>What is it</th>
+                                    <td>{!! $what_is_it !!}</td>
+                                </tr>
+                            @endif
+                            @if(!empty($subjects))
+                                <tr>
+                                    <th>Subjects</th>
+                                    <td>{!! $subjects !!}</td>
+                                </tr>
+                            @endif
+                            @if(!empty($core_apptitudes_to_highlight))
+                                <tr>
+                                    <th>Core aptitudes to highlight</th>
+                                    <td>{!! $core_apptitudes_to_highlight !!}</td>
+                                </tr>
+                            @endif
+                            @if(!empty($value_and_personality_edge))
+                                <tr>
+                                    <th>Value and personality edge</th>
+                                    <td>{!! $value_and_personality_edge !!}</td>
+                                </tr>
+                            @endif
+                            @if(!empty($why_it_could_fit_you))
+                                <tr>
+                                    <th>Why it could fit you</th>
+                                    <td>{!! $why_it_could_fit_you !!}</td>
+                                </tr>
+                            @endif
+                            @if(!empty($early_actions))
+                                <tr>
+                                    <th>Early actions</th>
+                                    <td>{!! $early_actions !!}</td>
+                                </tr>
+                            @endif
+                            @if(!empty($india_study_pathways))
+                                <tr>
+                                    <th>India study pathways</th>
+                                    <td>{!! $india_study_pathways !!}</td>
+                                </tr>
+                            @endif
+                            @if(!empty($future_trends))
+                                <tr>
+                                    <th>Future trends</th>
+                                    <td>{!! $future_trends !!}</td>
+                                </tr>
+                            @endif
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        @endforeach
+    </div>
+
     <div class="meta">
         <h2>Counselor's Remarks</h2>
         <p>{{ $student->name }} exhibits a balanced and mature personality marked by self-awareness

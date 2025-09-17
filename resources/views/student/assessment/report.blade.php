@@ -100,12 +100,14 @@
                 <h2 class="text-2xl font-semibold text-gray-800 mb-4">{{ $domainName }}</h2>
 
                 <div>
-                    @if(isset($sections['description']) && $sections['description'])
+                    @if (isset($sections['description']) && $sections['description'])
                         <div class="bg-blue-50 border-l-4 border-blue-400 p-4 mb-6">
                             <div class="flex">
                                 <div class="flex-shrink-0">
                                     <svg class="h-5 w-5 text-blue-400" viewBox="0 0 20 20" fill="currentColor">
-                                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+                                        <path fill-rule="evenodd"
+                                            d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                                            clip-rule="evenodd" />
                                     </svg>
                                 </div>
                                 <div class="ml-3">
@@ -172,9 +174,11 @@
                                     @foreach ($careerPathSections as $sec)
                                         @php
                                             $sectionId = $sec['section_id'] ?? null;
-                                            $paths = ($careerpaths[$sectionId] ?? collect())->filter(function ($p) {
-                                                return $p->sections && $p->sections->count() === 1;
-                                            })->values();
+                                            $paths = ($careerpaths[$sectionId] ?? collect())
+                                                ->filter(function ($p) {
+                                                    return $p->sections && $p->sections->count() === 1;
+                                                })
+                                                ->values();
                                             $combinedCareers = collect();
                                             foreach ($paths as $p) {
                                                 $combinedCareers = $combinedCareers->merge($p->careers);
@@ -184,14 +188,17 @@
 
                                         @if ($paths->isNotEmpty())
                                             <tr>
-                                                <td class="px-4 py-2 border font-semibold">{{ $sec['section_name'] }}</td>
+                                                <td class="px-4 py-2 border font-semibold">{{ $sec['section_name'] }}
+                                                </td>
                                                 <td class="px-4 py-2 border">
-                                                    @if($combinedCareers->count() > 0)
-                                                        @foreach($combinedCareers as $career)
-                                                            <span class="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded mr-1 mb-1">
+                                                    @if ($combinedCareers->count() > 0)
+                                                        @foreach ($combinedCareers as $career)
+                                                            <span
+                                                                class="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded mr-1 mb-1">
                                                                 {!! $career->name !!}
-                                                                @if($career->careerCategory)
-                                                                    <small style="display: block; font-size: 0.7em; color: #666; margin-top: 2px;">
+                                                                @if ($career->careerCategory)
+                                                                    <small
+                                                                        style="display: block; font-size: 0.7em; color: #666; margin-top: 2px;">
                                                                         {!! $career->careerCategory->name !!}
                                                                     </small>
                                                                 @endif
@@ -284,7 +291,8 @@
                         <div class="text-sm">
                             <span class="font-semibold">{!! $entry['domain'] !!} — {!! $entry['section'] !!}:</span>
                             @foreach ($entry['counts'] as $catName => $count)
-                                <span class="inline-block bg-green-100 text-green-800 text-xs px-2 py-1 rounded mr-1 mb-1">
+                                <span
+                                    class="inline-block bg-green-100 text-green-800 text-xs px-2 py-1 rounded mr-1 mb-1">
                                     {!! $catName !!} ({{ $count }})
                                 </span>
                             @endforeach
@@ -296,28 +304,34 @@
 
         <div class="mt-4">
             <h2 class="text-2xl font-semibold text-gray-800 mb-4">Calculation part</h2>
-            @if(!empty($groupedResults))
+            @if (!empty($groupedResults))
                 <div class="bg-white rounded-xl border border-gray-200 p-4">
                     <h3 class="text-lg font-semibold mb-2">Domain Weightage</h3>
                     <ul class="list-disc ml-5 text-sm">
-                        @foreach($groupedResults as $domain => $data)
+                        @foreach ($groupedResults as $domain => $data)
                             @php $weight = $data['domain_weightage'] ?? null; @endphp
-                            @if(!is_null($weight))
-                                <li class="mb-1"><span class="font-semibold">{{ $domain }}:</span> {{ $weight }}</li>
+                            @if (!is_null($weight))
+                                <li class="mb-1"><span class="font-semibold">{{ $domain }}:</span>
+                                    {{ $weight }}</li>
                             @endif
                         @endforeach
                     </ul>
                 </div>
                 @php
-                    $repeatedTotalsByDomain = collect($allCategoryCountsBySection ?? [])->groupBy('domain')->map(function($entries){
-                        $sum = 0;
-                        foreach ($entries as $e) {
-                            // $e['counts'] is a Collection of category => count (only where count > 1)
-                            $counts = $e['counts'];
-                            $sum += (is_object($counts) && method_exists($counts, 'values')) ? array_sum($counts->values()->all()) : array_sum((array)$counts);
-                        }
-                        return $sum;
-                    });
+                    $repeatedTotalsByDomain = collect($allCategoryCountsBySection ?? [])
+                        ->groupBy('domain')
+                        ->map(function ($entries) {
+                            $sum = 0;
+                            foreach ($entries as $e) {
+                                // $e['counts'] is a Collection of category => count (only where count > 1)
+                                $counts = $e['counts'];
+                                $sum +=
+                                    is_object($counts) && method_exists($counts, 'values')
+                                        ? array_sum($counts->values()->all())
+                                        : array_sum((array) $counts);
+                            }
+                            return $sum;
+                        });
 
                     $domainRepeatedRows = [];
                     foreach ($groupedResults as $domainName => $sections) {
@@ -338,7 +352,7 @@
                 <div class="bg-white rounded-xl border border-gray-200 p-4 mt-4">
                     <h3 class="text-lg font-semibold mb-3">All Career Clusters (by domain)</h3>
                     <div class="space-y-6">
-                        @foreach($groupedResults as $domainName => $sections)
+                        @foreach ($groupedResults as $domainName => $sections)
                             @php
                                 $weight = (float) ($sections['domain_weightage'] ?? 0);
                                 $entries = $repeatedByDomain->get($domainName, collect());
@@ -346,16 +360,25 @@
                                 $perCategoryTotals = [];
                                 foreach ($entries as $e) {
                                     $counts = $e['counts'];
-                                    $arr = (is_object($counts) && method_exists($counts, 'all')) ? $counts->all() : (array) $counts;
+                                    $arr =
+                                        is_object($counts) && method_exists($counts, 'all')
+                                            ? $counts->all()
+                                            : (array) $counts;
                                     foreach ($arr as $cat => $cnt) {
-                                        if (!isset($perCategoryTotals[$cat])) { $perCategoryTotals[$cat] = 0; }
+                                        if (!isset($perCategoryTotals[$cat])) {
+                                            $perCategoryTotals[$cat] = 0;
+                                        }
                                         $perCategoryTotals[$cat] += (int) $cnt;
                                     }
                                 }
                                 // Compute weighted scores per category and sort desc
                                 $ranked = collect($perCategoryTotals)
-                                    ->map(function($cnt, $cat) use ($weight){
-                                        return [ 'category' => $cat, 'count' => (int)$cnt, 'weighted' => (float)$cnt * $weight ];
+                                    ->map(function ($cnt, $cat) use ($weight) {
+                                        return [
+                                            'category' => $cat,
+                                            'count' => (int) $cnt,
+                                            'weighted' => (float) $cnt * $weight,
+                                        ];
                                     })
                                     ->sortByDesc('weighted')
                                     ->values();
@@ -364,40 +387,31 @@
                                 <div class="flex items-center justify-between mb-2">
                                     <h4 class="text-base font-semibold text-indigo-700">{{ $domainName }}</h4>
                                     <div class="text-xs text-gray-600">
-                                        <span class="mr-3"><span class="font-semibold">Weightage:</span> {{ rtrim(rtrim(number_format($weight, 2, '.', ''), '0'), '.') }}</span>
+                                        <span class="mr-3"><span class="font-semibold">Weightage:</span>
+                                            {{ rtrim(rtrim(number_format($weight, 2, '.', ''), '0'), '.') }}</span>
                                     </div>
                                 </div>
-                                @if($ranked->count() > 0)
+                                @if ($ranked->count() > 0)
                                     <ol class="list-decimal ml-5 space-y-1 text-sm">
-                                        @foreach($ranked as $index => $row)
+                                        @foreach ($ranked as $index => $row)
                                             <li>
                                                 <span class="font-semibold">{!! $row['category'] !!}</span>
-                                                <span class="text-gray-600"> — total {{ $row['count'] }}, weighted {{ rtrim(rtrim(number_format($row['weighted'], 2, '.', ''), '0'), '.') }}</span>
-                                                @if($index === 0)
-                                                    <span class="ml-2 inline-block bg-indigo-100 text-indigo-800 text-[10px] px-2 py-0.5 rounded">Top scorer</span>
+                                                <span class="text-gray-600"> — total {{ $row['count'] }}, weighted
+                                                    {{ rtrim(rtrim(number_format($row['weighted'], 2, '.', ''), '0'), '.') }}</span>
+                                                @if ($index === 0)
+                                                    <span
+                                                        class="ml-2 inline-block bg-indigo-100 text-indigo-800 text-[10px] px-2 py-0.5 rounded">Top
+                                                        scorer</span>
                                                 @elseif($index === 1)
-                                                    <span class="ml-2 inline-block bg-gray-100 text-gray-800 text-[10px] px-2 py-0.5 rounded">Second</span>
+                                                    <span
+                                                        class="ml-2 inline-block bg-gray-100 text-gray-800 text-[10px] px-2 py-0.5 rounded">Second</span>
                                                 @endif
                                             </li>
                                         @endforeach
                                     </ol>
-                                    {{-- <div class="mt-3">
-                                        <details>
-                                            <summary class="cursor-pointer text-xs text-gray-600">Show per-section breakdown</summary>
-                                            <div class="mt-2 space-y-1">
-                                                @foreach($entries as $entry)
-                                                    <div class="text-xs">
-                                                        <span class="font-semibold">{!! $entry['section'] !!}:</span>
-                                                        @foreach ($entry['counts'] as $catName => $count)
-                                                            <span class="inline-block bg-green-100 text-green-800 text-[10px] px-2 py-0.5 rounded mr-1 mb-1">{!! $catName !!} ({{ $count }})</span>
-                                                        @endforeach
-                                                    </div>
-                                                @endforeach
-                                            </div>
-                                        </details>
-                                    </div> --}}
                                 @else
-                                    <div class="text-xs text-gray-500">No repeated categories found for this domain.</div>
+                                    <div class="text-xs text-gray-500">No repeated categories found for this domain.
+                                    </div>
                                 @endif
                             </div>
                         @endforeach
@@ -416,15 +430,19 @@
                 $overallCategoryWeightages = [];
                 foreach ($groupedResults as $domainName => $sections) {
                     $weight = (float) ($sections['domain_weightage'] ?? 0);
-                    if ($weight === 0) { continue; }
+                    if ($weight === 0) {
+                        continue;
+                    }
 
                     $entries = $repeatedByDomain->get($domainName, collect());
                     foreach ($entries as $e) {
                         $counts = $e['counts'];
-                        $arr = (is_object($counts) && method_exists($counts, 'all')) ? $counts->all() : (array) $counts;
+                        $arr = is_object($counts) && method_exists($counts, 'all') ? $counts->all() : (array) $counts;
                         foreach ($arr as $cat => $cnt) {
-                            if (!isset($overallCategoryWeightages[$cat])) { $overallCategoryWeightages[$cat] = 0; }
-                            $overallCategoryWeightages[$cat] += ((int)$cnt) * $weight;
+                            if (!isset($overallCategoryWeightages[$cat])) {
+                                $overallCategoryWeightages[$cat] = 0;
+                            }
+                            $overallCategoryWeightages[$cat] += ((int) $cnt) * $weight;
                         }
                     }
                 }
@@ -433,20 +451,34 @@
                 arsort($overallCategoryWeightages);
             @endphp
 
-            @if(!empty($overallCategoryWeightages))
+            @if (!empty($overallCategoryWeightages))
                 <div class="overflow-x-auto">
                     <table class="min-w-full text-sm text-left border border-gray-300 rounded-lg">
                         <thead class="bg-gray-100">
                             <tr>
                                 <th class="px-4 py-2 border">Career Cluster</th>
                                 <th class="px-4 py-2 border text-right">Total Weightage</th>
+                                {{-- <th class="px-4 py-2 border">Example roles</th> --}}
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach($overallCategoryWeightages as $catName => $totalWeighted)
+                            @php
+                                $categoryDetails = \App\Models\CareerCategory::whereIn(
+                                    'name',
+                                    array_keys($overallCategoryWeightages),
+                                )
+                                    ->get()
+                                    ->keyBy('name');
+                            @endphp
+                            @foreach ($overallCategoryWeightages as $catName => $totalWeighted)
                                 <tr>
                                     <td class="px-4 py-2 border font-semibold">{!! $catName !!}</td>
-                                    <td class="px-4 py-2 border text-right">{{ rtrim(rtrim(number_format($totalWeighted, 2, '.', ''), '0'), '.') }}</td>
+                                    <td class="px-4 py-2 border text-right">
+                                        {{ rtrim(rtrim(number_format($totalWeighted, 2, '.', ''), '0'), '.') }}</td>
+                                    {{-- <td class="px-4 py-2 border">
+                                        @php $roles = optional($categoryDetails->get($catName))->example_roles; @endphp
+                                        {!! $roles ? $roles : '<span class="text-gray-500">—</span>' !!}
+                                    </td> --}}
                                 </tr>
                             @endforeach
                         </tbody>
@@ -455,6 +487,109 @@
             @else
                 <div class="text-sm text-gray-500">No career clusters to display.</div>
             @endif
+        </div>
+
+        <div class="mt-4">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4">Top Career Clusters</h2>
+            @foreach ($overallCategoryWeightages as $catName => $totalWeighted)
+                @php
+
+                    $roles = optional($categoryDetails->get($catName))->example_roles;
+                    $hook = optional($categoryDetails->get($catName))->hook;
+                    $what_is_it = optional($categoryDetails->get($catName))->what_is_it;
+                    $example_roles = optional($categoryDetails->get($catName))->example_roles;
+                    $subjects = optional($categoryDetails->get($catName))->subjects;
+                    $core_apptitudes_to_highlight = optional($categoryDetails->get($catName))
+                        ->core_apptitudes_to_highlight;
+                    $value_and_personality_edge = optional($categoryDetails->get($catName))->value_and_personality_edge;
+                    $why_it_could_fit_you = optional($categoryDetails->get($catName))->why_it_could_fit_you;
+                    $early_actions = optional($categoryDetails->get($catName))->early_actions;
+                    $india_study_pathways = optional($categoryDetails->get($catName))->india_study_pathways;
+                    $future_trends = optional($categoryDetails->get($catName))->future_trends;
+                @endphp
+                <div class="bg-white rounded-xl border border-gray-200 p-4 mb-4">
+                    <div class="flex items-start justify-between">
+                        <div>
+                            <h3 class="text-lg font-semibold text-gray-800">{!! $catName !!}</h3>
+                        </div>
+                        <span class="inline-flex items-center px-2 py-1 rounded text-[11px] bg-indigo-50 text-indigo-700 border border-indigo-200">
+                            Total Weightage: {{ rtrim(rtrim(number_format($totalWeighted, 2, '.', ''), '0'), '.') }}
+                        </span>
+                    </div>
+
+                    <div class="mt-3 grid md:grid-cols-2 gap-4 text-sm">
+                        @if(!empty($roles))
+                            <div>
+                                <div class="font-semibold text-gray-700 mb-1">Example Roles</div>
+                                <div class="text-gray-700 leading-relaxed">{!! $roles !!}</div>
+                            </div>
+                        @endif
+
+                        @if(!empty($hook))
+                            <div>
+                                <div class="font-semibold text-gray-700 mb-1">Hook</div>
+                                <div class="text-gray-700">{!! $hook !!}</div>
+                            </div>
+                        @endif
+
+                        @if(!empty($what_is_it))
+                            <div>
+                                <div class="font-semibold text-gray-700 mb-1">What is it</div>
+                                <div class="text-gray-700">{!! $what_is_it !!}</div>
+                            </div>
+                        @endif
+
+                        @if(!empty($subjects))
+                            <div>
+                                <div class="font-semibold text-gray-700 mb-1">Subjects</div>
+                                <div class="text-gray-700">{!! $subjects !!}</div>
+                            </div>
+                        @endif
+
+                        @if(!empty($core_apptitudes_to_highlight))
+                            <div>
+                                <div class="font-semibold text-gray-700 mb-1">Core aptitudes to highlight</div>
+                                <div class="text-gray-700">{!! $core_apptitudes_to_highlight !!}</div>
+                            </div>
+                        @endif
+
+                        @if(!empty($value_and_personality_edge))
+                            <div>
+                                <div class="font-semibold text-gray-700 mb-1">Value and personality edge</div>
+                                <div class="text-gray-700">{!! $value_and_personality_edge !!}</div>
+                            </div>
+                        @endif
+
+                        @if(!empty($why_it_could_fit_you))
+                            <div>
+                                <div class="font-semibold text-gray-700 mb-1">Why it could fit you</div>
+                                <div class="text-gray-700">{!! $why_it_could_fit_you !!}</div>
+                            </div>
+                        @endif
+
+                        @if(!empty($early_actions))
+                            <div>
+                                <div class="font-semibold text-gray-700 mb-1">Early actions</div>
+                                <div class="text-gray-700">{!! $early_actions !!}</div>
+                            </div>
+                        @endif
+
+                        @if(!empty($india_study_pathways))
+                            <div>
+                                <div class="font-semibold text-gray-700 mb-1">India study pathways</div>
+                                <div class="text-gray-700">{!! $india_study_pathways !!}</div>
+                            </div>
+                        @endif
+
+                        @if(!empty($future_trends))
+                            <div>
+                                <div class="font-semibold text-gray-700 mb-1">Future trends</div>
+                                <div class="text-gray-700">{!! $future_trends !!}</div>
+                            </div>
+                        @endif
+                    </div>
+                </div>
+            @endforeach
         </div>
 
         <div class="mt-4">
