@@ -1,4 +1,4 @@
-<x-app-layout>
+{{-- <x-app-layout>
     @if (session('error'))
         <div class="alert alert-danger">{{ session('error') }}</div>
     @endif
@@ -18,4 +18,33 @@
             </div>
         </div>
     </div>
-</x-app-layout>
+</x-app-layout> --}}
+
+
+@extends('layouts.app')
+
+@section('content')
+    {{-- Show error alert if session error exists --}}
+    @if (session('error'))
+        <div class="alert alert-danger">
+            {{ session('error') }}
+        </div>
+    @endif
+
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card shadow">
+                    <div class="card-header">
+                        <h2 class="h4 font-weight-bold text-dark mb-0">
+                            {{ __('Dashboard') }}
+                        </h2>
+                    </div>
+                    <div class="card-body text-dark">
+                        {{ __("You're logged in!") }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+@endsection
