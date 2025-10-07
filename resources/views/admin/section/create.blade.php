@@ -25,7 +25,7 @@
                     <select name="domain_id" id="domain_id" required class="w-full border rounded px-3 py-2 mt-1">
                         <option value="">Select Domain</option>
                         @foreach ($domains as $domain)
-                            <option value="{{ $domain->name == 'OCEAN' ? 'OCEAN' : ($domain->name == 'Work Values' ? 'Work Values' : $domain->id) }}">{{ $domain->name }}</option>
+                            <option value="{{ $domain->name == 'OCEAN' ? 'OCEAN' : ($domain->name == 'WORK VALUES' ? 'WORK VALUES' : $domain->id) }}">{{ $domain->name }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -83,7 +83,7 @@
     <script>
         function toggleFields() {
             const domain = document.getElementById('domain_id').value;
-            const showSpecial = domain === 'OCEAN' || domain === 'Work Values';
+            const showSpecial = domain === 'OCEAN' || domain === 'WORK VALUES';
             document.getElementById('low-group').style.display = showSpecial ? '' : 'none';
             document.getElementById('mid-group').style.display = showSpecial ? '' : 'none';
             document.getElementById('high-group').style.display = showSpecial ? '' : 'none';

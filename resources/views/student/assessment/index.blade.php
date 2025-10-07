@@ -36,12 +36,13 @@
                     ];
                 @endphp
 
+                @php $questionNumber = 1; @endphp
                 @foreach ($sections as $section)
                     <div class="mb-6 p-4 border rounded bg-white">
                         @foreach ($section->questions as $question)
                             <div class="mt-4">
                                 <div class="font-medium text-gray-800 mb-3">
-                                    {{ $loop->iteration }}. {!! $question->question !!}
+                                    {{ $questionNumber++ }}. {!! $question->question !!}
                                 </div>
                                 <div class="flex flex-wrap gap-3 mt-2 ">
                                     @php
