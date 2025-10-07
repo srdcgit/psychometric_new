@@ -58,7 +58,12 @@
                             </div> --}}
                             @foreach ($section->questions as $question)
                                 <div class="mb-4 p-3 border rounded bg-light question-item">
-                                    <div class="fw-medium mb-2">{{ $questionNumber++ }}. {!! $question->question !!}</div>
+                                    {{-- <div class="fw-medium mb-2">{{ $questionNumber++ }}. {!! $question->question !!}</div> --}}
+                                    <div class="fw-medium mb-2 d-flex align-items-start">
+                                        <span class="me-2">{{ $questionNumber++ }}.</span>
+                                        <span>{!! $question->question !!}</span>
+                                    </div>
+                                    
                                     <div class="d-flex flex-wrap gap-3 mt-2">
                                         @php $scoringType = $section->domain->scoring_type; @endphp
 
