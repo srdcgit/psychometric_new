@@ -1,114 +1,148 @@
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="text-xl font-semibold text-gray-800">Create Section</h2>
-    </x-slot>
+@extends('layouts.app')
 
-    <div class="py-10 max-w-2xl mx-auto sm:px-6 lg:px-8">
-        <div class="bg-white shadow rounded p-6">
-            <form method="POST" action="{{ route('section.store') }}" enctype="multipart/form-data">
-                @csrf
+@section('content')
+<style>
+  .card-glass {
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(10px) saturate(1.1);
+    border-radius: 1rem;
+    box-shadow: 0 12px 32px rgba(31,45,61,0.1), 0 1.5px 5px rgba(60,72,88,0.07);
+    padding: 2.5rem 3rem;
+    max-width: 700px;
+    margin: 40px auto;
+  }
+  h2 {
+    font-weight: 700;
+    margin-bottom: 2rem;
+    text-align: center;
+  }
+  label {
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    display: block;
+    color: #4a5568;
+  }
+  select.form-select, input.form-control, textarea.form-control {
+    width: 100%;
+    border: 1px solid #cbd5e0;
+    border-radius: 0.375rem;
+    padding: 0.5rem 0.75rem;
+    font-size: 1rem;
+  }
+  textarea.form-control {
+    min-height: 100px;
+  }
+  .btn-primary {
+    font-size: 1.1rem;
+    padding: 0.6rem 1.25rem;
+    border-radius: 0.5rem;
+    width: 100%;
+    margin-top: 1.5rem;
+  }
+  #image-preview {
+    max-height: 120px;
+    margin-top: 10px;
+    display: none;
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  }
+</style>
 
-                <div class="mb-4">
-                    <label for="name" class="block text-gray-700 font-medium">Name</label>
-                    <input type="text" name="name" id="name" required
-                        class="w-full border rounded px-3 py-2 mt-1">
-                </div>
+<div class="card-glass">
+  <h2>Create Section</h2>
 
-                <div class="mb-4">
-                    <label for="code" class="block text-gray-700 font-medium">Code</label>
-                    <input type="text" name="code" id="code" required
-                        class="w-full border rounded px-3 py-2 mt-1">
-                </div>
+  <form method="POST" action="{{ route('section.store') }}" enctype="multipart/form-data" novalidate>
+    @csrf
 
-                <div class="mb-4">
-                    <label for="domain_id" class="block text-gray-700 font-medium">Domain</label>
-                    <select name="domain_id" id="domain_id" required class="w-full border rounded px-3 py-2 mt-1">
-                        <option value="">Select Domain</option>
-                        @foreach ($domains as $domain)
-                            <option value="{{ $domain->name == 'OCEAN' ? 'OCEAN' : ($domain->name == 'WORK VALUES' ? 'WORK VALUES' : $domain->id) }}">{{ $domain->name }}</option>
-                        @endforeach
-                    </select>
-                </div>
+    <label for="name">Name</label>
+    <input type="text" name="name" id="name" required class="form-control @error('name') is-invalid @enderror" value="{{ old('name') }}">
+    @error('name') <div class="invalid-feedback">{{ $message }}</div> @enderror
 
-                <div class="mb-4" id="low-group">
-                    <label for="low" class="block text-gray-700 font-medium">Low</label>
-                    <textarea name="low" id="low" rows="3" class="w-full border rounded px-3 py-2 mt-1"></textarea>
-                </div>
+    <label for="code" class="mt-4">Code</label>
+    <input type="text" name="code" id="code" required class="form-control @error('code') is-invalid @enderror" value="{{ old('code') }}">
+    @error('code') <div class="invalid-feedback">{{ $message }}</div> @enderror
 
-                <div class="mb-4" id="mid-group">
-                    <label for="mid" class="block text-gray-700 font-medium">Mid</label>
-                    <textarea name="mid" id="mid" rows="3" class="w-full border rounded px-3 py-2 mt-1"></textarea>
-                </div>
+    <label for="domain_id" class="mt-4">Domain</label>
+    <select name="domain_id" id="domain_id" required class="form-select @error('domain_id') is-invalid @enderror">
+      <option value="">Select Domain</option>
+      @foreach ($domains as $domain)
+        <option value="{{ $domain->name == 'OCEAN' ? 'OCEAN' : ($domain->name == 'WORK VALUES' ? 'WORK VALUES' : $domain->id) }}"
+          {{ old('domain_id') == $domain->name || old('domain_id') == $domain->id ? 'selected' : '' }}>
+          {{ $domain->name }}
+        </option>
+      @endforeach
+    </select>
+    @error('domain_id') <div class="invalid-feedback">{{ $message }}</div> @enderror
 
-                <div class="mb-4" id="high-group">
-                    <label for="high" class="block text-gray-700 font-medium">High</label>
-                    <textarea name="high" id="high" rows="3" class="w-full border rounded px-3 py-2 mt-1"></textarea>
-                </div>
-
-                <div class="mb-4" id="keytraits-group">
-                    <label for="keytraits" class="block text-gray-700 font-medium">Key Traits</label>
-                    <textarea name="keytraits" id="keytraits" rows="3" class="w-full border rounded px-3 py-2 mt-1"></textarea>
-                </div>
-
-                <div class="mb-4" id="enjoys-group">
-                    <label for="enjoys" class="block text-gray-700 font-medium">Enjoys</label>
-                    <textarea name="enjoys" id="enjoys" rows="3" class="w-full border rounded px-3 py-2 mt-1"></textarea>
-                </div>
-
-                <div class="mb-4" id="idealenvironments-group">
-                    <label for="idealenvironments" class="block text-gray-700 font-medium">Ideal Environments</label>
-                    <textarea name="idealenvironments" id="idealenvironments" rows="3" class="w-full border rounded px-3 py-2 mt-1"></textarea>
-                </div>
-
-                <div class="mb-4">
-                    <label for="description" class="block text-gray-700 font-medium">Description</label>
-                    <textarea name="description" id="description" rows="3" class="w-full border rounded px-3 py-2 mt-1"></textarea>
-                </div>
-
-                <div class="mb-4">
-                    <label for="image" class="block text-gray-700 font-medium">Image</label>
-                    <input type="file" accept="image/*" name="image" id="image" class="w-full border rounded px-3 py-2 mt-1">
-                    <div class="mt-2">
-                        <img id="image-preview" src="#" alt="Preview" style="display:none;max-height:120px;"/>
-                    </div>
-                </div>
-
-                <x-primary-button>{{ __('Create') }}</x-primary-button>
-            </form>
-        </div>
+    <div id="low-group" class="mt-4">
+      <label for="low">Low</label>
+      <textarea name="low" id="low" class="form-control">{{ old('low') }}</textarea>
     </div>
 
-    <!-- CKEditor 5 Script -->
-    <script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
-    <script>
-        function toggleFields() {
-            const domain = document.getElementById('domain_id').value;
-            const showSpecial = domain === 'OCEAN' || domain === 'WORK VALUES';
-            document.getElementById('low-group').style.display = showSpecial ? '' : 'none';
-            document.getElementById('mid-group').style.display = showSpecial ? '' : 'none';
-            document.getElementById('high-group').style.display = showSpecial ? '' : 'none';
-            document.getElementById('keytraits-group').style.display = showSpecial ? 'none' : '';
-            document.getElementById('enjoys-group').style.display = showSpecial ? 'none' : '';
-            document.getElementById('idealenvironments-group').style.display = showSpecial ? 'none' : '';
-        }
-        document.getElementById('domain_id').addEventListener('change', toggleFields);
-        window.addEventListener('DOMContentLoaded', toggleFields);
-        // Preview selected image
-        document.getElementById('image').addEventListener('change', function (e) {
-            const [file] = this.files;
-            const img = document.getElementById('image-preview');
-            if (file) {
-                img.src = URL.createObjectURL(file);
-                img.style.display = '';
-            } else {
-                img.src = '#';
-                img.style.display = 'none';
-            }
-        });
-        ClassicEditor
-            .create(document.querySelector('#description'))
-            .catch(error => {
-                console.error(error);
-            });
-    </script>
-</x-app-layout>
+    <div id="mid-group" class="mt-4">
+      <label for="mid">Mid</label>
+      <textarea name="mid" id="mid" class="form-control">{{ old('mid') }}</textarea>
+    </div>
+
+    <div id="high-group" class="mt-4">
+      <label for="high">High</label>
+      <textarea name="high" id="high" class="form-control">{{ old('high') }}</textarea>
+    </div>
+
+    <div id="keytraits-group" class="mt-4">
+      <label for="keytraits">Key Traits</label>
+      <textarea name="keytraits" id="keytraits" class="form-control">{{ old('keytraits') }}</textarea>
+    </div>
+
+    <div id="enjoys-group" class="mt-4">
+      <label for="enjoys">Enjoys</label>
+      <textarea name="enjoys" id="enjoys" class="form-control">{{ old('enjoys') }}</textarea>
+    </div>
+
+    <div id="idealenvironments-group" class="mt-4">
+      <label for="idealenvironments">Ideal Environments</label>
+      <textarea name="idealenvironments" id="idealenvironments" class="form-control">{{ old('idealenvironments') }}</textarea>
+    </div>
+
+    <label for="description" class="mt-4">Description</label>
+    <textarea name="description" id="description" class="form-control">{{ old('description') }}</textarea>
+
+    <label for="image" class="mt-4">Image</label>
+    <input type="file" accept="image/*" name="image" id="image" class="form-control">
+    <img id="image-preview" alt="Image Preview" />
+
+    <button type="submit" class="btn btn-primary mt-5">Create</button>
+  </form>
+</div>
+
+<script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
+<script>
+  function toggleFields() {
+    const domain = document.getElementById('domain_id').value;
+    const showSpecial = domain === 'OCEAN' || domain === 'WORK VALUES';
+    ['low-group', 'mid-group', 'high-group'].forEach(id => {
+      document.getElementById(id).style.display = showSpecial ? 'block' : 'none';
+    });
+    ['keytraits-group', 'enjoys-group', 'idealenvironments-group'].forEach(id => {
+      document.getElementById(id).style.display = showSpecial ? 'none' : 'block';
+    });
+  }
+
+  document.getElementById('domain_id').addEventListener('change', toggleFields);
+  window.addEventListener('DOMContentLoaded', toggleFields);
+
+  document.getElementById('image').addEventListener('change', function() {
+    const [file] = this.files;
+    const preview = document.getElementById('image-preview');
+    if (file) {
+      preview.src = URL.createObjectURL(file);
+      preview.style.display = 'block';
+    } else {
+      preview.src = '';
+      preview.style.display = 'none';
+    }
+  });
+
+  ClassicEditor.create(document.querySelector('#description')).catch(error => console.error(error));
+</script>
+@endsection

@@ -1,84 +1,119 @@
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Edit Institute') }}
-        </h2>
-    </x-slot>
+@extends('layouts.app')
 
-    <div class="max-w-4xl mx-auto py-10 sm:px-6 lg:px-8">
-        <div class="bg-white shadow-sm rounded-lg p-6">
+@section('content')
+<style>
+  .card-glass {
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(10px) saturate(1.2);
+    border-radius: 1rem;
+    box-shadow: 0 12px 32px rgba(31,45,61,0.08), 0 1.5px 5px rgba(60,72,88,0.05);
+    padding: 2.5rem 3rem;
+    max-width: 700px;
+    margin: 40px auto;
+  }
+  h2 {
+    font-weight: 700;
+    margin-bottom: 2rem;
+  }
+  .form-label {
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+  .invalid-feedback {
+    display: block;
+  }
+  .btn-primary {
+    font-size: 1.1rem;
+    padding: 0.6rem 1.25rem;
+    border-radius: 0.5rem;
+  }
+</style>
 
-            @if ($errors->any())
-                <div class="mb-4 text-red-600">
-                    <ul class="list-disc pl-5">
-                        @foreach ($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
-                </div>
-            @endif
+<div class="card-glass">
+  <h2 class="text-center">Edit Institute</h2>
 
-            <form method="POST" action="{{ route('institute.update', $institute->id) }}">
-                @csrf
-                
+  @if ($errors->any())
+    <div class="alert alert-danger mb-4">
+      <ul class="mb-0">
+        @foreach ($errors->all() as $error)
+          <li>{{ $error }}</li>
+        @endforeach
+      </ul>
+    </div>
+  @endif
 
-                <div class="mt-4">
-                    <x-input-label for="name" :value="__('Name')" />
-                    <x-text-input id="name" name="name" class="mt-1 block w-full"
-                        value="{{ old('name', $institute->name) }}" required />
-                    <x-input-error :messages="$errors->get('name')" class="mt-2" />
-                </div>
+  <form method="POST" action="{{ route('institute.update', $institute->id) }}">
+    @csrf
+    @method('PUT')
 
-                <div class="mt-4">
-                    <x-input-label for="email" :value="__('Email')" />
-                    <x-text-input id="email" type="email" name="email" class="mt-1 block w-full"
-                        value="{{ old('email', $institute->email) }}" required />
-                    <x-input-error :messages="$errors->get('email')" class="mt-2" />
-                </div>
-
-                <div class="mt-4">
-                    <x-input-label for="address" :value="__('Address')" />
-                    <x-text-input id="address" name="address" class="mt-1 block w-full"
-                        value="{{ old('address', $institute->address) }}" required />
-                    <x-input-error :messages="$errors->get('address')" class="mt-2" />
-                </div>
-
-                <div class="mt-4">
-                    <x-input-label for="contactperson" :value="__('Contact Person')" />
-                    <x-text-input id="contactperson" name="contact_person" class="mt-1 block w-full"
-                        value="{{ old('contact_person', $institute->contact_person) }}" required />
-                    <x-input-error :messages="$errors->get('contact_person')" class="mt-2" />
-                </div>
-
-                <div class="mt-4">
-                    <x-input-label for="mobile" :value="__('Mobile')" />
-                    <x-text-input id="mobile" type="number" name="mobile" class="mt-1 block w-full"
-                        value="{{ old('mobile', $institute->mobile) }}" maxlength="12" required />
-                    <x-input-error :messages="$errors->get('mobile')" class="mt-2" />
-                </div>
-
-                <div class="mt-4">
-                    <x-input-label for="allowedstudents" :value="__('Allowed Students')" />
-                    <x-text-input id="allowedstudents" type="number" name="allowed_students" class="mt-1 block w-full"
-                        value="{{ old('allowed_students', $institute->allowed_students) }}" maxlength="12" required />
-                    <x-input-error :messages="$errors->get('allowed_students')" class="mt-2" />
-                </div>
-
-                <div class="mt-4">
-                    <x-primary-button>{{ __('Update') }}</x-primary-button>
-                </div>
-            </form>
-
-        </div>
+    <div class="mb-3">
+      <label for="name" class="form-label">Name</label>
+      <input id="name" name="name" type="text" class="form-control @error('name') is-invalid @enderror" 
+             value="{{ old('name', $institute->name) }}" required autofocus>
+      @error('name')
+      <div class="invalid-feedback">{{ $message }}</div>
+      @enderror
     </div>
 
-    <!-- CKEditor 5 Script -->
-    <script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
-    <script>
-        ClassicEditor
-            .create(document.querySelector('#description'))
-            .catch(error => {
-                console.error(error);
-            });
-    </script>
-</x-app-layout>
+    <div class="mb-3">
+      <label for="email" class="form-label">Email</label>
+      <input id="email" name="email" type="email" class="form-control @error('email') is-invalid @enderror" 
+             value="{{ old('email', $institute->email) }}" required>
+      @error('email')
+      <div class="invalid-feedback">{{ $message }}</div>
+      @enderror
+    </div>
+
+    <div class="mb-3">
+      <label for="address" class="form-label">Address</label>
+      <input id="address" name="address" type="text" class="form-control @error('address') is-invalid @enderror"
+             value="{{ old('address', $institute->address) }}" required>
+      @error('address')
+      <div class="invalid-feedback">{{ $message }}</div>
+      @enderror
+    </div>
+
+    <div class="mb-3">
+      <label for="contactperson" class="form-label">Contact Person</label>
+      <input id="contactperson" name="contact_person" type="text" class="form-control @error('contact_person') is-invalid @enderror"
+             value="{{ old('contact_person', $institute->contact_person) }}" required>
+      @error('contact_person')
+      <div class="invalid-feedback">{{ $message }}</div>
+      @enderror
+    </div>
+
+    <div class="mb-3">
+      <label for="mobile" class="form-label">Mobile</label>
+      <input id="mobile" name="mobile" type="tel" maxlength="12" class="form-control @error('mobile') is-invalid @enderror"
+             value="{{ old('mobile', $institute->mobile) }}" required>
+      @error('mobile')
+      <div class="invalid-feedback">{{ $message }}</div>
+      @enderror
+    </div>
+
+    <div class="mb-4">
+      <label for="allowedstudents" class="form-label">Allowed Students</label>
+      <input id="allowedstudents" name="allowed_students" type="number" maxlength="12" class="form-control @error('allowed_students') is-invalid @enderror"
+             value="{{ old('allowed_students', $institute->allowed_students) }}" required>
+      @error('allowed_students')
+      <div class="invalid-feedback">{{ $message }}</div>
+      @enderror
+    </div>
+
+    <div class="d-grid">
+      <button type="submit" class="btn btn-primary">Update</button>
+    </div>
+  </form>
+</div>
+
+
+<!-- CKEditor 5 Script -->
+<script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
+<script>
+    ClassicEditor
+        .create(document.querySelector('#description'))
+        .catch(error => {
+            console.error(error);
+        });
+</script>
+@endsection

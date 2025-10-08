@@ -1,71 +1,119 @@
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="text-xl font-semibold text-gray-800">Edit Career</h2>
-    </x-slot>
+@extends('layouts.app')
 
-    <div class="py-10 max-w-4xl mx-auto sm:px-6 lg:px-8">
-        <div class="bg-white shadow rounded p-6">
-            @if ($errors->any())
-                <div class="mb-4 text-red-600">
-                    <ul class="list-disc pl-5">
-                        @foreach ($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
-                </div>
-            @endif
+@section('content')
+<style>
+  .card-glass {
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(10px) saturate(1.1);
+    border-radius: 1rem;
+    box-shadow: 0 12px 32px rgba(31,45,61,0.08), 0 1.5px 5px rgba(60,72,88,0.05);
+    padding: 2.5rem 3rem;
+    max-width: 600px;
+    margin: 40px auto;
+  }
+  h2 {
+    font-weight: 700;
+    margin-bottom: 2rem;
+    text-align: center;
+  }
+  .form-label {
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    display: block;
+    color: #4a5568; /* Tailwind Gray 700 */
+  }
+  select.form-select {
+    width: 100%;
+    border: 1px solid #cbd5e0; /* Tailwind Gray 300 */
+    border-radius: 0.375rem;
+    padding: 0.5rem;
+    font-size: 1rem;
+  }
+  textarea.form-textarea {
+    width: 100%;
+    min-height: 120px;
+    border: 1px solid #cbd5e0;
+    border-radius: 0.375rem;
+    padding: 0.5rem;
+    font-size: 1rem;
+    resize: vertical;
+  }
+  .btn-primary {
+    font-size: 1.1rem;
+    padding: 0.6rem 1.25rem;
+    border-radius: 0.5rem;
+    min-width: 140px;
+  }
+  .btn-secondary {
+    background-color: #e2e8f0; /* Tailwind Gray 200 */
+    color: #2d3748; /* Tailwind Gray 800 */
+    border-radius: 0.5rem;
+    padding: 0.6rem 1.25rem;
+    font-size: 1rem;
+    min-width: 120px;
+  }
+  .btn-secondary:hover {
+    background-color: #cbd5e0; /* Slightly darker */
+  }
+  .form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: 2rem;
+  }
+  .alert-validation {
+    color: #e53e3e; /* Tailwind red-600 */
+    margin-bottom: 1rem;
+    border-left: 4px solid #e53e3e;
+    padding-left: 1rem;
+  }
+</style>
 
-            <form action="{{ route('career.update', $career->id) }}" method="POST">
-                @csrf
-                @method('PUT')
+<div class="card-glass">
+  <h2>Edit Career</h2>
 
-                {{-- <div class="mb-4">
-                    <label for="name" class="block text-sm font-medium text-gray-700">Section Name</label>
-                    <input type="text" name="name" id="name" value="{{ old('name', $career->name) }}"
-                           class="mt-1 block w-full border-gray-300 rounded shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
-                </div> --}}
-
-                <div class="mb-4">
-                    <label for="career_category_id" class="block text-sm font-medium text-gray-700">Career Category</label>
-                    <select name="career_category_id" id="career_category_id" required
-                            class="mt-1 block w-full border-gray-300 rounded shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
-                        <option value="">Select Career Category</option>
-                        @foreach ($career_categories as $career_category)
-                            <option value="{{ $career_category->id }}"
-                                {{ old('career_category_id', $career->career_category_id) == $career_category->id ? 'selected' : '' }}>
-                                {!! $career_category->name !!}
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
-
-                <div class="mb-4">
-                    <label for="name" class="block text-sm font-medium text-gray-700">Careers</label>
-                    <textarea name="name" id="name" rows="4"
-                              class="mt-1 block w-full border-gray-300 rounded shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">{{ old('name', $career->name) }}</textarea>
-                </div>
-
-                <div class="flex justify-end space-x-4">
-                        <a href="{{ route('career.index') }}"
-                       class="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300">
-                        Cancel
-                    </a>
-                    <button type="submit"
-                            class="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700">
-                        Update Career
-                    </button>
-                </div>
-            </form>
-        </div>
+  @if ($errors->any())
+    <div class="alert-validation">
+      <ul class="mb-0">
+        @foreach ($errors->all() as $error)
+          <li>{{ $error }}</li>
+        @endforeach
+      </ul>
     </div>
+  @endif
 
-     <!-- CKEditor 5 Script -->
-    <script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
-    <script>
-        ClassicEditor
-            .create(document.querySelector('#name'))
-            .catch(error => {
-                console.error(error);
-            });
-    </script>
-</x-app-layout>
+  <form action="{{ route('career.update', $career->id) }}" method="POST">
+    @csrf
+    @method('PUT')
+
+    <label for="career_category_id" class="form-label">Career Category</label>
+    <select name="career_category_id" id="career_category_id" required class="form-select">
+      <option value="">Select Career Category</option>
+      @foreach ($career_categories as $career_category)
+        <option value="{{ $career_category->id }}" 
+            {{ old('career_category_id', $career->career_category_id) == $career_category->id ? 'selected' : '' }}>
+          {!! $career_category->name !!}
+        </option>
+      @endforeach
+    </select>
+
+    <label for="name" class="form-label mt-4">Careers</label>
+    <textarea name="name" id="name" class="form-textarea">{{ old('name', $career->name) }}</textarea>
+
+    <div class="form-actions">
+      <a href="{{ route('career.index') }}" class="btn btn-secondary">Cancel</a>
+      <button type="submit" class="btn btn-primary">Update Career</button>
+    </div>
+  </form>
+</div>
+
+<!-- CKEditor 5 Script -->
+<script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
+<script>
+  ClassicEditor
+    .create(document.querySelector('#name'))
+    .catch(error => {
+      console.error(error);
+    });
+</script>
+@endsection

@@ -1,434 +1,333 @@
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="text-xl font-semibold text-gray-800">Add Question</h2>
-    </x-slot>
+@extends('layouts.app')
 
-    <div class="py-10 max-w-2xl mx-auto sm:px-6 lg:px-8">
-        <div class="bg-white shadow rounded p-6">
-            <form method="POST" action="{{ route('question.store') }}" id="questionForm">
-                @csrf
-                <div class="row">
-                    <div class="col">
-                        <label for="domain_id" class="block text-gray-700 font-medium">Domain</label>
-                        <select name="domain_id" id="domain_id" required class="w-full border rounded px-3 py-2 mt-1">
-                            <option value="">Select Domain</option>
-                            @foreach ($domains as $d)
-                                <option value="{{ $d->id }}" data-type="{{ $d->scoring_type }}">
-                                    {{ $d->name }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div class="col">
-                        <label for="section_id" class="block text-gray-700 font-medium">Section</label>
-                        <select name="section_id" id="section_id" required class="w-full border rounded px-3 py-2 mt-1">
-                            <option value="">Select Section</option>
-                            <!-- Options will be loaded via AJAX -->
-                        </select>
-                    </div>
+@section('content')
+<style>
+    /* Header */
+    .header-gradient {
+        background: linear-gradient(90deg, #4f46e5, #06b6d4);
+        color: #fff;
+        border-radius: 1rem;
+        padding: 1.75rem;
+        text-align: center;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        box-shadow: 0 6px 25px rgba(0, 0, 0, 0.08);
+        margin-bottom: 2rem;
+    }
+
+    /* Card */
+    .card-glass {
+        background: #fff;
+        border-radius: 1rem;
+        padding: 2rem 2.5rem;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+        border: 1px solid #f3f4f6;
+    }
+
+    /* CKEditor */
+    .ck-editor__editable {
+        min-height: 200px;
+        border: 1px solid #e5e7eb !important;
+        border-radius: 0.5rem !important;
+        background: #f9fafb;
+    }
+
+    .ck.ck-toolbar {
+        border: 1px solid #e5e7eb !important;
+        border-radius: 0.5rem !important;
+        background: #f9fafb;
+    }
+
+    .option-editor .ck-editor__editable {
+        min-height: 100px;
+    }
+
+    /* Buttons */
+    .btn-primary {
+        background: linear-gradient(90deg, #4f46e5, #06b6d4);
+        color: white;
+        padding: 0.6rem 1.4rem;
+        border-radius: 0.6rem;
+        border: none;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        opacity: 0.95;
+        box-shadow: 0 4px 15px rgba(79, 70, 229, 0.3);
+    }
+
+    .btn-secondary {
+        background: #f3f4f6;
+        color: #374151;
+        padding: 0.6rem 1.4rem;
+        border-radius: 0.6rem;
+        border: none;
+        transition: all 0.3s ease;
+        font-weight: 500;
+    }
+
+    .btn-secondary:hover {
+        background: #e5e7eb;
+        transform: translateY(-2px);
+    }
+
+    /* Option items */
+    .option-item {
+        border: 1px solid #e5e7eb;
+        border-radius: 0.75rem;
+        padding: 1rem;
+        background: #f9fafb;
+        transition: all 0.2s ease;
+    }
+
+    .option-item:hover {
+        background: #f3f4f6;
+    }
+
+    .remove-option {
+        background: #fee2e2;
+        border: none;
+        color: #dc2626;
+        font-size: 1.1rem;
+        font-weight: bold;
+        cursor: pointer;
+        border-radius: 0.4rem;
+        width: 28px;
+        height: 28px;
+        line-height: 0;
+        transition: all 0.2s ease;
+    }
+
+    .remove-option:hover {
+        background: #dc2626;
+        color: white;
+    }
+
+    /* Toggle */
+    #toggleButton {
+        min-width: 80px;
+        transition: all 0.3s ease;
+    }
+
+    #toggleButton.active {
+        background: linear-gradient(90deg, #4f46e5, #06b6d4);
+        color: white;
+    }
+
+    /* Input / Select */
+    select, input[type="text"], input[type="number"] {
+        border: 1px solid #e5e7eb;
+        border-radius: 0.5rem;
+        padding: 0.5rem 0.75rem;
+        background-color: #f9fafb;
+        transition: border-color 0.2s;
+    }
+
+    select:focus, input:focus {
+        outline: none;
+        border-color: #4f46e5;
+        background-color: white;
+    }
+</style>
+
+
+<div class="header-gradient">
+    <h2 class="text-2xl font-semibold">Add Question</h2>
+</div>
+
+<div class="max-w-3xl mx-auto">
+    <div class="card-glass">
+        <form method="POST" action="{{ route('question.store') }}" id="questionForm">
+            @csrf
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+                <div>
+                    <label for="domain_id" class="block text-gray-700 font-medium">Domain</label>
+                    <select name="domain_id" id="domain_id" required class="w-full border rounded px-3 py-2 mt-1">
+                        <option value="">Select Domain</option>
+                        @foreach ($domains as $d)
+                            <option value="{{ $d->id }}" data-type="{{ $d->scoring_type }}">{{ $d->name }}</option>
+                        @endforeach
+                    </select>
                 </div>
 
-                <br>
-                <style>
-                    .ck-editor__editable {
-                        min-height: 200px;
-                        border: 1px solid #d1d5db !important;
-                        border-radius: 0.375rem !important;
-                    }
-
-                    .ck.ck-toolbar {
-                        border: 1px solid #d1d5db !important;
-                        border-radius: 0.375rem !important;
-                    }
-
-                    .option-editor .ck-editor__editable {
-                        min-height: 100px;
-                    }
-                </style>
-
-                <div class="mb-4" id="question-container">
-                    <label for="editor" class="block text-gray-700 font-medium">Question</label>
-                    <div id="editor" class="mt-1"></div>
-                    <input type="hidden" name="question" id="question">
-                    <div id="question-error" class="text-red-500 text-sm mt-1 hidden">Please enter a question</div>
+                <div>
+                    <label for="section_id" class="block text-gray-700 font-medium">Section</label>
+                    <select name="section_id" id="section_id" required class="w-full border rounded px-3 py-2 mt-1">
+                        <option value="">Select Section</option>
+                    </select>
                 </div>
+            </div>
 
-                <!-- MCA Options Container (Initially Hidden) -->
-                <div id="mca-options-container" class="mb-4 hidden">
-                    <label class="block text-gray-700 font-medium mb-2">Options</label>
-                    <div id="options-list">
-                        <div class="option-item mb-2">
-                            <div class="flex items-center gap-2 mb-2">
-                                <div class="flex-1">
-                                    <div class="option-editor"></div>
-                                    <input type="hidden" name="options[]" class="option-input">
-                                </div>
+            <div class="mb-6">
+                <label class="block text-gray-700 font-medium">Question</label>
+                <div id="editor" class="mt-2"></div>
+                <input type="hidden" name="question" id="question">
+                <div id="question-error" class="text-red-500 text-sm mt-1 hidden">Please enter a question</div>
+            </div>
+
+            <!-- MCA Options Section -->
+            <div id="mca-options-container" class="mb-6 hidden">
+                <label class="block text-gray-700 font-medium mb-2">Options</label>
+                <div id="options-list">
+                    <div class="option-item mb-4">
+                        <div class="flex items-center gap-2 mb-2">
+                            <div class="flex-1">
+                                <div class="option-editor"></div>
+                                <input type="hidden" name="options[]" class="option-input">
+                            </div>
                             <label class="inline-flex items-center">
                                 <input type="radio" name="correct_option" value="0" required>
                                 <span class="ml-2">Correct</span>
                             </label>
-                                <button type="button" class="remove-option px-2 py-1 text-red-600 hover:text-red-800"
-                                    onclick="removeOption(this)">×</button>
-                            </div>
+                            <button type="button" class="remove-option" onclick="removeOption(this)">×</button>
                         </div>
                     </div>
-                    <button type="button" onclick="addOption()"
-                        class="mt-2 bg-gray-200 text-gray-700 px-4 py-2 rounded hover:bg-gray-300">
-                        + Add Option
-                    </button>
                 </div>
+                <button type="button" onclick="addOption()" class="btn-secondary mt-2">+ Add Option</button>
+            </div>
 
-                <div class="mb-4">
-                    <label for="is_reverse" class="block text-gray-700 font-medium mb-1">Is Reverse ?</label>
-                    <button type="button" id="toggleButton" class="bg-gray-300 text-gray-700 px-4 py-2 rounded"
-                        onclick="toggleIsReverse()">
-                        No
-                    </button>
-                    <input type="hidden" name="is_reverse" id="is_reverse" value="0">
-                </div>
+            <div class="mb-6">
+                <label class="block text-gray-700 font-medium mb-1">Is Reverse?</label>
+                <button type="button" id="toggleButton" class="btn-secondary" onclick="toggleIsReverse()">No</button>
+                <input type="hidden" name="is_reverse" id="is_reverse" value="0">
+            </div>
 
-                <div class="mt-6 flex justify-center gap-4">
-                    <a href="{{ route('question.index') }}"
-                        class="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300">
-                        Cancel
-                    </a>
-                    <x-primary-button type="button" onclick="submitForm()">{{ __('Create') }}</x-primary-button>
-                </div>
-            </form>
-        </div>
+            <div class="flex justify-center gap-4">
+                <a href="{{ route('question.index') }}" class="btn-secondary">Cancel</a>
+                <button type="button" onclick="submitForm()" class="btn-primary">Create</button>
+            </div>
+        </form>
     </div>
+</div>
 
-    {{-- Script  --}}
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/decoupled-document/ckeditor.js"></script>
-    
-    <script>
-        const sectionUrlTemplate = "{{ route('domain.sections', ['id' => '__ID__']) }}";
-        let optionEditors = [];
-        let mainEditor;
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/decoupled-document/ckeditor.js"></script>
 
-        class UploadAdapter {
-            constructor(loader) {
-                this.loader = loader;
-            }
+<script>
+const sectionUrlTemplate = "{{ route('domain.sections', ['id' => '__ID__']) }}";
+let optionEditors = [];
+let mainEditor;
 
-            upload() {
-                return this.loader.file.then(file => {
-                    return new Promise((resolve, reject) => {
-                        const formData = new FormData();
-                        formData.append('image', file);
-
-                        $.ajax({
-                            url: '{{ route('ckeditor.upload') }}',
-                            type: 'POST',
-                            data: formData,
-                            contentType: false,
-                            processData: false,
-                            headers: {
-                                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                            },
-                            success: function(response) {
-                                resolve({
-                                    default: response.url
-                                });
-                            },
-                            error: function(response) {
-                                reject(response.responseText);
-                            }
-                        });
-                    });
-                });
-            }
-
-            abort() {
-                // Abort upload if needed
-            }
-        }
-
-        function uploadPlugin(editor) {
-            editor.plugins.get('FileRepository').createUploadAdapter = (loader) => {
-                return new UploadAdapter(loader);
-            };
-        }
-
-        // Initialize main editor when document is ready
-        $(document).ready(function() {
-            // Initialize CKEditor with image upload support
-            DecoupledEditor
-                .create(document.querySelector('#editor'), {
-                    extraPlugins: [uploadPlugin],
-                    toolbar: {
-                        items: [
-                            'heading',
-                            '|',
-                            'bold',
-                            'italic',
-                            'link',
-                            'bulletedList',
-                            'numberedList',
-                            '|',
-                            'uploadImage',
-                            'blockQuote',
-                            'insertTable',
-                            'undo',
-                            'redo'
-                        ]
-                    },
-                    image: {
-                        toolbar: [
-                            'imageStyle:inline',
-                            'imageStyle:block',
-                            'imageStyle:side',
-                            '|',
-                            'toggleImageCaption',
-                            'imageTextAlternative',
-                            '|',
-                            'resizeImage'
-                        ],
-                        resizeUnit: '%',
-                        resizeOptions: [{
-                            name: 'resizeImage:original',
-                            value: null,
-                            icon: 'original'
-                        },
-                        {
-                            name: 'resizeImage:50',
-                            value: '50',
-                            icon: 'medium'
-                        },
-                        {
-                            name: 'resizeImage:75',
-                            value: '75',
-                            icon: 'large'
-                        }]
-                    }
-                })
-                .then(editor => {
-                    mainEditor = editor;
-                    const toolbarContainer = document.querySelector('#editor');
-                    toolbarContainer.parentNode.insertBefore(
-                        editor.ui.view.toolbar.element,
-                        toolbarContainer
-                    );
-            })
-            .catch(error => {
-                console.error(error);
+class UploadAdapter {
+    constructor(loader) {
+        this.loader = loader;
+    }
+    upload() {
+        return this.loader.file.then(file => new Promise((resolve, reject) => {
+            const formData = new FormData();
+            formData.append('image', file);
+            $.ajax({
+                url: '{{ route('ckeditor.upload') }}',
+                type: 'POST',
+                data: formData,
+                contentType: false,
+                processData: false,
+                headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
+                success: res => resolve({ default: res.url }),
+                error: err => reject(err.responseText)
             });
+        }));
+    }
+}
 
-            // Initialize the first option editor
-            const firstOptionEditor = document.querySelector('.option-editor');
-            if (firstOptionEditor) {
-                initializeOptionEditor(firstOptionEditor);
-            }
-        });
+function uploadPlugin(editor) {
+    editor.plugins.get('FileRepository').createUploadAdapter = loader => new UploadAdapter(loader);
+}
 
-        async function initializeOptionEditor(editorElement) {
-            try {
-                const editor = await DecoupledEditor.create(editorElement, {
-                    extraPlugins: [uploadPlugin],
-                    toolbar: {
-                        items: [
-                            'bold',
-                            'italic',
-                            'link',
-                            '|',
-                            'uploadImage',
-                            'undo',
-                            'redo'
-                        ]
-                    },
-                    image: {
-                        toolbar: [
-                            'imageStyle:inline',
-                            'imageStyle:block',
-                            'imageStyle:side',
-                            '|',
-                            'toggleImageCaption',
-                            'imageTextAlternative',
-                            '|',
-                            'resizeImage'
-                        ],
-                        resizeUnit: '%',
-                        resizeOptions: [{
-                            name: 'resizeImage:original',
-                            value: null,
-                            icon: 'original'
-                        },
-                        {
-                            name: 'resizeImage:50',
-                            value: '50',
-                            icon: 'medium'
-                        },
-                        {
-                            name: 'resizeImage:75',
-                            value: '75',
-                            icon: 'large'
-                        }]
-                    }
-                });
+$(document).ready(() => {
+    // Initialize main CKEditor
+    DecoupledEditor.create(document.querySelector('#editor'), {
+        extraPlugins: [uploadPlugin],
+        toolbar: { items: ['heading', '|', 'bold', 'italic', 'link', 'bulletedList', 'numberedList', '|', 'uploadImage', 'undo', 'redo'] }
+    }).then(editor => {
+        mainEditor = editor;
+        const toolbarContainer = document.querySelector('#editor');
+        toolbarContainer.parentNode.insertBefore(editor.ui.view.toolbar.element, toolbarContainer);
+    });
 
-                // Store the editor instance
-                optionEditors.push(editor);
-                
-                // Handle the toolbar placement
-                const toolbarContainer = editorElement;
-                toolbarContainer.parentNode.insertBefore(
-                    editor.ui.view.toolbar.element,
-                    toolbarContainer
-                );
-                
-                // Update hidden input when content changes
-                editor.model.document.on('change:data', () => {
-                    const inputField = editorElement.nextElementSibling;
-                    if (inputField) {
-                        inputField.value = editor.getData();
-                    }
-                });
+    // First option editor
+    initializeOptionEditor(document.querySelector('.option-editor'));
 
-                return editor;
-            } catch (error) {
-                console.error('Error initializing option editor:', error);
-            }
-        }
+    $('#domain_id').on('change', function() {
+        const domainId = $(this).val();
+        const type = $(this).find(':selected').data('type');
+        if (type === 'mcq') $('#mca-options-container').removeClass('hidden');
+        else $('#mca-options-container').addClass('hidden');
+        loadSections(domainId);
+    });
+});
 
-        function submitForm() {
-            if (!mainEditor) {
-                console.error('Editor not initialized');
-                return;
-            }
+async function initializeOptionEditor(editorElement) {
+    const editor = await DecoupledEditor.create(editorElement, {
+        extraPlugins: [uploadPlugin],
+        toolbar: { items: ['bold', 'italic', 'link', '|', 'uploadImage', 'undo', 'redo'] }
+    });
+    optionEditors.push(editor);
+    const toolbarContainer = editorElement;
+    toolbarContainer.parentNode.insertBefore(editor.ui.view.toolbar.element, toolbarContainer);
+    editor.model.document.on('change:data', () => {
+        const inputField = editorElement.nextElementSibling;
+        if (inputField) inputField.value = editor.getData();
+    });
+}
 
-            const questionContent = mainEditor.getData();
-            if (!questionContent.trim()) {
-                document.getElementById('question-error').classList.remove('hidden');
-                return;
-            }
-            
-            document.getElementById('question-error').classList.add('hidden');
-            document.getElementById('question').value = questionContent;
-            
-            // Update all option values before submitting
-            optionEditors.forEach((editor, index) => {
-                if (editor) {
-                    const optionContent = editor.getData();
-                    const hiddenInput = document.querySelectorAll('.option-input')[index];
-                    if (hiddenInput) {
-                        hiddenInput.value = optionContent;
-                    }
-                }
-            });
-            
-            document.getElementById('questionForm').submit();
-        }
+function loadSections(domainId) {
+    const $sectionSelect = $('#section_id');
+    if (!domainId) return $sectionSelect.html('<option value="">Select Section</option>');
+    $sectionSelect.html('<option>Loading...</option>');
+    $.get(sectionUrlTemplate.replace('__ID__', domainId), sections => {
+        let options = '<option value="">Select Section</option>';
+        sections.forEach(s => options += `<option value="${s.id}">${s.name}</option>`);
+        $sectionSelect.html(options);
+    });
+}
 
-        // Domain change handler
-        $(document).ready(function() {
-            $('#domain_id').on('change', function() {
-                var domainId = $(this).val();
-                var $sectionSelect = $('#section_id');
-                var scoringType = $(this).find(':selected').data('type');
-                
-                // Toggle MCA options container based on domain type
-                if (scoringType === 'mcq') {
-                    $('#mca-options-container').removeClass('hidden');
-                } else {
-                    $('#mca-options-container').addClass('hidden');
-                }
-
-                $sectionSelect.html('<option value="">Loading...</option>');
-
-                if (!domainId) {
-                    $sectionSelect.html('<option value="">Select Section</option>');
-                    return;
-                }
-
-                var url = sectionUrlTemplate.replace('__ID__', domainId);
-                $.ajax({
-                    url: url,
-                    method: 'GET',
-                    success: function(sections) {
-                        var options = '<option value="">Select Section</option>';
-                        sections.forEach(function(section) {
-                            options += '<option value="' + section.id + '">' + section.name + '</option>';
-                        });
-                        $sectionSelect.html(options);
-                    },
-                    error: function(xhr, status, error) {
-                        console.error('Failed to load sections:', error);
-                        $sectionSelect.html('<option value="">Error loading sections</option>');
-                    }
-                });
-            });
-        });
-
-        function addOption() {
-            const optionsList = document.getElementById('options-list');
-            const newOption = document.createElement('div');
-            const optionCount = optionsList.children.length;
-            
-            newOption.className = 'option-item mb-2';
-            newOption.innerHTML = `
-                <div class="flex items-center gap-2 mb-2">
-                    <div class="flex-1">
-                        <div class="option-editor"></div>
-                        <input type="hidden" name="options[]" class="option-input">
-                    </div>
+function addOption() {
+    const optionsList = $('#options-list');
+    const index = optionsList.children().length;
+    const html = `
+        <div class="option-item mb-4">
+            <div class="flex items-center gap-2 mb-2">
+                <div class="flex-1">
+                    <div class="option-editor"></div>
+                    <input type="hidden" name="options[]" class="option-input">
+                </div>
                 <label class="inline-flex items-center">
-                    <input type="radio" name="correct_option" value="${optionCount}" required>
+                    <input type="radio" name="correct_option" value="${index}" required>
                     <span class="ml-2">Correct</span>
                 </label>
-                <button type="button" class="remove-option px-2 py-1 text-red-600 hover:text-red-800" onclick="removeOption(this)">×</button>
-                </div>
-            `;
-            
-            optionsList.appendChild(newOption);
-            
-            // Initialize CKEditor for the new option
-            const newEditorElement = newOption.querySelector('.option-editor');
-            initializeOptionEditor(newEditorElement);
-        }
+                <button type="button" class="remove-option" onclick="removeOption(this)">×</button>
+            </div>
+        </div>`;
+    optionsList.append(html);
+    initializeOptionEditor(optionsList.find('.option-editor').last()[0]);
+}
 
-        function removeOption(button) {
-            const optionItem = button.closest('.option-item');
-            const optionsList = optionItem.parentElement;
-            
-            if (optionsList.children.length > 1) {
-                // Find and destroy the CKEditor instance
-                const editorElement = optionItem.querySelector('.option-editor');
-                const editorIndex = Array.from(optionsList.querySelectorAll('.option-editor')).indexOf(editorElement);
-                if (editorIndex !== -1) {
-                    optionEditors[editorIndex].destroy()
-                        .then(() => {
-                            optionEditors.splice(editorIndex, 1);
-                        })
-                        .catch(error => {
-                            console.error(error);
-                        });
-                }
-                
-                optionItem.remove();
-                
-                // Update radio button values
-                Array.from(optionsList.children).forEach((item, index) => {
-                    item.querySelector('input[type="radio"]').value = index;
-                });
-            }
-        }
+function removeOption(btn) {
+    const option = $(btn).closest('.option-item');
+    if ($('#options-list .option-item').length > 1) option.remove();
+}
 
-        function toggleIsReverse() {
-            const button = document.getElementById('toggleButton');
-            const input = document.getElementById('is_reverse');
-            const isOn = input.value === '1';
+function toggleIsReverse() {
+    const btn = $('#toggleButton');
+    const input = $('#is_reverse');
+    if (input.val() === '1') {
+        input.val('0');
+        btn.text('No').removeClass('bg-blue-600 text-white').addClass('btn-secondary');
+    } else {
+        input.val('1');
+        btn.text('Yes').removeClass('btn-secondary').addClass('bg-blue-600 text-white');
+    }
+}
 
-            if (isOn) {
-                input.value = '0';
-                button.textContent = 'No';
-                button.classList.remove('bg-blue-600', 'text-white');
-                button.classList.add('bg-gray-300', 'text-gray-700');
-            } else {
-                input.value = '1';
-                button.textContent = 'Yes';
-                button.classList.remove('bg-gray-300', 'text-gray-700');
-                button.classList.add('bg-blue-600', 'text-white');
-            }
-        }
-    </script>
-</x-app-layout>
+function submitForm() {
+    const question = mainEditor.getData();
+    if (!question.trim()) return $('#question-error').removeClass('hidden');
+    $('#question').val(question);
+    $('#questionForm').submit();
+}
+</script>
+@endsection

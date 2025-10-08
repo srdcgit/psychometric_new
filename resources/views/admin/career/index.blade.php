@@ -1,113 +1,49 @@
-<x-app-layout>
-    <x-slot name="header">
-        <div class="flex justify-between items-center">
-            <h2 class="text-xl font-semibold text-gray-800">Career</h2>
-            <a href="{{ route('career.create') }}" class="bg-indigo-600 text-white px-4 py-2 rounded inline-block hover:bg-indigo-700 transition-colors">
-                + Add New Career
-            </a>
-        </div>
-    </x-slot>
+@extends('layouts.app')
 
-    <div class="max-w-7xl mx-auto py-10 sm:px-6 lg:px-8">
-        {{-- <div class="mb-6">
-            <a href="{{ route('career.create') }}"
-                class="inline-block px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700">
-                + Add New Career
-            </a>
-        </div> --}}
+@section('content')
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
 
-        @if (session('success'))
-            <div class="mb-4 text-green-600">
-                {{ session('success') }}
-            </div>
-        @endif
+<style>
+.header-gradient {
+    background: linear-gradient(90deg, #624bff 0, #29b6f6 100%);
+    color: #fff;
+    border-radius: 1rem;
+    padding: 1rem 2rem;
+    box-shadow: 0 8px 24px rgba(60,72,88,0.05);
+    margin-bottom: 1rem;
+}
+.card-careers {
+    background-color: #fff;
+    border-radius: 1rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    padding: 1.5rem;
+}
+.table thead th {
+    font-weight: 600;
+}
+.table-striped tbody tr:nth-of-type(odd) {
+    background-color: #f9fafb;
+}
+.table-striped tbody tr:hover {
+    background-color: #e9ecef;
+}
+.action-btn {
+    min-width: 36px;
+    padding: 0.375rem 0.5rem;
+}
+</style>
 
-        <div class="bg-white shadow-sm rounded-lg p-6">
-            @if ($careers->count())
-                <div class="table-responsive">
-                    <table class="w-full table-auto">
-                        <thead>
-                            <tr class="bg-gray-100 text-left">
-                                <th class="px-4 py-2">#</th>
-                                <th class="px-4 py-2">Name</th>
-                                <th class="px-4 py-2">Career Category</th>
-                                <th class="px-4 py-2">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($careers as $career)
-                                <tr class="border-b">
-                                    <td class="px-4 py-2">
-                                        {{ ($careers->currentPage() - 1) * $careers->perPage() + $loop->iteration }}
-                                    </td>
-                                    <td class="px-4 py-2">{!! $career->name ?? 'Null' !!}</td>
-                                        <td class="px-4 py-2">{!! $career->careerCategory->name ?? 'Null' !!}</td>
-                                    <td class="px-4 py-2 space-x-2">
-                                            <a href="{{ route('career.edit', $career->id) }}"
-                                            class="text-blue-500 hover:underline">Edit</a>
-
-                                        <form action="{{ route('career.destroy', $career->id) }}" method="POST"
-                                            class="inline delete-form">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="button" class="text-red-600 hover:underline delete-btn"
-                                                data-id="{{ $career->id }}">
-                                                Delete
-                                            </button>
-                                        </form>
-
-                                    </td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-
-
-                <div class="mt-4">
-                    {!! $careers->links() !!}
-                </div>
-            @else
-                <p>No Careers found.</p>
-            @endif
-        </div>
+<div class="container py-4">
+    <div class="header-gradient d-flex justify-content-between align-items-center">
+        <h2 class="h4 mb-0">Career</h2>
+        <a href="{{ route('career.create') }}" class="btn btn-lg btn-warning d-flex align-items-center gap-2 shadow-sm">
+            <i class="bi bi-plus-circle"></i> Add New Career
+        </a>
     </div>
-    <script>
-        $(document).ready(function() {
-            $('#career_category_id').select2();
-        });
-    </script>
 
-    <!-- Include SweetAlert2 -->
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const deleteButtons = document.querySelectorAll('.delete-btn');
-
-            deleteButtons.forEach(button => {
-                button.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    const form = this.closest('form');
-
-                    Swal.fire({
-                        title: 'Are you sure?',
-                        text: "This will permanently delete the Career.",
-                        icon: 'warning',
-                        showCancelButton: true,
-                        confirmButtonColor: '#d33',
-                        cancelButtonColor: '#3085d6',
-                        confirmButtonText: 'Yes, delete it!'
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            form.submit();
-                        }
-                    });
-                });
-            });
-
-            // Show success alert if session has message
-            @if (session('success'))
+    @if (session('success'))
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
                 Swal.fire({
                     icon: 'success',
                     title: 'Success',
@@ -115,8 +51,100 @@
                     timer: 3000,
                     showConfirmButton: false
                 });
-            @endif
-        });
-    </script>
+            });
+        </script>
+    @endif
 
-</x-app-layout>
+    <div class="card-careers">
+        @if ($careers->count())
+            <div class="table-responsive">
+                <table class="table table-striped table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th style="width: 60px;">#</th>
+                            <th>Name</th>
+                            <th>Career Category</th>
+                            <th style="width: 140px;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($careers as $career)
+                            <tr>
+                                <td>
+                                    <span class="badge bg-info text-dark px-3 py-2">
+                                        {{ ($careers->currentPage() - 1) * $careers->perPage() + $loop->iteration }}
+                                    </span>
+                                </td>
+                                <td>{!! $career->name ?? 'Null' !!}</td>
+                                <td>{!! $career->careerCategory->name ?? 'Null' !!}</td>
+                                <td>
+                                    <a href="{{ route('career.edit', $career->id) }}"
+                                        class="btn btn-sm btn-outline-primary action-btn"
+                                        data-bs-toggle="tooltip" title="Edit">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+
+                                    <form action="{{ route('career.destroy', $career->id) }}" method="POST" class="d-inline-block m-0 p-0">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="button" class="btn btn-sm btn-outline-danger action-btn delete-btn"
+                                            data-id="{{ $career->id }}" data-bs-toggle="tooltip" title="Delete">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            <div class="mt-3 d-flex justify-content-center">
+                {!! $careers->links('pagination::bootstrap-5') !!}
+            </div>
+        @else
+            <div class="text-center p-5 text-muted">
+                <i class="bi bi-exclamation-circle fs-1 mb-3"></i>
+                <h5>No Careers found.</h5>
+            </div>
+        @endif
+    </div>
+</div>
+
+<!-- Include SweetAlert2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const deleteButtons = document.querySelectorAll('.delete-btn');
+
+    deleteButtons.forEach(button => {
+        button.addEventListener('click', function (e) {
+            e.preventDefault();
+            const form = this.closest('form');
+
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "This will permanently delete the Career.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    form.submit();
+                }
+            });
+        });
+    });
+
+    // Initialize Bootstrap tooltips
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+    tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl)
+    })
+});
+</script>
+@endsection
