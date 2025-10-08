@@ -31,6 +31,9 @@
 .table tbody tr:hover {
     background: #f5f7fb !important;
 }
+.badge-name {
+        font-weight: none !important;
+}
 </style>
 
 <div class="container py-4">
@@ -100,81 +103,71 @@
         <div class="card-body p-0">
             @if ($careerpaths->count())
                 <div class="table-responsive">
-                    <table class="table table-borderless align-middle mb-0">
-                        <thead>
-                            <tr>
-                                <th style="width:48px;">#</th>
-                                <th style="min-width:200px;">Careers</th>
-                                <th style="min-width:160px;">Section Name</th>
-                                <th style="min-width:120px;">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($careerpaths as $career)
-                                <tr>
-                                    <td class="fw-semibold text-secondary">
-                                        <span class="badge rounded-pill bg-primary-subtle text-primary fs-6 shadow-sm px-2 py-2">
-                                            {{ ($careerpaths->currentPage() - 1) * $careerpaths->perPage() + $loop->iteration }}
-                                        </span>
-                                    </td>
-                                    <td>
-                                        @if($career->careers->count() > 0)
-                                            @foreach($career->careers as $index => $careerItem)
-                                                <span class="badge
-                                                    bg-light text-dark rounded-pill border border-light shadow-sm me-1 mb-1"
-                                                    style="font-size:1em;"
-                                                    data-bs-toggle="tooltip"
-                                                    title="{{ $careerItem->description ?? '' }}">
-                                                    {!! $careerItem->name !!}
-                                                </span>
-                                            @endforeach
-                                        @else
-                                            <span class="text-muted">No careers assigned</span>
-                                        @endif
-                                    </td>
-                                    <td>
-                                        @if($career->sections->count() > 0)
-                                            @foreach($career->sections as $index => $section)
-                                                <span class="badge
-                                                    bg-light text-dark rounded-pill border border-light shadow-sm me-1 mb-1"
-                                                    style="font-size:1em;"
-                                                    data-bs-toggle="tooltip"
-                                                    title="{{ $section->description ?? '' }}">
-                                                    {!! $section->name !!}
-                                                </span>
-                                            @endforeach
-                                        @else
-                                            <span class="text-muted">No sections assigned</span>
-                                        @endif
-                                    </td>
-                                    <td>
-                                        <a href="{{ route('careerpath.edit', $career->id) }}"
-                                           class="btn btn-sm btn-outline-info me-2 shadow-sm"
-                                           data-bs-toggle="tooltip" title="Edit Career Path">
-                                            <i class="bi bi-pencil"></i>
-                                        </a>
-                                        <button type="button"
-                                                class="btn btn-sm btn-outline-danger shadow-sm delete-btn"
-                                                data-id="{{ $career->id }}"
-                                                data-bs-toggle="tooltip" title="Delete Career Path">
-                                            <i class="bi bi-trash"></i>
-                                        </button>
-                                        <form action="{{ route('careerpath.destroy', $career->id) }}"
-                                              method="POST"
-                                              class="d-none delete-form">
-                                            @csrf
-                                            @method('DELETE')
-                                        </form>
-                                    </td>
-                                </tr>
+    <table class="table align-middle table-hover table-striped rounded-3 bg-white shadow-sm">
+        <thead class="table-light">
+            <tr>
+                <th style="width:48px;">#</th>
+                <th style="min-width:200px;">Careers</th>
+                <th style="min-width:160px;">Section Name</th>
+                <th style="min-width:120px;">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach ($careerpaths as $career)
+                <tr class="hover-bg-soft">
+                    <td>
+                        <span class="badge badge-pill bg-info text-dark fs-6 px-3 py-2 shadow-sm">
+                            {{ ($careerpaths->currentPage() - 1) * $careerpaths->perPage() + $loop->iteration }}
+                        </span>
+                    </td>
+                    <td>
+                        @if($career->careers->count() > 0)
+                            @foreach($career->careers as $careerItem)
+                                <span class="badge bg-light text-dark border border-light rounded-pill me-1 mb-1" style="font-size:0.9em;"
+                                      data-bs-toggle="tooltip" title="{{ $careerItem->description ?? '' }}">
+                                    {!! $careerItem->name !!}
+                                </span>
                             @endforeach
-                        </tbody>
-                    </table>
-                </div>
-                {{-- Use bootstrap-5 pagination --}}
-                <div class="my-4 px-3">
-                    {!! $careerpaths->links('pagination::bootstrap-5') !!}
-                </div>
+                        @else
+                            <span class="text-muted">No careers assigned</span>
+                        @endif
+                    </td>
+                    <td>
+                        @if($career->sections->count() > 0)
+                            @foreach($career->sections as $section)
+                                <span class="badge bg-light text-dark border border-light rounded-pill me-1 mb-1" style="font-size:0.9em;"
+                                      data-bs-toggle="tooltip" title="{{ $section->description ?? '' }}">
+                                    {!! $section->name !!}
+                                </span>
+                            @endforeach
+                        @else
+                            <span class="text-muted">No sections assigned</span>
+                        @endif
+                    </td>
+                    <td>
+                        <a href="{{ route('careerpath.edit', $career->id) }}" class="btn btn-sm btn-outline-primary me-2 shadow-sm"
+                           data-bs-toggle="tooltip" title="Edit Career Path">
+                            <i class="bi bi-pencil"></i>
+                        </a>
+                        <button type="button" class="btn btn-sm btn-outline-danger shadow-sm delete-btn"
+                                data-id="{{ $career->id }}" data-bs-toggle="tooltip" title="Delete Career Path">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                        <form action="{{ route('careerpath.destroy', $career->id) }}" method="POST" class="d-none delete-form">
+                            @csrf
+                            @method('DELETE')
+                        </form>
+                    </td>
+                </tr>
+            @endforeach
+        </tbody>
+    </table>
+</div>
+<!-- Pagination with better spacing -->
+<div class="my-4 px-3 d-flex justify-content-center">
+    {!! $careerpaths->links('pagination::bootstrap-5') !!}
+</div>
+
             @else
                 <div class="text-center p-5 text-muted">
                     <i class="bi bi-diagram-3 fs-1 mb-3"></i>
