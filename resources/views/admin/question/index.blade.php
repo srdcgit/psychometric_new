@@ -1,44 +1,50 @@
 @extends('layouts.app')
 
 @section('content')
-        <div class="flex justify-between items-center">
-            <h2 class="text-xl font-semibold text-gray-800">Question</h2>
-            <a href="{{ route('question.create') }}" class="bg-indigo-600 text-white px-4 py-2 rounded inline-block hover:bg-indigo-700 transition-colors">
+    <div class="container-fluid py-4 bg-light min-vh-100">
+
+        <!-- Page Header -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h2 class="fw-bold text-dark mb-1">📋 Question Management</h2>
+                <p class="text-muted mb-0 small">View, filter, and manage all questions easily.</p>
+            </div>
+            <a href="{{ route('question.create') }}" class="btn btn-primary shadow-sm">
                 + Add Question
             </a>
         </div>
-   
 
-    <div class="py-10 max-w-7xl mx-auto sm:px-6 lg:px-8">
-        <div class="bg-white shadow rounded-lg overflow-hidden">
-            <div class="p-6 border-b">
+        <!-- Main Card -->
+        <div class="card shadow border-0 rounded-4">
+            <div class="card-body">
+
                 <!-- Bulk Actions -->
-                <div class="mb-6 flex items-center space-x-4">
-                    <select id="bulk_action" class="rounded-md border-gray-300">
-                        <option value="">Bulk Actions</option>
-                        <option value="delete">Delete Selected</option>
-                    </select>
-                    <button id="apply_bulk_action" class="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700">
-                        Apply
-                    </button>
-                    <div class="ml-auto flex items-center space-x-4">
-                        <select id="per_page" class="rounded-md border-gray-300">
+                <div class="row align-items-center mb-4">
+                    <div class="col-md-6 d-flex gap-2">
+                        <select id="bulk_action" class="form-select w-auto">
+                            <option value="">Bulk Actions</option>
+                            <option value="delete">Delete Selected</option>
+                        </select>
+                        <button id="apply_bulk_action" class="btn btn-dark">Apply</button>
+                    </div>
+                    <div class="col-md-6 d-flex justify-content-end gap-3">
+                        <select id="per_page" class="form-select w-auto">
                             <option value="10">10 per page</option>
                             <option value="25">25 per page</option>
                             <option value="50">50 per page</option>
                             <option value="100">100 per page</option>
                         </select>
-                        <button id="reset_filters" class="text-gray-600 hover:text-gray-900">
+                        <button id="reset_filters" class="btn btn-link text-decoration-none text-muted">
                             Reset Filters
                         </button>
                     </div>
                 </div>
 
-                <!-- Basic Filters -->
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                    <div>
-                        <label for="domain_filter" class="block text-sm font-medium text-gray-700 mb-1">Domain</label>
-                        <select id="domain_filter" class="w-full rounded-md border-gray-300">
+                <!-- Filters -->
+                <div class="row g-3 mb-4">
+                    <div class="col-md-4">
+                        <label for="domain_filter" class="form-label fw-semibold">Domain</label>
+                        <select id="domain_filter" class="form-select">
                             <option value="">All Domains</option>
                             @foreach ($domains as $domain)
                                 <option value="{{ $domain->id }}" data-type="{{ $domain->scoring_type }}">
@@ -47,151 +53,136 @@
                             @endforeach
                         </select>
                     </div>
-                    <div>
-                        <label for="section_filter" class="block text-sm font-medium text-gray-700 mb-1">Section</label>
-                        <select id="section_filter" class="w-full rounded-md border-gray-300" disabled>
+                    <div class="col-md-4">
+                        <label for="section_filter" class="form-label fw-semibold">Section</label>
+                        <select id="section_filter" class="form-select" disabled>
                             <option value="">Select Domain First</option>
                         </select>
                     </div>
-                    <div>
-                        <label for="type_filter" class="block text-sm font-medium text-gray-700 mb-1">Question Type</label>
-                        <select id="type_filter" class="w-full rounded-md border-gray-300" disabled>
+                    <div class="col-md-4">
+                        <label for="type_filter" class="form-label fw-semibold">Question Type</label>
+                        <select id="type_filter" class="form-select" disabled>
                             <option value="">Select Domain First</option>
                         </select>
                     </div>
                 </div>
 
                 <!-- Advanced Filters -->
-                <div class="border rounded-md p-4 mb-6">
-                    <div class="flex items-center justify-between mb-4">
-                        <h3 class="text-sm font-medium text-gray-700">Advanced Filters</h3>
-                        <button id="toggle_advanced" class="text-sm text-indigo-600 hover:text-indigo-900">
-                            Show/Hide
-                        </button>
-                    </div>
-                    <div id="advanced_filters" class="hidden">
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
-                                <label for="date_from" class="block text-sm font-medium text-gray-700 mb-1">Date From</label>
-                                <input type="date" id="date_from" class="w-full rounded-md border-gray-300">
-                            </div>
-                            <div>
-                                <label for="date_to" class="block text-sm font-medium text-gray-700 mb-1">Date To</label>
-                                <input type="date" id="date_to" class="w-full rounded-md border-gray-300">
+                <div class="card bg-light border-0 mb-4">
+                    <div class="card-body py-3 px-4">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <h6 class="fw-semibold mb-0 text-secondary">Advanced Filters</h6>
+                            <button id="toggle_advanced" class="btn btn-sm btn-outline-primary">
+                                Show / Hide
+                            </button>
+                        </div>
+                        <div id="advanced_filters" class="d-none mt-3">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label for="date_from" class="form-label">Date From</label>
+                                    <input type="date" id="date_from" class="form-control">
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="date_to" class="form-label">Date To</label>
+                                    <input type="date" id="date_to" class="form-control">
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Search Bar -->
-                <div class="relative">
-                    <input type="text" id="search" class="w-full rounded-md border-gray-300 pl-10 pr-4 py-2" 
-                           placeholder="Search by question content, domain name, or section name...">
-                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                        </svg>
-                    </div>
+                <!-- Search -->
+                <div class="position-relative mb-4">
+                    <input type="text" id="search" class="form-control ps-5"
+                        placeholder="Search by question, domain, or section...">
+                    <i class="bi bi-search position-absolute top-50 start-0 translate-middle-y ms-3 text-secondary"></i>
                 </div>
-            </div>
 
-            <!-- Table Header Enhancement -->
-            <div class="px-6 py-4 border-b bg-gray-50">
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center space-x-4">
-                        <input type="checkbox" id="select_all" class="rounded border-gray-300 text-indigo-600">
-                        <label for="select_all" class="text-sm text-gray-600">Select All</label>
+                <!-- Table Header -->
+                <div class="d-flex justify-content-between align-items-center bg-light p-3 rounded-3 mb-2 border">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="select_all">
+                        <label class="form-check-label text-muted small" for="select_all">Select All</label>
                     </div>
-                    <div class="text-sm text-gray-600">
-                        Total Questions: <span class="font-medium">{{ $questions->total() }}</span>
-                    </div>
+                    <span class="text-muted small">
+                        Total Questions: <strong>{{ $questions->total() }}</strong>
+                    </span>
                 </div>
-            </div>
 
-            <div class="overflow-x-auto">
-                @if ($questions->count())
-                    <table class="min-w-full divide-y divide-gray-200">
-                        <thead class="bg-gray-50">
-                            <tr>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    
-                                </th>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">#</th>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Domain</th>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Section</th>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Question</th>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody class="bg-white divide-y divide-gray-200" id="questions-table-body">
-                            @foreach ($questions as $question)
-                                <tr class="hover:bg-gray-50">
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <input type="checkbox" class="question-checkbox rounded border-gray-300 text-indigo-600" 
-                                               value="{{ $question->id }}">
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                        {{ ($questions->currentPage() - 1) * $questions->perPage() + $loop->iteration }}
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                        {{ $question->domain->name }}
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                        {{ $question->section->name }}
-                                    </td>
-                                    <td class="px-6 py-4 text-sm text-gray-900">
-                                        <div class="max-w-xl">
-                                            {!! $question->question !!}
-                                        </div>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ $question->domain->scoring_type === 'mcq' ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800' }}">
-                                            {{ strtoupper($question->domain->scoring_type) }}
-                                        </span>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-3">
-                                        <a href="{{ route('question.edit', $question->id) }}"
-                                            class="text-indigo-600 hover:text-indigo-900">Edit</a>
-                                        <form action="{{ route('question.destroy', $question->id) }}" method="POST"
-                                            class="inline delete-form">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="button" class="text-red-600 hover:text-red-900 delete-btn"
-                                                data-id="{{ $question->id }}">
-                                                Delete
-                                            </button>
-                                        </form>
-                                    </td>
+                <!-- Table -->
+                <div class="table-responsive">
+                    @if ($questions->count())
+                        <table class="table table-hover align-middle">
+                            <thead class="table-primary">
+                                <tr>
+                                    <th></th>
+                                    <th>#</th>
+                                    <th>Domain</th>
+                                    <th>Section</th>
+                                    <th>Question</th>
+                                    <th>Type</th>
+                                    <th>Actions</th>
                                 </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody id="questions-table-body">
+                                @foreach ($questions as $question)
+                                    <tr>
+                                        <td>
+                                            <input type="checkbox" class="form-check-input question-checkbox"
+                                                value="{{ $question->id }}">
+                                        </td>
+                                        <td>{{ ($questions->currentPage() - 1) * $questions->perPage() + $loop->iteration }}
+                                        </td>
+                                        <td class="fw-semibold">{{ $question->domain->name }}</td>
+                                        <td>{{ $question->section->name }}</td>
+                                        <td class="text-truncate" style="max-width: 400px;">{!! $question->question !!}</td>
+                                        <td>
+                                            <span
+                                                class="badge 
+                                            {{ $question->domain->scoring_type === 'mcq' ? 'bg-success' : 'bg-info text-dark' }}">
+                                                {{ strtoupper($question->domain->scoring_type) }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <a href="{{ route('question.edit', $question->id) }}"
+                                                class="btn btn-sm btn-outline-primary">Edit</a>
+                                            <form action="{{ route('question.destroy', $question->id) }}" method="POST"
+                                                class="d-inline delete-form">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="button" class="btn btn-sm btn-outline-danger delete-btn"
+                                                    data-id="{{ $question->id }}">Delete</button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
 
-                    <div class="px-6 py-4 border-t">
-                        {!! $questions->links() !!}
-                    </div>
-                @else
-                    <div class="text-center py-12">
-                        <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                        </svg>
-                        <h3 class="mt-2 text-sm font-medium text-gray-900">No questions</h3>
-                        <p class="mt-1 text-sm text-gray-500">Get started by creating a new question.</p>
-                        <div class="mt-6">
-                            <a href="{{ route('question.create') }}" class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700">
+                        <div class="mt-3">
+                            {!! $questions->links('pagination::bootstrap-5') !!}
+                        </div>
+                    @else
+                        <div class="text-center py-5">
+                            <i class="bi bi-inbox fs-1 text-muted mb-2"></i>
+                            <h5 class="fw-semibold text-muted">No Questions Found</h5>
+                            <p class="text-muted small">Start by creating a new question.</p>
+                            <a href="{{ route('question.create') }}" class="btn btn-primary mt-2">
                                 + Add Question
                             </a>
                         </div>
-                    </div>
-                @endif
+                    @endif
+                </div>
+
             </div>
         </div>
     </div>
 
+    <!-- Scripts (same as before) -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    {{-- Keep your existing JS/AJAX --}}
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -218,28 +209,37 @@
                 if (type) scoringTypes.add(type);
             });
 
-            function handleDelete(e) {
-                e.preventDefault();
-                const form = this.closest('form');
+          
 
-                Swal.fire({
-                    title: 'Are you sure?',
-                    text: "This will permanently delete the question.",
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#d33',
-                    cancelButtonColor: '#3085d6',
-                    confirmButtonText: 'Yes, delete it!'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        form.submit();
-                    }
-                });
-            }
+            // DOMContentLoaded refersh in delete
+            const tableBody = document.getElementById('questions-table-body');
+
+            tableBody.addEventListener('click', function(e) {
+                if (e.target.classList.contains('delete-btn')) {
+                    e.preventDefault();
+                    const form = e.target.closest('form');
+
+                    Swal.fire({
+                        title: 'Are you sure?',
+                        text: "This will permanently delete the question.",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#d33',
+                        cancelButtonColor: '#3085d6',
+                        confirmButtonText: 'Yes, delete it!'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            form.submit();
+                        }
+                    });
+                }
+            });
+
 
             // Toggle Advanced Filters
             toggleAdvanced.addEventListener('click', function() {
-                advancedFilters.classList.toggle('hidden');
+                advancedFilters.classList.toggle('d-none');
+
             });
 
             // Reset Filters
@@ -266,16 +266,16 @@
                 const domainId = this.value;
                 const selectedOption = this.options[this.selectedIndex];
                 const scoringType = selectedOption.getAttribute('data-type');
-                
+
                 // Update type filter based on domain selection
                 if (domainId) {
                     typeFilter.removeAttribute('disabled');
                     sectionFilter.removeAttribute('disabled');
                     if (scoringType) {
                         typeFilter.innerHTML = `
-                            <option value="">All Types</option>
-                            <option value="${scoringType}" selected>${scoringType.toUpperCase()}</option>
-                        `;
+                        <option value="">All Types</option>
+                        <option value="${scoringType}" selected>${scoringType.toUpperCase()}</option>
+                    `;
                     }
                     updateSections(domainId);
                 } else {
@@ -330,7 +330,8 @@
 
             // Bulk Actions
             applyBulkAction.addEventListener('click', function() {
-                const selectedQuestions = Array.from(document.querySelectorAll('.question-checkbox:checked'))
+                const selectedQuestions = Array.from(document.querySelectorAll(
+                        '.question-checkbox:checked'))
                     .map(checkbox => checkbox.value);
 
                 if (selectedQuestions.length === 0) {
@@ -365,7 +366,7 @@
                 }).then((result) => {
                     if (result.isConfirmed) {
                         $.ajax({
-                            url: '{{ route("question.bulk-action") }}',
+                            url: '{{ route('question.bulk-action') }}',
                             method: 'POST',
                             data: {
                                 _token: '{{ csrf_token() }}',
@@ -385,7 +386,8 @@
                                 Swal.fire({
                                     icon: 'error',
                                     title: 'Error',
-                                    text: xhr.responseJSON?.message || 'An error occurred',
+                                    text: xhr.responseJSON?.message ||
+                                        'An error occurred',
                                     timer: 3000
                                 });
                             }
@@ -405,7 +407,7 @@
                 const itemsPerPage = perPage.value;
 
                 $.ajax({
-                    url: '{{ route("question.index") }}',
+                    url: '{{ route('question.index') }}',
                     method: 'GET',
                     data: {
                         domain: domain,
@@ -419,7 +421,7 @@
                     success: function(response) {
                         const tableBody = document.getElementById('questions-table-body');
                         tableBody.innerHTML = response;
-                        
+
                         // Reattach event listeners
                         const newDeleteButtons = tableBody.querySelectorAll('.delete-btn');
                         newDeleteButtons.forEach(button => {
@@ -431,8 +433,10 @@
                         checkboxes.forEach(checkbox => {
                             checkbox.addEventListener('change', function() {
                                 // Update select all checkbox state
-                                const allCheckboxes = document.querySelectorAll('.question-checkbox');
-                                const allChecked = Array.from(allCheckboxes).every(cb => cb.checked);
+                                const allCheckboxes = document.querySelectorAll(
+                                    '.question-checkbox');
+                                const allChecked = Array.from(allCheckboxes).every(cb =>
+                                    cb.checked);
                                 selectAll.checked = allChecked;
                             });
                         });
@@ -473,5 +477,6 @@
             @endif
         });
     </script>
+
 
 @endsection

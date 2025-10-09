@@ -59,6 +59,7 @@
                                     <div class="col-md-6 col-lg-4">
                                         <div class="card h-100 bg-light border-primary border-2">
                                             <div class="card-body">
+                                                <img src="{{ asset('storage/' . $section['section_image']) }}" alt="{{ $section['section_name'] }} image" class="img-fluid mb-2">
                                                 <h5 class="card-title text-primary">{{ $section['section_name'] }} - {{ $section['label'] }}</h5>
                                                 <p class="card-text small mb-2">{!! $section['section_description'] !!}</p>
                                                 <div class="mb-2 small">

@@ -6,20 +6,7 @@
         <div class="card shadow-lg border-0 mb-4">
             <div class="card-header bg-primary text-white d-flex align-items-center">
                 <strong class="flex-grow-1">{{ $domain->name ?? '' }}</strong>
-                {{-- Progress Bar Example --}}
-                {{-- <div class="w-25 ms-3">
-                    <div class="progress" style="height: 20px;">
-                        <div 
-                            class="progress-bar bg-success" 
-                            role="progressbar" 
-                            style="width: {{ $progress_percent ?? 0 }}%;" 
-                            aria-valuenow="{{ $progress_percent ?? 0 }}" 
-                            aria-valuemin="0" 
-                            aria-valuemax="100">
-                            {{ $progress_percent ?? 0 }}%
-                        </div>
-                    </div>
-                </div> --}}
+                
             </div>
             <div class="card-body">
                 <p class="mb-4">{!! $domain->instruction !!}</p>

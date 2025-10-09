@@ -165,7 +165,7 @@
                 <label class="block text-gray-700 font-medium">Question</label>
                 <div id="editor" class="mt-2"></div>
                 <input type="hidden" name="question" id="question">
-                <div id="question-error" class="text-red-500 text-sm mt-1 hidden">Please enter a question</div>
+                {{-- <div id="question-error" class="text-red-500 text-sm mt-1 hidden">Please enter a question</div> --}}
             </div>
 
             <!-- MCA Options Section -->
@@ -316,10 +316,10 @@ function toggleIsReverse() {
     const input = $('#is_reverse');
     if (input.val() === '1') {
         input.val('0');
-        btn.text('No').removeClass('bg-blue-600 text-white').addClass('btn-secondary');
+        btn.text('No').removeClass('bg-blue-600 text-white').addClass('btn-secondary text-white');
     } else {
         input.val('1');
-        btn.text('Yes').removeClass('btn-secondary').addClass('bg-blue-600 text-white');
+        btn.text('Yes').removeClass('btn-secondary').addClass('btn-primary bg-primary text-white');
     }
 }
 
