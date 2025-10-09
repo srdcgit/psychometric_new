@@ -66,6 +66,7 @@
                     <article class="col-md-12 col-lg-6">
                         <div class="card border-primary shadow-sm rounded-4 h-100">
                             <div class="card-body">
+                                <img src="{{ asset('storage/' . $section['section_image']) }}" alt="{{ $section['section_name'] }} image" class="img-fluid mb-2">
                                 <h3 class="card-title h5 text-primary">{{ $section['section_name'] }}
                                     @if (isset($section['label']))
                                         - {{ $section['label'] }}

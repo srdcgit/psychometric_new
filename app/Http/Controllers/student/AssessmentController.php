@@ -344,6 +344,7 @@ class AssessmentController extends Controller
             ->join('domains', 'sections.domain_id', '=', 'domains.id')
             ->select(
                 'assessments.section_id',
+                'sections.image as section_image',
                 'sections.name as section_name',
                 'sections.description as section_description',
                 'sections.keytraits as section_keytraits',
@@ -356,7 +357,7 @@ class AssessmentController extends Controller
                 DB::raw('COUNT(*) as count')
             )
             ->where('assessments.student_id', $userId)
-            ->groupBy('assessments.section_id', 'sections.name', 'section_description', 'section_keytraits', 'section_enjoys', 'section_idealenvironments', 'sections.domain_id', 'domains.name', 'domains.description')
+            ->groupBy('assessments.section_id', 'sections.name', 'sections.image', 'section_description', 'section_keytraits', 'section_enjoys', 'section_idealenvironments', 'sections.domain_id', 'domains.name', 'domains.description')
             ->get();
 
         $flatResults = [];
@@ -367,6 +368,7 @@ class AssessmentController extends Controller
                 'domain_description' => $response->domain_description,
                 'domain_id' => $response->domain_id,
                 'section_id' => $response->section_id,
+                'section_image' => $response->section_image,
                 'section_name' => $response->section_name,
                 'section_description' => $response->section_description,
                 'section_keytraits' => $response->section_keytraits,
