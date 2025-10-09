@@ -60,7 +60,7 @@
                                                     <input class="form-check-input" type="radio"
                                                            name="responses[{{ $question->id }}]"
                                                            value="{{ $option->id }}"
-                                                           {{ old('responses.' . $question->id) == $option->id ? 'checked' : '' }} required>
+                                                           {{ (old('responses.' . $question->id) ?? ($previousAnswers[$question->id] ?? null)) == $option->id ? 'checked' : '' }} required>
                                                     <label class="form-check-label option-text">{!! $option->option_text !!}</label>
                                                 </div>
                                             @endforeach
@@ -73,7 +73,7 @@
                                                         <input class="form-check-input" type="radio"
                                                                name="responses[{{ $question->id }}]"
                                                                value="{{ $value }}"
-                                                               {{ old('responses.' . $question->id) == $value ? 'checked' : '' }} required>
+                                                               {{ (old('responses.' . $question->id) ?? ($previousAnswers[$question->id] ?? null)) == $value ? 'checked' : '' }} required>
                                                         <label class="form-check-label">{{ $label }}</label>
                                                     </div>
                                                 @endforeach
