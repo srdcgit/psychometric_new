@@ -5,7 +5,7 @@
     @if ($domain)
         <div class="card shadow-lg border-0 mb-4">
             <div class="card-header bg-primary text-white d-flex align-items-center">
-                <strong class="flex-grow-1">{{ $domain->name ?? '' }}</strong>
+                <strong class="flex-grow-1">{{ $domain->display_name ?? '' }}</strong>
                 
             </div>
             <div class="card-body">

@@ -56,6 +56,10 @@
     <input id="name" name="name" type="text" class="form-control @error('name') is-invalid @enderror" value="{{ old('name') }}" required autofocus>
     @error('name') <div class="invalid-feedback">{{ $message }}</div> @enderror
 
+    <label for="display_name" class="form-label">Display Domain Name</label>
+    <input id="display_name" name="display_name" type="text" class="form-control @error('display_name') is-invalid @enderror" value="{{ old('display_name') }}" required autofocus>
+    @error('display_name') <div class="invalid-feedback">{{ $message }}</div> @enderror
+
     <label for="scoring_type" class="form-label mt-4">Scoring Type</label>
     <select id="scoring_type" name="scoring_type" class="form-select @error('scoring_type') is-invalid @enderror" required>
       <option value="" disabled {{ old('scoring_type') ? '' : 'selected' }}>Select Option</option>

@@ -462,9 +462,11 @@
     {{-- Dmain section start here  --}}
     <div class="domain-section">
         @foreach ($groupedResults as $domainName => $sections)
-            @php $slug = Str::slug($domainName); @endphp
+            @php $slug = Str::slug($domainName); 
+            $domainDisplayName = $sections['cards'][0]['domain_display_name'] ?? $domainName;
+            @endphp
             <div class="h2-banner">
-                <h2 class="h2-title">{{ $domainName }}</h2>
+                <h2 class="h2-title">{{ $domainDisplayName }}</h2>
             </div>
 
             <div class="meta">

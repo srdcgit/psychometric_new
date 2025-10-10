@@ -33,6 +33,7 @@ class DomainController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255|unique:domains,name',
+            'display_name' => 'required|string|max:255',
             'description' => 'nullable|string',
             'scoring_type' => 'nullable|string',
             'domain_weightage' => 'nullable|integer',
@@ -40,6 +41,7 @@ class DomainController extends Controller
 
         Domain::create([
             'name' =>$request->name,
+            'display_name' =>$request->display_name,
             'description' =>$request->description,
             'instruction' =>$request->instruction,
             'scoring_type' =>$request->scoring_type,
@@ -77,6 +79,7 @@ class DomainController extends Controller
 
         $request->validate([
             'name' => 'required|string|max:255|unique:domains,name,' . $domain->id,
+            'display_name' => 'required|string|max:255',
             'description' => 'nullable|string',
             'instruction' => 'nullable|string',
             'scoring_type' => 'nullable|string',

@@ -10,6 +10,7 @@ class Domain extends Model
     use HasFactory;
     protected $fillable = [
         'name',
+        'display_name',
         'description',
         'instruction',
         'scoring_type',
@@ -18,8 +19,7 @@ class Domain extends Model
     ];
 
     public function sections()
-{
-    return $this->hasMany(Section::class);
-}
-
+    {
+        return $this->hasMany(Section::class);
+    }
 }

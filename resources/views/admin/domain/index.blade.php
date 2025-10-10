@@ -73,6 +73,7 @@
                         <tr>
                             <th style="width: 60px;">#</th>
                             <th>Name</th>
+                            <th>Display Domain Name</th>
                             <th>Score Type</th>
                             <th>Description</th>
                             <th>Domain Weightage</th>
@@ -84,6 +85,7 @@
                         <tr>
                             <td><span class="badge badge-counter bg-info text-dark">{{ ($domains->currentPage()-1)*$domains->perPage() + $loop->iteration }}</span></td>
                             <td>{{ $domain->name ?? 'Null' }}</td>
+                            <td>{{ $domain->display_name ?? 'Null' }}</td>
                             <td>{{ $domain->scoring_type ?? 'Null' }}</td>
                             <td>{!! Str::limit(strip_tags($domain->description), 50, '...') ?? 'Null' !!}</td>
                             <td>{{ $domain->domain_weightage ?? 'Null' }}</td>

@@ -176,12 +176,13 @@ class AssessmentController extends Controller
                 'sections.idealenvironments as section_idealenvironments',
                 'sections.domain_id',
                 'domains.name as domain_name',
+                'domains.display_name as domain_display_name',
                 'domains.description as domain_description',
                 DB::raw('SUM(response_value) as total'),
                 DB::raw('COUNT(*) as count')
             )
             ->where('assessments.student_id', $userId)
-            ->groupBy('assessments.section_id', 'sections.name', 'sections.image', 'section_description', 'section_keytraits', 'section_enjoys', 'section_idealenvironments', 'sections.domain_id', 'domains.name', 'domains.description')
+            ->groupBy('assessments.section_id', 'sections.name', 'sections.image', 'section_description', 'section_keytraits', 'section_enjoys', 'section_idealenvironments', 'sections.domain_id', 'domains.name', 'domains.display_name', 'domains.description')
             ->get();
 
         $flatResults = [];
@@ -189,6 +190,7 @@ class AssessmentController extends Controller
         foreach ($responses as $response) {
             $flatResults[] = [
                 'domain_name' => $response->domain_name,
+                'domain_display_name' => $response->domain_display_name,
                 'domain_description' => $response->domain_description,
                 'domain_id' => $response->domain_id,
                 'section_id' => $response->section_id,
@@ -352,12 +354,13 @@ class AssessmentController extends Controller
                 'sections.idealenvironments as section_idealenvironments',
                 'sections.domain_id',
                 'domains.name as domain_name',
+                'domains.display_name as domain_display_name',
                 'domains.description as domain_description',
                 DB::raw('SUM(response_value) as total'),
                 DB::raw('COUNT(*) as count')
             )
             ->where('assessments.student_id', $userId)
-            ->groupBy('assessments.section_id', 'sections.name', 'sections.image', 'section_description', 'section_keytraits', 'section_enjoys', 'section_idealenvironments', 'sections.domain_id', 'domains.name', 'domains.description')
+            ->groupBy('assessments.section_id', 'sections.name', 'sections.image', 'section_description', 'section_keytraits', 'section_enjoys', 'section_idealenvironments', 'sections.domain_id', 'domains.name', 'domains.display_name', 'domains.description')
             ->get();
 
         $flatResults = [];
@@ -365,6 +368,7 @@ class AssessmentController extends Controller
         foreach ($responses as $response) {
             $flatResults[] = [
                 'domain_name' => $response->domain_name,
+                'domain_display_name' => $response->domain_display_name,
                 'domain_description' => $response->domain_description,
                 'domain_id' => $response->domain_id,
                 'section_id' => $response->section_id,
