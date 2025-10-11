@@ -1,6 +1,23 @@
 @extends('layouts.app')
 
 @section('content')
+
+    <style>
+        .card {
+            border: 1px solid #dee2e6;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+        }
+
+        .card img {
+            max-width: 100%;
+            border-radius: 10px;
+        }
+    </style>
     <div class="container max-w-5xl py-5">
         <div class="d-flex flex-wrap justify-content-between align-items-center mb-5">
             <h1 class="display-5 fw-bold text-primary flex-grow-1">Comprehensive Psychometric Assessment Report</h1>
@@ -55,8 +72,8 @@
         {{-- Domains and Sections --}}
         @foreach ($groupedResults as $domainName => $sections)
             @php $slug = Str::slug($domainName);
-            $domainDisplayName = $sections['cards'][0]['domain_display_name'] ?? $domainName;
-            @endphp
+                                $domainDisplayName = $sections['cards'][0]['domain_display_name'] ?? $domainName;
+                        @endphp 
             <section class="mb-5">
                 <h2 class="h4 fw-semibold text-primary mb-4">{{ $domainDisplayName }}</h2>
 
@@ -72,45 +89,63 @@
                 <div class="row g-4">
                     @foreach ($sections['cards'] ?? [] as $section)
                         <article class="col-md-12 col-lg-6">
-                            <div class="card border-primary shadow-sm rounded-4 h-100">
-                                <div class="card-body">
-                                    <img src="{{ asset($section['section_image']) }}"
-                                        alt="{{ $section['section_name'] }} image" class="img-fluid mb-2">
-                                    <h3 class="card-title h5 text-primary">{{ $section['section_name'] }}
-                                        @if (isset($section['label']))
-                                            - {{ $section['label'] }}
-                                        @endif
-                                    </h3>
-                                    <p class="card-text small text-muted mb-3">{!! $section['section_description'] !!}</p>
-                                    <p>
-                                        <strong>{{ $domainName === 'APTITUDE' ? 'Total Score:' : 'Average Score:' }}</strong>
-                                        {{ $section['average'] }}
-                                    </p>
+                            <div class="card border rounded-4 shadow-sm h-100">
+                                <div class="row g-0 align-items-center">
 
-                                    @if ($domainName === 'OCEAN')
-                                        <p class="small mt-2"><strong>{{ $section['label'] }}:</strong>
-                                            {{ $section['relevant_description'] }}</p>
-                                    @elseif ($domainName === 'WORK VALUES')
-                                        @if ($section['label'] === 'Low')
-                                            <p class="small mt-2"><strong>Low:</strong> {{ $section['low'] }}</p>
-                                        @elseif ($section['label'] === 'Mid')
-                                            <p class="small mt-2"><strong>Mid:</strong> {{ $section['mid'] }}</p>
-                                        @elseif ($section['label'] === 'High')
-                                            <p class="small mt-2"><strong>High:</strong> {{ $section['high'] }}</p>
-                                        @endif
-                                    @else
-                                        <div class="small mt-3">
-                                            <p><strong>Key Traits:</strong> {{ $section['section_keytraits'] }}</p>
-                                            <p><strong>Enjoys:</strong> {{ $section['section_enjoys'] }}</p>
-                                            <p><strong>Ideal Environments:</strong>
-                                                {{ $section['section_idealenvironments'] }}</p>
+                                    {{-- Left side: Image --}}
+                                    <div class="col-4 text-center p-3">
+                                        <img src="{{ asset($section['section_image']) }}"
+                                            alt="{{ $section['section_name'] }} image" class="img-fluid"
+                                            style="max-height: 100px; object-fit: contain;">
+                                    </div>
+
+                                    {{-- Right side: Content --}}
+                                    <div class="col-8">
+                                        <div class="card-body p-3">
+                                            <h5 class="card-title mb-1 fw-bold text-dark">
+                                                {{ $section['section_name'] }}
+                                                @if (isset($section['label']))
+                                                    <small class="text-muted">- {{ $section['label'] }}</small>
+                                                @endif
+                                            </h5>
+
+                                            <p class="mb-2 small text-muted">
+                                                <strong>{{ $domainName === 'APTITUDE' ? 'Total Score:' : 'Average Score:' }}</strong>
+                                                {{ $section['average'] }}
+                                            </p>
+
+                                            {{-- Description --}}
+                                            <p class="text-muted small mb-2">{!! $section['section_description'] !!}</p>
+
+                                            {{-- Conditional Details --}}
+                                            @if ($domainName === 'OCEAN')
+                                                <p class="small"><strong>{{ $section['label'] }}:</strong>
+                                                    {{ $section['relevant_description'] }}</p>
+                                            @elseif ($domainName === 'WORK VALUES')
+                                                @if ($section['label'] === 'Low')
+                                                    <p class="small"><strong>Low:</strong> {{ $section['low'] }}</p>
+                                                @elseif ($section['label'] === 'Mid')
+                                                    <p class="small"><strong>Mid:</strong> {{ $section['mid'] }}</p>
+                                                @elseif ($section['label'] === 'High')
+                                                    <p class="small"><strong>High:</strong> {{ $section['high'] }}</p>
+                                                @endif
+                                            @else
+                                                <div class="small">
+                                                    <p><strong>Key Traits:</strong> {{ $section['section_keytraits'] }}</p>
+                                                    <p><strong>Enjoys:</strong> {{ $section['section_enjoys'] }}</p>
+                                                    <p><strong>Ideal Environments:</strong>
+                                                        {{ $section['section_idealenvironments'] }}</p>
+                                                </div>
+                                            @endif
                                         </div>
-                                    @endif
+                                    </div>
+
                                 </div>
                             </div>
                         </article>
                     @endforeach
                 </div>
+
 
                 {{-- Suggested Career Paths Table --}}
                 @if (!empty($sections['cards']) && $domainName !== 'GOAL ORIENTATION')
@@ -137,26 +172,21 @@
                                                 <td class="fw-semibold">{{ $sec['section_name'] }}</td>
                                                 <td class="small">
                                                     @if ($combinedCareers->count() > 0)
-                                                        {{-- @foreach ($combinedCareers as $career)
-                                                            <span
-                                                                class="badge bg-info text-dark me-1 mb-1">{!! $career->name !!}</span>
-                                                        @endforeach --}}
+                                                        {{-- now merge and show single career cluster  --}}
+                                                        @php
+                                                            $uniqueCategories = $combinedCareers
+                                                                ->pluck('careerCategory.name') // extract category names
+                                                                ->filter() // remove null values
+                                                                ->unique() // keep only unique ones
+                                                                ->values();
+                                                        @endphp
 
-                                                         {{-- now merge and show single career cluster  --}}
-                                                         @php
-                                                         $uniqueCategories = $combinedCareers
-                                                             ->pluck('careerCategory.name') // extract category names
-                                                             ->filter() // remove null values
-                                                             ->unique() // keep only unique ones
-                                                             ->values();
-                                                     @endphp
-
-                                                     @foreach ($uniqueCategories as $categoryName)
-                                                         <span class="badge bg-info text-dark me-1 mb-1">
-                                                             {!! $categoryName !!}
-                                                         </span>
-                                                     @endforeach
-                                                     {{-- end merging  --}}
+                                                        @foreach ($uniqueCategories as $categoryName)
+                                                            <span class="badge bg-info text-dark me-1 mb-1">
+                                                                {!! $categoryName !!}
+                                                            </span>
+                                                        @endforeach
+                                                        {{-- end merging  --}}
                                                     @else
                                                         <span class="text-muted">No careers assigned</span>
                                                     @endif
@@ -375,49 +405,64 @@
 
     <script>
         const chartData = @json($groupedResults);
-    
+
         Object.entries(chartData).forEach(([domain, sections]) => {
             const slug = domain.toLowerCase().replace(/[^a-z0-9]+/g, '-');
             const ctx = document.getElementById(`chart-${slug}`);
             if (!ctx) return;
-    
+
             const chartSections = sections.chart;
             const labels = chartSections.map(s => s.section_name);
             const dataValues = chartSections.map(s => s.average_value);
-    
+
             // 🧠 Choose chart type per domain
             let chartType = 'bar';
             let backgroundColor = '#0d6efd';
             let borderColor = '#0d6efd';
             let options = {
                 responsive: true,
-                plugins: { legend: { display: false } },
-                scales: { y: { beginAtZero: true, max: 10 } }
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 10
+                    }
+                }
             };
-    
+
             switch (domain.toUpperCase()) {
                 case 'APTITUDE':
                     chartType = 'bar';
                     backgroundColor = '#007bff';
                     break;
-    
+
                 case 'OCEAN': // Big 5 Personality
                     chartType = 'radar';
                     backgroundColor = 'rgba(13, 110, 253, 0.4)';
                     borderColor = '#0d6efd';
                     options = {
                         responsive: true,
-                        elements: { line: { borderWidth: 2 } },
+                        elements: {
+                            line: {
+                                borderWidth: 2
+                            }
+                        },
                         scales: {
                             r: {
-                                angleLines: { display: true },
+                                angleLines: {
+                                    display: true
+                                },
                                 suggestedMin: 0,
                                 suggestedMax: 10
                             }
                         }
                     };
                     break;
-    
+
                 case 'WORK VALUES':
                     chartType = 'doughnut';
                     backgroundColor = [
@@ -426,11 +471,14 @@
                     options = {
                         responsive: true,
                         plugins: {
-                            legend: { display: true, position: 'bottom' }
+                            legend: {
+                                display: true,
+                                position: 'bottom'
+                            }
                         }
                     };
                     break;
-    
+
                 case 'GOAL ORIENTATION':
                     chartType = 'polarArea';
                     backgroundColor = [
@@ -442,15 +490,18 @@
                     options = {
                         responsive: true,
                         scales: {
-                            r: { suggestedMin: 0, suggestedMax: 10 }
+                            r: {
+                                suggestedMin: 0,
+                                suggestedMax: 10
+                            }
                         }
                     };
                     break;
-    
+
                 default:
                     chartType = 'bar';
             }
-    
+
             new Chart(ctx, {
                 type: chartType,
                 data: {
