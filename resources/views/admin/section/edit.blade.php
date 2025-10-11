@@ -140,7 +140,7 @@
     <input type="file" accept="image/*" name="image" id="image" class="form-control @error('image') is-invalid @enderror">
     <div class="mt-2">
       @if($section->image)
-        <img src="{{ asset('storage/' . $section->image) }}" alt="Current Image" style="max-height:120px; border-radius: 0.5rem;"/>
+        <img src="{{ asset($section->image) }}" alt="Current Image" style="max-height:120px; border-radius: 0.5rem;"/>
       @endif
       <img id="image-preview" src="#" alt="New Image Preview" style="display:none; max-height:120px; margin-top: 10px; border-radius: 0.5rem;" />
     </div>

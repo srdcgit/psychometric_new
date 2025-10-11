@@ -74,7 +74,7 @@
                         <article class="col-md-12 col-lg-6">
                             <div class="card border-primary shadow-sm rounded-4 h-100">
                                 <div class="card-body">
-                                    <img src="{{ asset('storage/' . $section['section_image']) }}"
+                                    <img src="{{ asset($section['section_image']) }}"
                                         alt="{{ $section['section_name'] }} image" class="img-fluid mb-2">
                                     <h3 class="card-title h5 text-primary">{{ $section['section_name'] }}
                                         @if (isset($section['label']))
@@ -137,10 +137,26 @@
                                                 <td class="fw-semibold">{{ $sec['section_name'] }}</td>
                                                 <td class="small">
                                                     @if ($combinedCareers->count() > 0)
-                                                        @foreach ($combinedCareers as $career)
+                                                        {{-- @foreach ($combinedCareers as $career)
                                                             <span
                                                                 class="badge bg-info text-dark me-1 mb-1">{!! $career->name !!}</span>
-                                                        @endforeach
+                                                        @endforeach --}}
+
+                                                         {{-- now merge and show single career cluster  --}}
+                                                         @php
+                                                         $uniqueCategories = $combinedCareers
+                                                             ->pluck('careerCategory.name') // extract category names
+                                                             ->filter() // remove null values
+                                                             ->unique() // keep only unique ones
+                                                             ->values();
+                                                     @endphp
+
+                                                     @foreach ($uniqueCategories as $categoryName)
+                                                         <span class="badge bg-info text-dark me-1 mb-1">
+                                                             {!! $categoryName !!}
+                                                         </span>
+                                                     @endforeach
+                                                     {{-- end merging  --}}
                                                     @else
                                                         <span class="text-muted">No careers assigned</span>
                                                     @endif

@@ -41,8 +41,8 @@
         <div class="tab-content" id="resultTabContent">
             @foreach ($groupedResults as $domainName => $sections)
                 @php $slug = Str::slug($domainName); @endphp
-                <div class="tab-pane fade {{ $loop->first ? 'show active' : '' }}" id="{{ $slug }}"
-                    role="tabpanel" aria-labelledby="tab-{{ $slug }}">
+                <div class="tab-pane fade {{ $loop->first ? 'show active' : '' }}" id="{{ $slug }}" role="tabpanel"
+                    aria-labelledby="tab-{{ $slug }}">
                     {{-- Domain Description --}}
                     @if (isset($sections['description']) && $sections['description'])
                         <div class="alert alert-info d-flex align-items-center mb-4">
@@ -59,7 +59,7 @@
                                     <div class="col-md-6 col-lg-4">
                                         <div class="card h-100 bg-light border-primary border-2">
                                             <div class="card-body">
-                                                <img src="{{ asset('storage/' . $section['section_image']) }}"
+                                                <img src="{{ asset($section['section_image']) }}"
                                                     alt="{{ $section['section_name'] }} image" class="img-fluid mb-2">
                                                 <h5 class="card-title text-primary">{{ $section['section_name'] }} -
                                                     {{ $section['label'] }}</h5>
@@ -127,10 +127,28 @@
                                                     <td class="fw-bold text-primary">{{ $sec['section_name'] }}</td>
                                                     <td>
                                                         @if ($combinedCareers->count() > 0)
-                                                            @foreach ($combinedCareers as $career)
-                                                                <span
-                                                                    class="badge bg-info text-dark me-1 mb-1">{!! $career->name !!}</span>
+
+                                                        {{-- mutiple career cluster show --}}
+                                                            {{-- @foreach ($combinedCareers as $career)
+                                                                <span class="badge bg-info text-dark me-1 mb-1">{!! $career->careerCategory->name !!}</span>
+                                                            @endforeach --}}
+
+                                                            {{-- now merge and show single career cluster  --}}
+                                                            @php
+                                                                $uniqueCategories = $combinedCareers
+                                                                    ->pluck('careerCategory.name') // extract category names
+                                                                    ->filter() // remove null values
+                                                                    ->unique() // keep only unique ones
+                                                                    ->values();
+                                                            @endphp
+
+                                                            @foreach ($uniqueCategories as $categoryName)
+                                                                <span class="badge bg-info text-dark me-1 mb-1">
+                                                                    {!! $categoryName !!}
+                                                                </span>
                                                             @endforeach
+                                                            {{-- end merging  --}}
+                                                            
                                                         @else
                                                             <span class="text-muted">No careers assigned</span>
                                                         @endif
@@ -227,49 +245,64 @@
 
     <script>
         const chartData = @json($groupedResults);
-    
+
         Object.entries(chartData).forEach(([domain, sections]) => {
             const slug = domain.toLowerCase().replace(/[^a-z0-9]+/g, '-');
             const ctx = document.getElementById(`chart-${slug}`);
             if (!ctx) return;
-    
+
             const chartSections = sections.chart;
             const labels = chartSections.map(s => s.section_name);
             const dataValues = chartSections.map(s => s.average_value);
-    
+
             // 🧠 Choose chart type per domain
             let chartType = 'bar';
             let backgroundColor = '#0d6efd';
             let borderColor = '#0d6efd';
             let options = {
                 responsive: true,
-                plugins: { legend: { display: false } },
-                scales: { y: { beginAtZero: true, max: 10 } }
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 10
+                    }
+                }
             };
-    
+
             switch (domain.toUpperCase()) {
                 case 'APTITUDE':
                     chartType = 'bar';
                     backgroundColor = '#007bff';
                     break;
-    
+
                 case 'OCEAN': // Big 5 Personality
                     chartType = 'radar';
                     backgroundColor = 'rgba(13, 110, 253, 0.4)';
                     borderColor = '#0d6efd';
                     options = {
                         responsive: true,
-                        elements: { line: { borderWidth: 2 } },
+                        elements: {
+                            line: {
+                                borderWidth: 2
+                            }
+                        },
                         scales: {
                             r: {
-                                angleLines: { display: true },
+                                angleLines: {
+                                    display: true
+                                },
                                 suggestedMin: 0,
                                 suggestedMax: 10
                             }
                         }
                     };
                     break;
-    
+
                 case 'WORK VALUES':
                     chartType = 'doughnut';
                     backgroundColor = [
@@ -278,11 +311,14 @@
                     options = {
                         responsive: true,
                         plugins: {
-                            legend: { display: true, position: 'bottom' }
+                            legend: {
+                                display: true,
+                                position: 'bottom'
+                            }
                         }
                     };
                     break;
-    
+
                 case 'GOAL ORIENTATION':
                     chartType = 'polarArea';
                     backgroundColor = [
@@ -294,15 +330,18 @@
                     options = {
                         responsive: true,
                         scales: {
-                            r: { suggestedMin: 0, suggestedMax: 10 }
+                            r: {
+                                suggestedMin: 0,
+                                suggestedMax: 10
+                            }
                         }
                     };
                     break;
-    
+
                 default:
                     chartType = 'bar';
             }
-    
+
             new Chart(ctx, {
                 type: chartType,
                 data: {

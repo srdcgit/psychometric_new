@@ -369,8 +369,14 @@
         .career-table {
             padding: 25px !important;
         }
+
         .career-chart {
             padding: 25px !important;
+        }
+
+        image.meta {
+            height: 100px !important;
+            width: 250px !important;
         }
     </style>
     @php use Illuminate\Support\Str; @endphp
@@ -462,8 +468,8 @@
     {{-- Dmain section start here  --}}
     <div class="domain-section">
         @foreach ($groupedResults as $domainName => $sections)
-            @php $slug = Str::slug($domainName); 
-            $domainDisplayName = $sections['cards'][0]['domain_display_name'] ?? $domainName;
+            @php $slug = Str::slug($domainName);
+                $domainDisplayName = $sections['cards'][0]['domain_display_name'] ?? $domainName;
             @endphp
             <div class="h2-banner">
                 <h2 class="h2-title">{{ $domainDisplayName }}</h2>
@@ -478,6 +484,8 @@
             <div class="section-contaner">
                 @foreach ($sections['cards'] ?? [] as $section)
                     <div class="section">
+                        <img src="{{ asset($section['section_image']) }}" alt="{{ $section['section_name'] }} image"
+                            class="meta">
                         <h3>{{ $section['section_name'] }} @if (isset($section['label']))
                                 - {{ $section['label'] }}
                             @endif
@@ -539,11 +547,28 @@
                                             <td style="width: 30%">{{ $sec['section_name'] }}</td>
                                             <td>
                                                 @if ($combinedCareers->count() > 0)
-                                                    @foreach ($combinedCareers as $career)
+                                                    {{-- @foreach ($combinedCareers as $career)
                                                         <span class="badge">
                                                             {!! $career->name !!}
                                                         </span>
+                                                    @endforeach --}}
+
+                                                    {{-- now merge and show single career cluster  --}}
+                                                    @php
+                                                        $uniqueCategories = $combinedCareers
+                                                            ->pluck('careerCategory.name') // extract category names
+                                                            ->filter() // remove null values
+                                                            ->unique() // keep only unique ones
+                                                            ->values();
+                                                    @endphp
+
+                                                    @foreach ($uniqueCategories as $categoryName)
+                                                       
+                                                            {!! $categoryName !!}
+                                                        
                                                     @endforeach
+                                                    {{-- end merging  --}}
+
                                                 @else
                                                     <span class="meta">No careers assigned</span>
                                                 @endif

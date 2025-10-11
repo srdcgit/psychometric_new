@@ -35,7 +35,7 @@ class SectionController extends Controller
     {
         $domainInput = $request->input('domain_id');
         $specialDomains = ['OCEAN', 'Work Values'];
-        
+
         // If the domain is a special one, fetch its ID by name
         if (in_array($domainInput, $specialDomains)) {
             $domain = \App\Models\Domain::where('name', $domainInput)->first();
@@ -85,10 +85,11 @@ class SectionController extends Controller
             $data['idealenvironments'] = $request->idealenvironments;
         }
 
-        // Handle image upload
         if ($request->hasFile('image')) {
-            $path = $request->file('image')->store('sections', 'public');
-            $data['image'] = $path;
+            $image = $request->file('image');
+            $filename = time() . '_' . $image->getClientOriginalName();
+            $image->move(public_path('assets/images/section/'), $filename);
+            $data['image'] = 'assets/images/section/' . $filename;
         }
 
         Section::create($data);
@@ -173,15 +174,23 @@ class SectionController extends Controller
             $data['idealenvironments'] = $request->idealenvironments;
         }
 
+
         // Handle image upload (replace existing if new provided)
         if ($request->hasFile('image')) {
             // delete old image if exists
-            if (!empty($section->image)) {
-                \Illuminate\Support\Facades\Storage::disk('public')->delete($section->image);
+            if (!empty($section->image) && file_exists(public_path($section->image))) {
+                unlink(public_path($section->image));
             }
-            $path = $request->file('image')->store('sections', 'public');
-            $data['image'] = $path;
+
+            // upload new image to public/assets/images
+            $image = $request->file('image');
+            $filename = time() . '_' . $image->getClientOriginalName();
+            $image->move(public_path('assets/images/section/'), $filename);
+
+            // save path to database
+            $data['image'] = 'assets/images/section/' . $filename;
         }
+
 
         $section->update($data);
 
