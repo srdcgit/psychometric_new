@@ -17,6 +17,16 @@
             max-width: 100%;
             border-radius: 10px;
         }
+
+        .card-body canvas {
+    width: 100% !important;
+    max-width: 500px;   /* reduce width */
+    height: auto !important;
+    max-height: 250px;  /* reduce height */
+    margin: 0 auto;
+    display: block;
+}
+
     </style>
     <div class="container max-w-5xl py-5">
         <div class="d-flex flex-wrap justify-content-between align-items-center mb-5">
@@ -71,9 +81,10 @@
 
         {{-- Domains and Sections --}}
         @foreach ($groupedResults as $domainName => $sections)
-            @php $slug = Str::slug($domainName);
-                                $domainDisplayName = $sections['cards'][0]['domain_display_name'] ?? $domainName;
-                        @endphp 
+            @php 
+            $slug = Str::slug($domainName);
+                $domainDisplayName = $sections['cards'][0]['domain_display_name'] ?? $domainName;
+            @endphp
             <section class="mb-5">
                 <h2 class="h4 fw-semibold text-primary mb-4">{{ $domainDisplayName }}</h2>
 
