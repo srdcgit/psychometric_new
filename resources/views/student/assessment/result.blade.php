@@ -1,6 +1,42 @@
 @extends('layouts.app')
 
 @section('content')
+
+    <style>
+        .card-body canvas {
+            width: 100% !important;
+            max-width: 500px;
+            /* reduce width */
+            height: auto !important;
+            max-height: 250px;
+            /* reduce height */
+            margin: 0 auto;
+            display: block;
+        }
+
+        .career-list {
+            counter-reset: list-counter;
+            list-style: none;
+            padding-left: 1.5rem;
+        }
+
+        .career-list li {
+            counter-increment: list-counter;
+            position: relative;
+            margin-bottom: 0.4rem;
+        }
+
+        .career-list li::before {
+            content: counter(list-counter) ".";
+            position: absolute;
+            left: -1.2rem;
+            color: #0d6efd;
+            font-weight: 600;
+        }
+        p {
+            margin-bottom: none !important;
+        }
+    </style>
     @if (session('error'))
         <div class="container pt-4">
             <div class="alert alert-danger alert-dismissible fade show" role="alert">
@@ -38,7 +74,7 @@
 
 
         {{-- Tab Content --}}
-        <div class="tab-content" id="resultTabContent">
+        <div class="tab-content mx-auto" id="resultTabContent" style="width: 80%; max-width: 1000px;">
             @foreach ($groupedResults as $domainName => $sections)
                 @php $slug = Str::slug($domainName); @endphp
                 <div class="tab-pane fade {{ $loop->first ? 'show active' : '' }}" id="{{ $slug }}" role="tabpanel"
@@ -51,148 +87,181 @@
                         </div>
                     @endif
 
-                    <div class="card shadow-lg border-0 mb-5">
-                        <div class="card-body">
-                            <div class="row g-4">
-                                @php $displaySections = $sections['cards']; @endphp
-                                @foreach ($displaySections as $section)
-                                    <div class="col-md-6 col-lg-4">
-                                        <div class="card h-100 bg-light border-primary border-2">
-                                            <div class="card-body">
-                                                <img src="{{ asset($section['section_image']) }}"
-                                                    alt="{{ $section['section_name'] }} image" class="img-fluid mb-2">
-                                                <h5 class="card-title text-primary">{{ $section['section_name'] }} -
-                                                    {{ $section['label'] }}</h5>
-                                                <p class="card-text small mb-2">{!! $section['section_description'] !!}</p>
-                                                <div class="mb-2 small">
-                                                    @if ($domainName === 'APTITUDE')
-                                                        <strong>Total Score:</strong>
-                                                    @else
-                                                        <strong>Average Score:</strong>
+                    {{-- Section cards --}}
+                    <div class="row g-4 mb-5 mx-auto">
+                        @foreach ($sections['cards'] ?? [] as $section)
+                            <article class="col-12">
+                                <div class="card border rounded-4 shadow-sm h-100">
+                                    <div class="row g-0 w-100 align-items-center">
+
+                                        {{-- Left side: Image --}}
+                                        <div class="col-4 text-center p-3">
+                                            <img src="{{ asset($section['section_image']) }}"
+                                                alt="{{ $section['section_name'] }} image" class="img-fluid"
+                                                style="max-height: 100px; object-fit: contain;">
+                                        </div>
+
+                                        {{-- Right side: Content --}}
+                                        <div class="col-8">
+                                            <div class="card-body p-3">
+                                                <h5 class="card-title mb-1 fw-bold text-dark">
+                                                    {{ $section['section_name'] }}
+                                                    @if (isset($section['label']))
+                                                        <small class="text-muted">- {{ $section['label'] }}</small>
                                                     @endif
+                                                </h5>
+
+                                                <p class="mb-2 small text-muted">
+                                                    <strong>{{ $domainName === 'APTITUDE' ? 'Total Score:' : 'Average Score:' }}</strong>
                                                     {{ $section['average'] }}
-                                                </div>
+                                                </p>
+
+                                                <p class="text-muted small mb-2">{!! $section['section_description'] !!}</p>
+
+                                                {{-- Conditional Details --}}
                                                 @if ($domainName === 'OCEAN')
-                                                    <div class="mb-2"><strong>{{ $section['label'] }}:</strong>
-                                                        {{ $section['relevant_description'] }}</div>
+                                                    <p class="small"><strong>{{ $section['label'] }}:</strong>
+                                                        {{ $section['relevant_description'] }}</p>
                                                 @elseif ($domainName === 'WORK VALUES')
                                                     @if ($section['label'] === 'Low')
-                                                        <div class="mb-2"><strong>Low:</strong> {{ $section['low'] }}
-                                                        </div>
+                                                        <p class="small"><strong>Low:</strong> {{ $section['low'] }}</p>
                                                     @elseif ($section['label'] === 'Mid')
-                                                        <div class="mb-2"><strong>Mid:</strong> {{ $section['mid'] }}
-                                                        </div>
+                                                        <p class="small"><strong>Mid:</strong> {{ $section['mid'] }}</p>
                                                     @elseif ($section['label'] === 'High')
-                                                        <div class="mb-2"><strong>High:</strong> {{ $section['high'] }}
-                                                        </div>
+                                                        <p class="small"><strong>High:</strong> {{ $section['high'] }}</p>
                                                     @endif
                                                 @else
-                                                    <div><strong>Key Traits:</strong> {{ $section['section_keytraits'] }}
+                                                    <div class="small">
+                                                        <p><strong>Key Traits:</strong> {{ $section['section_keytraits'] }}
+                                                        </p>
+                                                        <p><strong>Enjoys:</strong> {{ $section['section_enjoys'] }}</p>
+                                                        <p><strong>Ideal Environments:</strong>
+                                                            {{ $section['section_idealenvironments'] }}</p>
                                                     </div>
-                                                    <div><strong>Enjoys:</strong> {{ $section['section_enjoys'] }}</div>
-                                                    <div><strong>Ideal Environments:</strong>
-                                                        {{ $section['section_idealenvironments'] }}</div>
                                                 @endif
                                             </div>
                                         </div>
                                     </div>
-                                @endforeach
+                                </div>
+                            </article>
+                        @endforeach
+                    </div>
+
+                    <div class="row">
+                        {{-- Show Career Cluster  --}}
+                        <div class="col">
+                            @php $careerPathSections = $sections['cards']; @endphp
+                            @if (!empty($careerPathSections) && $domainName !== 'GOAL ORIENTATION')
+                                <div class="mb-5">
+                                    <h4 class="fw-semibold text-primary mb-3">Suggested Career Paths</h4>
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered align-middle">
+                                            <tbody>
+                                                @foreach ($careerPathSections as $sec)
+                                                    @php
+                                                        $sectionId = $sec['section_id'] ?? null;
+                                                        $paths = ($careerpaths[$sectionId] ?? collect())
+                                                            ->filter(function ($p) {
+                                                                return $p->sections && $p->sections->count() === 1;
+                                                            })
+                                                            ->values();
+                                                        $combinedCareers = collect();
+                                                        foreach ($paths as $p) {
+                                                            $combinedCareers = $combinedCareers->merge($p->careers);
+                                                        }
+                                                        $combinedCareers = $combinedCareers->unique('id')->values();
+                                                    @endphp
+                                                    @if ($paths->isNotEmpty())
+                                                        <tr>
+                                                            <td class="fw-bold text-primary text-center">{{ $sec['section_name'] }}
+                                                            </td>
+                                                            <td>
+                                                                @if ($combinedCareers->count() > 0)
+                                                                    @php
+                                                                        // Group careers by category name (or Uncategorized)
+                                                                        $groupedByCategory = $combinedCareers->groupBy(
+                                                                            fn($c) => $c->careerCategory->name ??
+                                                                                'Uncategorized',
+                                                                        );
+                                                                    @endphp
+
+                                                                    @foreach ($groupedByCategory as $categoryName => $careersInCategory)
+                                                                        <div class="mb-3 border-bottom">
+                                                                            {{-- Category Name --}}
+                                                                            <h6 class="fw-semibold text-primary  mb-2">
+                                                                                {!! $categoryName !!}
+                                                                            </h6>
+
+                                                                            {{-- Careers under this category --}}
+                                                                            <ol class="ms-3 mb-0 career-list">
+                                                                                @foreach ($careersInCategory as $career)
+                                                                                    <li
+                                                                                        class="mb-1">
+                                                                                        <span
+                                                                                            class="text-dark small fw-medium">{!! $career->name !!}</span>
+                                                                                    </li>
+                                                                                @endforeach
+                                                                            </ol>
+                                                                        </div>
+                                                                    @endforeach
+                                                                @else
+                                                                    <span class="text-muted fst-italic">No careers
+                                                                        assigned</span>
+                                                                @endif
+                                                            </td>
+
+
+                                                        </tr>
+                                                    @endif
+                                                @endforeach
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            @endif
+
+                            @if ($domainName === 'GOAL ORIENTATION')
+                                <div class="row g-4 mb-5">
+                                    <div class="col-md-6">
+                                        <div class="card border-0 bg-gradient bg-primary-subtle">
+                                            <div class="card-body">
+                                                <h5 class="fw-bold text-primary mb-2"><i class="bi bi-clock me-2"></i>Short
+                                                    Term
+                                                </h5>
+                                                <p class="text-dark">Aim for short milestones and rewards. Match with roles
+                                                    needing
+                                                    daily targets.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="card border-0 bg-gradient bg-success-subtle">
+                                            <div class="card-body">
+                                                <h5 class="fw-bold text-success mb-2"><i
+                                                        class="bi bi-bullseye me-2"></i>Long Term
+                                                </h5>
+                                                <p class="text-dark">Use Vision boards, planning tools, long-term
+                                                    mentorship. Ideal
+                                                    for research, entrepreneurship, civil services.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endif
+                        </div>
+
+                        {{-- Chat show  --}}
+                        <div class="col">
+                            <div class="card shadow mt-4 border-0">
+                                <div class="card-body">
+                                    <h5 class="fw-bold text-primary mb-3">Visual Representation of your Score</h5>
+                                    <canvas id="chart-{{ $slug }}" height="180"></canvas>
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                    @php $careerPathSections = $sections['cards']; @endphp
-                    @if (!empty($careerPathSections) && $domainName !== 'GOAL ORIENTATION')
-                        <div class="mb-5">
-                            <h4 class="fw-semibold text-primary mb-3">💼 Suggested Career Paths</h4>
-                            <div class="table-responsive">
-                                <table class="table table-bordered align-middle">
-                                    <tbody>
-                                        @foreach ($careerPathSections as $sec)
-                                            @php
-                                                $sectionId = $sec['section_id'] ?? null;
-                                                $paths = ($careerpaths[$sectionId] ?? collect())
-                                                    ->filter(function ($p) {
-                                                        return $p->sections && $p->sections->count() === 1;
-                                                    })
-                                                    ->values();
-                                                $combinedCareers = collect();
-                                                foreach ($paths as $p) {
-                                                    $combinedCareers = $combinedCareers->merge($p->careers);
-                                                }
-                                                $combinedCareers = $combinedCareers->unique('id')->values();
-                                            @endphp
-                                            @if ($paths->isNotEmpty())
-                                                <tr>
-                                                    <td class="fw-bold text-primary">{{ $sec['section_name'] }}</td>
-                                                    <td>
-                                                        @if ($combinedCareers->count() > 0)
 
-                                                        {{-- mutiple career cluster show --}}
-                                                            {{-- @foreach ($combinedCareers as $career)
-                                                                <span class="badge bg-info text-dark me-1 mb-1">{!! $career->careerCategory->name !!}</span>
-                                                            @endforeach --}}
-
-                                                            {{-- now merge and show single career cluster  --}}
-                                                            @php
-                                                                $uniqueCategories = $combinedCareers
-                                                                    ->pluck('careerCategory.name') // extract category names
-                                                                    ->filter() // remove null values
-                                                                    ->unique() // keep only unique ones
-                                                                    ->values();
-                                                            @endphp
-
-                                                            @foreach ($uniqueCategories as $categoryName)
-                                                                <span class="badge bg-info text-dark me-1 mb-1">
-                                                                    {!! $categoryName !!}
-                                                                </span>
-                                                            @endforeach
-                                                            {{-- end merging  --}}
-                                                            
-                                                        @else
-                                                            <span class="text-muted">No careers assigned</span>
-                                                        @endif
-                                                    </td>
-                                                </tr>
-                                            @endif
-                                        @endforeach
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    @endif
-
-                    @if ($domainName === 'GOAL ORIENTATION')
-                        <div class="row g-4 mb-5">
-                            <div class="col-md-6">
-                                <div class="card border-0 bg-gradient bg-primary-subtle">
-                                    <div class="card-body">
-                                        <h5 class="fw-bold text-primary mb-2"><i class="bi bi-clock me-2"></i>Short Term
-                                        </h5>
-                                        <p class="text-dark">Aim for short milestones and rewards. Match with roles needing
-                                            daily targets.</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="card border-0 bg-gradient bg-success-subtle">
-                                    <div class="card-body">
-                                        <h5 class="fw-bold text-success mb-2"><i class="bi bi-bullseye me-2"></i>Long Term
-                                        </h5>
-                                        <p class="text-dark">Use Vision boards, planning tools, long-term mentorship. Ideal
-                                            for research, entrepreneurship, civil services.</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    @endif
-
-                    <div class="card shadow mt-4 border-0">
-                        <div class="card-body">
-                            <h5 class="fw-bold text-primary mb-3">Visual Representation of your Score</h5>
-                            <canvas id="chart-{{ $slug }}" height="180"></canvas>
-                        </div>
-                    </div>
                 </div>
             @endforeach
         </div>

@@ -19,18 +19,19 @@
         }
 
         .card-body canvas {
-    width: 100% !important;
-    max-width: 500px;   /* reduce width */
-    height: auto !important;
-    max-height: 250px;  /* reduce height */
-    margin: 0 auto;
-    display: block;
-}
-
+            width: 100% !important;
+            max-width: 500px;
+            /* reduce width */
+            height: auto !important;
+            max-height: 250px;
+            /* reduce height */
+            margin: 0 auto;
+            display: block;
+        }
     </style>
     <div class="container max-w-5xl py-5">
         <div class="d-flex flex-wrap justify-content-between align-items-center mb-5">
-            <h1 class="display-5 fw-bold text-primary flex-grow-1">Comprehensive Psychometric Assessment Report</h1>
+            <h3 class="fw-bold text-primary flex-grow-1">Comprehensive Psychometric Assessment Report</h3>
             <a href="{{ route('assessment.report.pdf') }}" class="btn btn-dark btn-lg px-4 shadow-sm">Download PDF</a>
         </div>
 
@@ -81,8 +82,8 @@
 
         {{-- Domains and Sections --}}
         @foreach ($groupedResults as $domainName => $sections)
-            @php 
-            $slug = Str::slug($domainName);
+            @php
+                $slug = Str::slug($domainName);
                 $domainDisplayName = $sections['cards'][0]['domain_display_name'] ?? $domainName;
             @endphp
             <section class="mb-5">
