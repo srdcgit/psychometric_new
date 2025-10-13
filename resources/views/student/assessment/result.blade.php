@@ -33,6 +33,7 @@
             color: #0d6efd;
             font-weight: 600;
         }
+
         p {
             margin-bottom: none !important;
         }
@@ -173,7 +174,8 @@
                                                     @endphp
                                                     @if ($paths->isNotEmpty())
                                                         <tr>
-                                                            <td class="fw-bold text-primary text-center">{{ $sec['section_name'] }}
+                                                            <td class="fw-bold text-primary text-center">
+                                                                {{ $sec['section_name'] }}
                                                             </td>
                                                             <td>
                                                                 @if ($combinedCareers->count() > 0)
@@ -186,21 +188,49 @@
                                                                     @endphp
 
                                                                     @foreach ($groupedByCategory as $categoryName => $careersInCategory)
-                                                                        <div class="mb-3 border-bottom">
+                                                                        <div class="mb-3 border-bottom pb-2">
                                                                             {{-- Category Name --}}
-                                                                            <h6 class="fw-semibold text-primary  mb-2">
+                                                                            <h6 class="fw-semibold text-primary mb-2">
+                                                                                <i class="bi bi-folder2-open me-1"></i>
                                                                                 {!! $categoryName !!}
                                                                             </h6>
 
                                                                             {{-- Careers under this category --}}
                                                                             <ol class="ms-3 mb-0 career-list">
-                                                                                @foreach ($careersInCategory as $career)
-                                                                                    <li
-                                                                                        class="mb-1">
+                                                                                @php
+                                                                                    $displayCareers = $careersInCategory->take(
+                                                                                        2,
+                                                                                    );
+                                                                                    $hiddenCareers = $careersInCategory->skip(
+                                                                                        2,
+                                                                                    );
+                                                                                @endphp
+
+                                                                                @foreach ($displayCareers as $career)
+                                                                                    <li class="mb-1">
                                                                                         <span
                                                                                             class="text-dark small fw-medium">{!! $career->name !!}</span>
                                                                                     </li>
                                                                                 @endforeach
+                                                                                {{-- Show "+N more" popover if there are hidden ones --}}
+                                                                                @if ($hiddenCareers->count() > 0)
+                                                                                    <button type="button"
+                                                                                        class="btn btn-sm btn-outline-secondary text-primary fw-semibold"
+                                                                                        data-bs-toggle="popover"
+                                                                                        data-bs-html="true"
+                                                                                        title="More Careers"
+                                                                                        data-bs-content="
+                                                                                         <ul class='career-list mb-0'>
+                                                                                             @foreach ($hiddenCareers as $career)
+                                                                                             <li>{!! $career->name !!}</li>
+                                                                                             @endforeach
+                                                                                         </ul>
+                                                                                     ">
+                                                                                        +{{ $hiddenCareers->count() }}
+                                                                                        more
+                                                                                    </button>
+                                                                                @endif
+
                                                                             </ol>
                                                                         </div>
                                                                     @endforeach
@@ -427,5 +457,14 @@
                 options: options
             });
         });
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'))
+            popoverTriggerList.map(function(popoverTriggerEl) {
+                return new bootstrap.Popover(popoverTriggerEl)
+            })
+        })
     </script>
 @endsection
