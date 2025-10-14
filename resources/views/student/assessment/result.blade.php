@@ -37,6 +37,11 @@
         p {
             margin-bottom: none !important;
         }
+
+        /* .accordion-body {
+                max-height: 300px;
+                overflow-y: auto;
+            } */
     </style>
     @if (session('error'))
         <div class="container pt-4">
@@ -148,119 +153,95 @@
                         @endforeach
                     </div>
 
+                    {{-- display career suggstion and chat  --}}
                     <div class="row">
                         {{-- Show Career Cluster  --}}
-                        <div class="col">
+                        <div class="col-12">
                             @php $careerPathSections = $sections['cards']; @endphp
                             @if (!empty($careerPathSections) && $domainName !== 'GOAL ORIENTATION')
                                 <div class="mb-5">
                                     <h4 class="fw-semibold text-primary mb-3">Suggested Career Paths</h4>
-                                    <div class="table-responsive">
-                                        <table class="table table-bordered align-middle">
-                                            <tbody>
-                                                @foreach ($careerPathSections as $sec)
-                                                    @php
-                                                        $sectionId = $sec['section_id'] ?? null;
-                                                        $paths = ($careerpaths[$sectionId] ?? collect())
-                                                            ->filter(function ($p) {
-                                                                return $p->sections && $p->sections->count() === 1;
-                                                            })
-                                                            ->values();
-                                                        $combinedCareers = collect();
-                                                        foreach ($paths as $p) {
-                                                            $combinedCareers = $combinedCareers->merge($p->careers);
-                                                        }
-                                                        $combinedCareers = $combinedCareers->unique('id')->values();
-                                                    @endphp
-                                                    @if ($paths->isNotEmpty())
-                                                        <tr>
-                                                            <td class="fw-bold text-primary text-center">
-                                                                {{ $sec['section_name'] }}
-                                                            </td>
-                                                            <td>
-                                                                @if ($combinedCareers->count() > 0)
-                                                                    @php
-                                                                        // Group careers by category name (or Uncategorized)
-                                                                        $groupedByCategory = $combinedCareers->groupBy(
-                                                                            fn($c) => $c->careerCategory->name ??
-                                                                                'Uncategorized',
-                                                                        );
-                                                                    @endphp
 
-                                                                    @foreach ($groupedByCategory as $categoryName => $careersInCategory)
-                                                                        <div class="mb-3 border-bottom pb-2">
-                                                                            {{-- Category Name --}}
-                                                                            <h6 class="fw-semibold text-primary mb-2">
-                                                                                <i class="bi bi-folder2-open me-1"></i>
-                                                                                {!! $categoryName !!}
-                                                                            </h6>
+                                    <div class="accordion" id="accordionExample">
+                                        @foreach ($careerPathSections as $index => $sec)
+                                            @php
+                                                $sectionId = $sec['section_id'] ?? null;
+                                                $paths = ($careerpaths[$sectionId] ?? collect())
+                                                    ->filter(fn($p) => $p->sections && $p->sections->count() === 1)
+                                                    ->values();
+                                                $combinedCareers = collect();
+                                                foreach ($paths as $p) {
+                                                    $combinedCareers = $combinedCareers->merge($p->careers);
+                                                }
+                                                $combinedCareers = $combinedCareers->unique('id')->values();
 
-                                                                            {{-- Careers under this category --}}
-                                                                            <ol class="ms-3 mb-0 career-list">
-                                                                                @php
-                                                                                    $displayCareers = $careersInCategory->take(
-                                                                                        2,
-                                                                                    );
-                                                                                    $hiddenCareers = $careersInCategory->skip(
-                                                                                        2,
-                                                                                    );
-                                                                                @endphp
+                                                $collapseId = 'collapse' . $index;
+                                                $headingId = 'heading' . $index;
+                                                $isFirst = $index === 0; // first accordion open by default
+                                            @endphp
 
-                                                                                @foreach ($displayCareers as $career)
-                                                                                    <li class="mb-1">
-                                                                                        <span
-                                                                                            class="text-dark small fw-medium">{!! $career->name !!}</span>
-                                                                                    </li>
-                                                                                @endforeach
-                                                                                {{-- Show "+N more" popover if there are hidden ones --}}
-                                                                                @if ($hiddenCareers->count() > 0)
-                                                                                    <button type="button"
-                                                                                        class="btn btn-sm btn-outline-secondary text-primary fw-semibold"
-                                                                                        data-bs-toggle="popover"
-                                                                                        data-bs-html="true"
-                                                                                        title="More Careers"
-                                                                                        data-bs-content="
-                                                                                         <ul class='career-list mb-0'>
-                                                                                             @foreach ($hiddenCareers as $career)
-                                                                                             <li>{!! $career->name !!}</li>
-                                                                                             @endforeach
-                                                                                         </ul>
-                                                                                     ">
-                                                                                        +{{ $hiddenCareers->count() }}
-                                                                                        more
-                                                                                    </button>
-                                                                                @endif
+                                            @if ($paths->isNotEmpty())
+                                                <div class="accordion-item">
+                                                    <h2 class="accordion-header" id="{{ $headingId }}">
+                                                        <button class="accordion-button {{ !$isFirst ? 'collapsed' : '' }}"
+                                                            type="button" data-bs-toggle="collapse"
+                                                            data-bs-target="#{{ $collapseId }}"
+                                                            aria-expanded="{{ $isFirst ? 'true' : 'false' }}"
+                                                            aria-controls="{{ $collapseId }}">
+                                                            <i class="bi bi-diagram-3 me-2"></i>{{ $sec['section_name'] }}
+                                                        </button>
+                                                    </h2>
+                                                    <div id="{{ $collapseId }}"
+                                                        class="accordion-collapse collapse {{ $isFirst ? 'show' : '' }}"
+                                                        aria-labelledby="{{ $headingId }}"
+                                                        data-bs-parent="#accordionExample">
+                                                        <div class="accordion-body">
+                                                            @if ($combinedCareers->count() > 0)
+                                                                @php
+                                                                    $groupedByCategory = $combinedCareers->groupBy(
+                                                                        fn($c) => $c->careerCategory->name ??
+                                                                            'Uncategorized',
+                                                                    );
+                                                                @endphp
 
-                                                                            </ol>
-                                                                        </div>
-                                                                    @endforeach
-                                                                @else
-                                                                    <span class="text-muted fst-italic">No careers
-                                                                        assigned</span>
-                                                                @endif
-                                                            </td>
-
-
-                                                        </tr>
-                                                    @endif
-                                                @endforeach
-                                            </tbody>
-                                        </table>
+                                                                @foreach ($groupedByCategory as $categoryName => $careersInCategory)
+                                                                    <div class="mb-3">
+                                                                        <h6 class="fw-semibold text-primary">
+                                                                            <i
+                                                                                class="bi bi-folder2-open me-1"></i>{!! $categoryName !!}
+                                                                        </h6>
+                                                                        <ol class="">
+                                                                            @foreach ($careersInCategory as $career)
+                                                                                <li>
+                                                                                    <span
+                                                                                        class="text-dark small">{!! $career->name !!}</span>
+                                                                                </li>
+                                                                            @endforeach
+                                                                        </ol>
+                                                                    </div>
+                                                                @endforeach
+                                                            @else
+                                                                <p class="text-muted fst-italic">No careers assigned</p>
+                                                            @endif
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            @endif
+                                        @endforeach
                                     </div>
                                 </div>
                             @endif
 
+                            {{-- Goal Orientation Section --}}
                             @if ($domainName === 'GOAL ORIENTATION')
                                 <div class="row g-4 mb-5">
                                     <div class="col-md-6">
                                         <div class="card border-0 bg-gradient bg-primary-subtle">
                                             <div class="card-body">
                                                 <h5 class="fw-bold text-primary mb-2"><i class="bi bi-clock me-2"></i>Short
-                                                    Term
-                                                </h5>
+                                                    Term</h5>
                                                 <p class="text-dark">Aim for short milestones and rewards. Match with roles
-                                                    needing
-                                                    daily targets.</p>
+                                                    needing daily targets.</p>
                                             </div>
                                         </div>
                                     </div>
@@ -268,17 +249,17 @@
                                         <div class="card border-0 bg-gradient bg-success-subtle">
                                             <div class="card-body">
                                                 <h5 class="fw-bold text-success mb-2"><i
-                                                        class="bi bi-bullseye me-2"></i>Long Term
-                                                </h5>
+                                                        class="bi bi-bullseye me-2"></i>Long Term</h5>
                                                 <p class="text-dark">Use Vision boards, planning tools, long-term
-                                                    mentorship. Ideal
-                                                    for research, entrepreneurship, civil services.</p>
+                                                    mentorship. Ideal for research, entrepreneurship, civil services.</p>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             @endif
                         </div>
+
+
 
                         {{-- Chat show  --}}
                         <div class="col">
