@@ -112,9 +112,9 @@
                                             <div class="card-body p-3">
                                                 <h5 class="card-title mb-1 fw-bold text-dark">
                                                     {{ $section['section_name'] }}
-                                                    @if (isset($section['label']))
+                                                    {{-- @if (isset($section['label']))
                                                         <small class="text-muted">- {{ $section['label'] }}</small>
-                                                    @endif
+                                                    @endif --}}
                                                 </h5>
 
                                                 <p class="mb-2 small text-muted">
@@ -210,14 +210,26 @@
                                                                             <i
                                                                                 class="bi bi-folder2-open me-1"></i>{!! $categoryName !!}
                                                                         </h6>
-                                                                        <ol class="">
-                                                                            @foreach ($careersInCategory as $career)
-                                                                                <li>
-                                                                                    <span
-                                                                                        class="text-dark small">{!! $career->name !!}</span>
-                                                                                </li>
+
+                                                                        @php
+                                                                            $chunks = $careersInCategory->chunk(10); // Split into groups of 10
+                                                                            $counter = 1; // Start numbering
+                                                                        @endphp
+
+                                                                        <div class="row g-3">
+                                                                            @foreach ($chunks as $chunk)
+                                                                                <div class="col-md-6 col-lg-4">
+                                                                                    <ol class="mb-0" start="{{ $counter }}">
+                                                                                        @foreach ($chunk as $career)
+                                                                                            <li><span class="text-dark small">{!! $career->name !!}</span></li>
+                                                                                            @php $counter++; @endphp
+                                                                                        @endforeach
+                                                                                    </ol>
+                                                                                </div>
                                                                             @endforeach
-                                                                        </ol>
+                                                                        </div>
+
+
                                                                     </div>
                                                                 @endforeach
                                                             @else

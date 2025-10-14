@@ -222,14 +222,23 @@
                                                                     <i
                                                                         class="bi bi-folder2-open me-1"></i>{!! $categoryName !!}
                                                                 </h6>
-                                                                <ol class="">
-                                                                    @foreach ($careersInCategory as $career)
-                                                                        <li>
-                                                                            <span
-                                                                                class="text-dark small">{!! $career->name !!}</span>
-                                                                        </li>
-                                                                    @endforeach
-                                                                </ol>
+                                                                @php
+                                                                            $chunks = $careersInCategory->chunk(10); // Split into groups of 10
+                                                                            $counter = 1; // Start numbering
+                                                                        @endphp
+
+                                                                        <div class="row g-3">
+                                                                            @foreach ($chunks as $chunk)
+                                                                                <div class="col-md-6 col-lg-4">
+                                                                                    <ol class="mb-0" start="{{ $counter }}">
+                                                                                        @foreach ($chunk as $career)
+                                                                                            <li><span class="text-dark small">{!! $career->name !!}</span></li>
+                                                                                            @php $counter++; @endphp
+                                                                                        @endforeach
+                                                                                    </ol>
+                                                                                </div>
+                                                                            @endforeach
+                                                                        </div>
                                                             </div>
                                                         @endforeach
                                                     @else
