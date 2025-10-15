@@ -230,26 +230,51 @@
                                                                         $counter = 1; // Numbering
                                                                     @endphp
 
-                                                                    @foreach ($chunks->chunk(3) as $rowGroup)
-                                                                        {{-- Each group of 3 columns --}}
+                                                                    @php
+                                                                        // Distribute careers into 3 columns (round-robin)
+                                                                        $columns = [
+                                                                            collect(),
+                                                                            collect(),
+                                                                            collect(),
+                                                                        ];
+                                                                        foreach (
+                                                                            $careersInCategory->values()
+                                                                            as $i => $career
+                                                                        ) {
+                                                                            $columns[$i % 3]->push($career);
+                                                                        }
+                                                                        $maxRows = max(
+                                                                            $columns[0]->count(),
+                                                                            $columns[1]->count(),
+                                                                            $columns[2]->count(),
+                                                                        );
+                                                                    @endphp
+
+                                                                    @for ($r = 0; $r < $maxRows; $r++)
                                                                         <div class="row g-3 mb-3">
-                                                                            @foreach ($rowGroup as $chunk)
+                                                                            @for ($c = 0; $c < 3; $c++)
                                                                                 <div class="col-md-6 col-lg-4">
-                                                                                    <ol class="mb-0"
-                                                                                        start="{{ $counter }}">
-                                                                                        @foreach ($chunk as $career)
-                                                                                            <li>
-                                                                                                <span
-                                                                                                    class="text-dark small">{!! $career->name !!}</span>
+                                                                                    @if (isset($columns[$c][$r]))
+                                                                                        {{-- For proper numbering, you can push numbering inside this block --}}
+                                                                                        <ol class="mb-0"
+                                                                                            start="{{ $counter }}">
+                                                                                            <li><span
+                                                                                                    class="text-dark small">{!! $columns[$c][$r]->name !!}</span>
                                                                                             </li>
                                                                                             @php $counter++; @endphp
-                                                                                        @endforeach
-                                                                                    </ol>
+                                                                                        </ol>
+                                                                                    @endif
                                                                                 </div>
-                                                                            @endforeach
+                                                                            @endfor
                                                                         </div>
-                                                                        <hr class="my-2 border-secondary opacity-50">
-                                                                    @endforeach
+
+                                                                        {{-- only show hr between rows --}}
+                                                                        @if ($r + 1 < $maxRows)
+                                                                            <hr
+                                                                                class="my-2 border-secondary opacity-50">
+                                                                        @endif
+                                                                    @endfor
+
                                                                 </div>
                                                             @endforeach
                                                         @else
