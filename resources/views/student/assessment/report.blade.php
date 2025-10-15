@@ -106,7 +106,7 @@
                 @endif
 
                 {{-- Section cards --}}
-                <div class="row g-4 mb-5 mx-auto">
+                <div class="row g-4 mb-5 ">
                     @foreach ($sections['cards'] ?? [] as $section)
                         <article class="col-12">
                             <div class="card border rounded-4 shadow-sm h-100">
@@ -124,9 +124,9 @@
                                         <div class="card-body p-3">
                                             <h5 class="card-title mb-1 fw-bold text-dark">
                                                 {{ $section['section_name'] }}
-                                                @if (isset($section['label']))
+                                                {{-- @if (isset($section['label']))
                                                     <small class="text-muted">- {{ $section['label'] }}</small>
-                                                @endif
+                                                @endif --}}
                                             </h5>
 
                                             <p class="mb-2 small text-muted">
@@ -165,133 +165,144 @@
                     @endforeach
                 </div>
 
-               {{-- display career suggstion and chat  --}}
-               <div class="row">
-                {{-- Show Career Cluster  --}}
-                <div class="col-12">
-                    @php $careerPathSections = $sections['cards']; @endphp
-                    @if (!empty($careerPathSections) && $domainName !== 'GOAL ORIENTATION')
-                        <div class="mb-5">
-                            <h4 class="fw-semibold text-primary mb-3">Suggested Career Paths</h4>
+                {{-- display career suggstion and chat  --}}
+                <div class="row">
+                    {{-- Show Career Cluster  --}}
+                    <div class="col-12">
+                        @php $careerPathSections = $sections['cards']; @endphp
+                        @if (!empty($careerPathSections) && $domainName !== 'GOAL ORIENTATION')
+                            <div class="mb-5">
+                                <h4 class="fw-semibold text-primary mb-3">Suggested Career Paths</h4>
 
-                            <div class="accordion" id="accordionExample">
-                                @foreach ($careerPathSections as $index => $sec)
-                                    @php
-                                        $sectionId = $sec['section_id'] ?? null;
-                                        $paths = ($careerpaths[$sectionId] ?? collect())
-                                            ->filter(fn($p) => $p->sections && $p->sections->count() === 1)
-                                            ->values();
-                                        $combinedCareers = collect();
-                                        foreach ($paths as $p) {
-                                            $combinedCareers = $combinedCareers->merge($p->careers);
-                                        }
-                                        $combinedCareers = $combinedCareers->unique('id')->values();
+                                <div class="accordion" id="accordionExample">
+                                    @foreach ($careerPathSections as $index => $sec)
+                                        @php
+                                            $sectionId = $sec['section_id'] ?? null;
+                                            $paths = ($careerpaths[$sectionId] ?? collect())
+                                                ->filter(fn($p) => $p->sections && $p->sections->count() === 1)
+                                                ->values();
+                                            $combinedCareers = collect();
+                                            foreach ($paths as $p) {
+                                                $combinedCareers = $combinedCareers->merge($p->careers);
+                                            }
+                                            $combinedCareers = $combinedCareers->unique('id')->values();
 
-                                        $collapseId = 'collapse' . $index;
-                                        $headingId = 'heading' . $index;
-                                        $isFirst = $index === 0; // first accordion open by default
-                                    @endphp
+                                            $collapseId = 'collapse' . $index;
+                                            $headingId = 'heading' . $index;
+                                            $isFirst = $index === 0; // first accordion open by default
+                                        @endphp
 
-                                    @if ($paths->isNotEmpty())
-                                        <div class="accordion-item">
-                                            <h2 class="accordion-header" id="{{ $headingId }}">
-                                                <button class="accordion-button {{ !$isFirst ? 'collapsed' : '' }}"
-                                                    type="button" data-bs-toggle="collapse"
-                                                    data-bs-target="#{{ $collapseId }}"
-                                                    aria-expanded="{{ $isFirst ? 'true' : 'false' }}"
-                                                    aria-controls="{{ $collapseId }}">
-                                                    <i class="bi bi-diagram-3 me-2"></i>{{ $sec['section_name'] }}
-                                                </button>
-                                            </h2>
-                                            <div id="{{ $collapseId }}"
-                                                class="accordion-collapse collapse {{ $isFirst ? 'show' : '' }}"
-                                                aria-labelledby="{{ $headingId }}"
-                                                data-bs-parent="#accordionExample">
-                                                <div class="accordion-body">
-                                                    @if ($combinedCareers->count() > 0)
-                                                        @php
-                                                            $groupedByCategory = $combinedCareers->groupBy(
-                                                                fn($c) => $c->careerCategory->name ??
-                                                                    'Uncategorized',
-                                                            );
-                                                        @endphp
+                                        @if ($paths->isNotEmpty())
+                                            <div class="accordion-item">
+                                                <h2 class="accordion-header" id="{{ $headingId }}">
+                                                    <button class="accordion-button {{ !$isFirst ? 'collapsed' : '' }}"
+                                                        type="button" data-bs-toggle="collapse"
+                                                        data-bs-target="#{{ $collapseId }}"
+                                                        aria-expanded="{{ $isFirst ? 'true' : 'false' }}"
+                                                        aria-controls="{{ $collapseId }}">
+                                                        <i class="bi bi-diagram-3 me-2"></i>{{ $sec['section_name'] }}
+                                                    </button>
+                                                </h2>
+                                                <div id="{{ $collapseId }}"
+                                                    class="accordion-collapse collapse {{ $isFirst ? 'show' : '' }}"
+                                                    aria-labelledby="{{ $headingId }}"
+                                                    data-bs-parent="#accordionExample">
+                                                    <div class="accordion-body">
+                                                        @if ($combinedCareers->count() > 0)
+                                                            @php
+                                                                $groupedByCategory = $combinedCareers->groupBy(
+                                                                    fn($c) => $c->careerCategory->name ??
+                                                                        'Uncategorized',
+                                                                );
+                                                            @endphp
 
-                                                        @foreach ($groupedByCategory as $categoryName => $careersInCategory)
-                                                            <div class="mb-3">
-                                                                <h6 class="fw-semibold text-primary">
-                                                                    <i
-                                                                        class="bi bi-folder2-open me-1"></i>{!! $categoryName !!}
-                                                                </h6>
-                                                                @php
-                                                                            $chunks = $careersInCategory->chunk(10); // Split into groups of 10
-                                                                            $counter = 1; // Start numbering
-                                                                        @endphp
+                                                            @foreach ($groupedByCategory as $categoryName => $careersInCategory)
+                                                                <div class="mb-3">
+                                                                    <h6 class="fw-semibold text-primary">
+                                                                        <i
+                                                                            class="bi bi-folder2-open me-1"></i>{!! $categoryName !!}
+                                                                    </h6>
 
-                                                                        <div class="row g-3">
-                                                                            @foreach ($chunks as $chunk)
+                                                                    @php
+                                                                        $chunks = $careersInCategory->chunk(
+                                                                            ceil($careersInCategory->count() / 3),
+                                                                        ); // Split into 3 equal columns
+                                                                        $counter = 1; // Numbering
+                                                                    @endphp
+
+                                                                    @foreach ($chunks->chunk(3) as $rowGroup)
+                                                                        {{-- Each group of 3 columns --}}
+                                                                        <div class="row g-3 mb-3">
+                                                                            @foreach ($rowGroup as $chunk)
                                                                                 <div class="col-md-6 col-lg-4">
-                                                                                    <ol class="mb-0" start="{{ $counter }}">
+                                                                                    <ol class="mb-0"
+                                                                                        start="{{ $counter }}">
                                                                                         @foreach ($chunk as $career)
-                                                                                            <li><span class="text-dark small">{!! $career->name !!}</span></li>
+                                                                                            <li>
+                                                                                                <span
+                                                                                                    class="text-dark small">{!! $career->name !!}</span>
+                                                                                            </li>
                                                                                             @php $counter++; @endphp
                                                                                         @endforeach
                                                                                     </ol>
                                                                                 </div>
                                                                             @endforeach
                                                                         </div>
-                                                            </div>
-                                                        @endforeach
-                                                    @else
-                                                        <p class="text-muted fst-italic">No careers assigned</p>
-                                                    @endif
+                                                                        <hr class="my-2 border-secondary opacity-50">
+                                                                    @endforeach
+                                                                </div>
+                                                            @endforeach
+                                                        @else
+                                                            <p class="text-muted fst-italic">No careers assigned</p>
+                                                        @endif
+                                                    </div>
                                                 </div>
                                             </div>
+                                        @endif
+                                    @endforeach
+                                </div>
+                            </div>
+                        @endif
+
+                        {{-- Goal Orientation Section --}}
+                        @if ($domainName === 'GOAL ORIENTATION')
+                            <div class="row g-4 mb-5">
+                                <div class="col-md-6">
+                                    <div class="card border-0 bg-gradient bg-primary-subtle">
+                                        <div class="card-body">
+                                            <h5 class="fw-bold text-primary mb-2"><i class="bi bi-clock me-2"></i>Short
+                                                Term</h5>
+                                            <p class="text-dark">Aim for short milestones and rewards. Match with roles
+                                                needing daily targets.</p>
                                         </div>
-                                    @endif
-                                @endforeach
-                            </div>
-                        </div>
-                    @endif
-
-                    {{-- Goal Orientation Section --}}
-                    @if ($domainName === 'GOAL ORIENTATION')
-                        <div class="row g-4 mb-5">
-                            <div class="col-md-6">
-                                <div class="card border-0 bg-gradient bg-primary-subtle">
-                                    <div class="card-body">
-                                        <h5 class="fw-bold text-primary mb-2"><i class="bi bi-clock me-2"></i>Short
-                                            Term</h5>
-                                        <p class="text-dark">Aim for short milestones and rewards. Match with roles
-                                            needing daily targets.</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="card border-0 bg-gradient bg-success-subtle">
+                                        <div class="card-body">
+                                            <h5 class="fw-bold text-success mb-2"><i class="bi bi-bullseye me-2"></i>Long
+                                                Term</h5>
+                                            <p class="text-dark">Use Vision boards, planning tools, long-term
+                                                mentorship. Ideal for research, entrepreneurship, civil services.</p>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-6">
-                                <div class="card border-0 bg-gradient bg-success-subtle">
-                                    <div class="card-body">
-                                        <h5 class="fw-bold text-success mb-2"><i
-                                                class="bi bi-bullseye me-2"></i>Long Term</h5>
-                                        <p class="text-dark">Use Vision boards, planning tools, long-term
-                                            mentorship. Ideal for research, entrepreneurship, civil services.</p>
-                                    </div>
-                                </div>
+                        @endif
+                    </div>
+
+
+
+                    {{-- Chat show  --}}
+                    <div class="col">
+                        <div class="card shadow mt-4 border-0">
+                            <div class="card-body">
+                                <h5 class="fw-bold text-primary mb-3">Visual Representation of your Score</h5>
+                                <canvas id="chart-{{ $slug }}" height="180"></canvas>
                             </div>
-                        </div>
-                    @endif
-                </div>
-
-
-
-                {{-- Chat show  --}}
-                <div class="col">
-                    <div class="card shadow mt-4 border-0">
-                        <div class="card-body">
-                            <h5 class="fw-bold text-primary mb-3">Visual Representation of your Score</h5>
-                            <canvas id="chart-{{ $slug }}" height="180"></canvas>
                         </div>
                     </div>
                 </div>
-            </div>
 
 
             </section>
@@ -380,13 +391,19 @@
                         </thead>
                         <tbody>
                             @foreach ($overallCategoryWeightages as $catName => $totalWeighted)
-                                <tr>
-                                    <td class="fw-semibold">{!! $catName !!}</td>
-                                    <td class="text-end">
-                                        {{ rtrim(rtrim(number_format($totalWeighted, 2, '.', ''), '0'), '.') }}</td>
-                                </tr>
+                                @if ($loop->iteration <= 3)
+                                    <tr>
+                                        <td class="fw-semibold">{!! $catName !!}</td>
+                                        <td class="text-end">
+                                            {{ rtrim(rtrim(number_format($totalWeighted, 2, '.', ''), '0'), '.') }}
+                                        </td>
+                                    </tr>
+                                @else
+                                    @break
+                                @endif
                             @endforeach
                         </tbody>
+
                     </table>
                 </div>
             @else
@@ -397,20 +414,30 @@
         {{-- Customized Career Recommendation Details --}}
         <section class="mt-5">
             <h2 class="h3 fw-semibold text-secondary mb-4">Customized Career Recommendation</h2>
-            @foreach ($overallCategoryWeightages as $catName => $totalWeighted)
-                @php
-                    $details = $categoryDetails->get($catName);
-                @endphp
-                <div class="card rounded-4 mb-4 shadow-sm border-0">
-                    <div class="card-body">
-                        <h3 class="h5 text-primary fw-bold mb-3">{!! $catName !!}
-                            @if (!empty($details->hook))
-                                - {!! $details->hook !!}
-                            @endif
-                        </h3>
 
-                        <div class="small text-muted">
-                            @foreach ([
+            @foreach ($overallCategoryWeightages as $catName => $totalWeighted)
+                @if ($loop->iteration <= 3)
+                    @php
+                        $details = $categoryDetails->get($catName);
+                    @endphp
+
+                    <div class="card rounded-4 mb-4 shadow-sm border-0">
+                        <div class="card-body">
+                            <h5 class="text-primary fw-bold mb-3 d-inline-flex align-items-center flex-wrap" style="gap: 0.25rem;">
+                                <span class="d-inline">{!! strip_tags($catName) !!}</span>
+                                @if (!empty($details->hook))
+                                    <span class="text-muted fw-normal d-inline" style="white-space: nowrap;">
+                                        - {!! strip_tags($details->hook) !!}
+                                    </span>
+                                @endif
+                            </h5>
+                            
+                        
+                            
+                            
+
+                            <div class="small text-muted">
+                                @foreach ([
             'what_is_it' => 'What is it',
             'example_roles' => 'Example Roles',
             'subjects' => 'Subjects',
@@ -421,15 +448,22 @@
             'india_study_pathways' => 'India Study Pathways',
             'future_trends' => 'Future Trends',
         ] as $field => $label)
-                                @if (!empty($details->$field))
-                                    <p><strong>{{ $label }}:</strong> {!! $details->$field !!}</p>
-                                @endif
-                            @endforeach
+                                    @if (!empty($details->$field))
+                                        <span class="d-inline-block me-3 p-1">
+                                            <strong>{{ $label }}:</strong> {!! strip_tags($details->$field) !!}
+                                        </span>
+                                    @endif
+                                @endforeach
+                            </div>
                         </div>
                     </div>
-                </div>
+                @else
+                    @break
+                @endif
             @endforeach
         </section>
+
+
 
         {{-- Counselor's Remarks --}}
         <section class="mt-5">

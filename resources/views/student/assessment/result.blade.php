@@ -39,9 +39,9 @@
         }
 
         /* .accordion-body {
-                max-height: 300px;
-                overflow-y: auto;
-            } */
+                    max-height: 300px;
+                    overflow-y: auto;
+                } */
     </style>
     @if (session('error'))
         <div class="container pt-4">
@@ -94,7 +94,7 @@
                     @endif
 
                     {{-- Section cards --}}
-                    <div class="row g-4 mb-5 mx-auto">
+                    <div class="row g-4 mb-5 ">
                         @foreach ($sections['cards'] ?? [] as $section)
                             <article class="col-12">
                                 <div class="card border rounded-4 shadow-sm h-100">
@@ -212,24 +212,32 @@
                                                                         </h6>
 
                                                                         @php
-                                                                            $chunks = $careersInCategory->chunk(10); // Split into groups of 10
-                                                                            $counter = 1; // Start numbering
+                                                                            $chunks = $careersInCategory->chunk(
+                                                                                ceil($careersInCategory->count() / 3),
+                                                                            ); // Split into 3 equal columns
+                                                                            $counter = 1; // Numbering
                                                                         @endphp
 
-                                                                        <div class="row g-3">
-                                                                            @foreach ($chunks as $chunk)
-                                                                                <div class="col-md-6 col-lg-4">
-                                                                                    <ol class="mb-0" start="{{ $counter }}">
-                                                                                        @foreach ($chunk as $career)
-                                                                                            <li><span class="text-dark small">{!! $career->name !!}</span></li>
-                                                                                            @php $counter++; @endphp
-                                                                                        @endforeach
-                                                                                    </ol>
-                                                                                </div>
-                                                                            @endforeach
-                                                                        </div>
-
-
+                                                                        @foreach ($chunks->chunk(3) as $rowGroup)
+                                                                            {{-- Each group of 3 columns --}}
+                                                                            <div class="row g-3 mb-3">
+                                                                                @foreach ($rowGroup as $chunk)
+                                                                                    <div class="col-md-6 col-lg-4">
+                                                                                        <ol class="mb-0"
+                                                                                            start="{{ $counter }}">
+                                                                                            @foreach ($chunk as $career)
+                                                                                                <li>
+                                                                                                    <span
+                                                                                                        class="text-dark small">{!! $career->name !!}</span>
+                                                                                                </li>
+                                                                                                @php $counter++; @endphp
+                                                                                            @endforeach
+                                                                                        </ol>
+                                                                                    </div>
+                                                                                @endforeach
+                                                                            </div>
+                                                                            <hr class="my-2 border-secondary opacity-50">
+                                                                        @endforeach
                                                                     </div>
                                                                 @endforeach
                                                             @else
@@ -294,46 +302,6 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     {{-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script> --}}
 
-
-    {{-- <script>
-        // Chart Data Initialization
-        const chartData = @json($groupedResults);
-
-        Object.entries(chartData).forEach(([domain, sections]) => {
-            const slug = domain.toLowerCase().replace(/[^a-z0-9]+/g, '-');
-            const ctx = document.getElementById(`chart-${slug}`);
-            if (!ctx) return;
-            const chartSections = sections.chart;
-            new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: chartSections.map(s => s.section_name),
-                    datasets: [{
-                        label: (domain === 'APTITUDE') ? 'Total Score' : 'Average Score',
-                        data: chartSections.map(s => s.average_value),
-                        backgroundColor: '#0d6efd'
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        legend: {
-                            display: false
-                        },
-                        tooltip: {
-                            enabled: true
-                        }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            max: 10
-                        }
-                    }
-                }
-            });
-        });
-    </script> --}}
 
     <script>
         const chartData = @json($groupedResults);
