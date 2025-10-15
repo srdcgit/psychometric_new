@@ -62,7 +62,7 @@
         </div>
 
         {{-- Bootstrap Tabs --}}
-        <ul class="nav nav-tabs mb-4" id="resultTab" role="tablist">
+        <ul class="nav nav-tabs mb-4 mx-auto" id="resultTab" role="tablist" style="width: 80%; max-width: 1000px; justify-content: center;">
             @foreach ($groupedResults as $domainName => $sections)
                 @php
                     $slug = Str::slug($domainName);
