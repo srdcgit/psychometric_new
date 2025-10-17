@@ -48,6 +48,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/assessment/result', [AssessmentController::class, 'result'])->name('assessment.result');
     Route::get('/assessment/report', [AssessmentController::class, 'report'])->name('assessment.report');
     Route::get('/assessment/report/pdf', [AssessmentController::class, 'reportPdf'])->name('assessment.report.pdf');
+    // Route::get('/assessment/report/image', [AssessmentController::class, 'reportImage'])->name('assessment.report.image');
 
     //Institutes
     Route::get('/institute', [InstituteController::class, 'index'])->name('institute.index');

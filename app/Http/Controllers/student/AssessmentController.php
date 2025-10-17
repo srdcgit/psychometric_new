@@ -515,4 +515,13 @@ class AssessmentController extends Controller
             ->header('Content-Type', 'application/pdf')
             ->header('Content-Disposition', 'attachment; filename="assessment-report.pdf"');
     }
+
+    public function reportImage(Request $request)
+    {
+        $user = Auth::user();
+        $data = $this->buildResultData($user->id);
+        // Render the same PDF blade but in browser; a query flag will trigger client-side PNG download
+        $data['export_image'] = true;
+        return view('student.assessment.report-pdf', $data);
+    }
 }

@@ -40,7 +40,10 @@
     <div class="container max-w-5xl py-5 mx-auto" style="width: 80%; max-width: 1000px;">
         <div class="d-flex flex-wrap justify-content-between align-items-center mb-5">
             <h3 class="fw-bold text-primary flex-grow-1">Comprehensive Psychometric Assessment Report</h3>
-            <a href="{{ route('assessment.report.pdf') }}" class="btn btn-dark btn-lg px-4 shadow-sm">Download PDF</a>
+            <div class="d-flex gap-2">
+                <a href="{{ route('assessment.report.pdf') }}" class="btn btn-dark btn-lg px-4 shadow-sm">Download PDF</a>
+                {{-- <a href="{{ route('assessment.report.image') }}" class="btn btn-outline-primary btn-lg px-4 shadow-sm">Download As Image</a> --}}
+            </div>
         </div>
 
         {{-- Student Information --}}

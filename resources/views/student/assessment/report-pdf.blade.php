@@ -846,6 +846,39 @@
 
     </div>
 
+    {{-- Generate this pdf report to image format code  --}}
+    {{-- @if(!empty($export_image))
+        <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+        <script>
+            (function() {
+                function downloadPng() {
+                    const body = document.body;
+                    const prevBg = body.style.backgroundColor;
+                    body.style.backgroundColor = '#ffffff';
+                    html2canvas(body, { scale: 2, useCORS: true, backgroundColor: '#ffffff' }).then(function(canvas) {
+                        const dataUrl = canvas.toDataURL('image/png');
+                        const link = document.createElement('a');
+                        var studentName = @json($student->name ?? 'report');
+                        var safe = String(studentName).replace(/[^a-z0-9]+/gi, '-').replace(/^-+|-+$/g, '').toLowerCase();
+                        link.href = dataUrl;
+                        link.download = (safe || 'report') + '-full-report.png';
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                        body.style.backgroundColor = prevBg;
+                    }).catch(function() {
+                        alert('Failed to generate image');
+                        body.style.backgroundColor = prevBg;
+                    });
+                }
+                if (document.readyState === 'complete' || document.readyState === 'interactive') {
+                    setTimeout(downloadPng, 500);
+                } else {
+                    document.addEventListener('DOMContentLoaded', function(){ setTimeout(downloadPng, 500); });
+                }
+            })();
+        </script>
+    @endif --}}
 </body>
 
 </html>
